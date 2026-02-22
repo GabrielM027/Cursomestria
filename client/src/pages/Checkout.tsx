@@ -2,6 +2,8 @@
  * DESIGN: Blueprint Industrial
  * Página de Checkout - Mercado Pago
  * Mantém o visual do projeto: tema escuro, acentos laranja/azul
+ * 
+ * v2: Ajustado para Vercel API Routes
  */
 
 import { useState } from 'react';
@@ -21,12 +23,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import axios from 'axios';
 
 const COURSE_PRICE = 197.00;
 
 export default function Checkout() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
 
   async function handleCheckout() {
@@ -38,23 +39,35 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      // Chama a API para criar a preference do Mercado Pago
-      const response = await axios.post('/api/create-checkout', {
-        user_id: user.id,
+      // Chama a API Route do Vercel para criar a preference do Mercado Pago
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          userEmail: user.email,
+          userName: profile?.full_name || user.email,
+        }),
       });
 
-      const { init_point } = response.data;
+      const data = await response.json();
 
-      if (init_point) {
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao criar checkout');
+      }
+
+      if (data.init_point) {
         // Redireciona para o checkout do Mercado Pago
-        window.location.href = init_point;
+        window.location.href = data.init_point;
       } else {
         throw new Error('Não foi possível criar o checkout');
       }
     } catch (error: any) {
       console.error('Erro ao criar checkout:', error);
       toast.error('Erro ao processar pagamento', {
-        description: error.response?.data?.error || 'Tente novamente mais tarde',
+        description: error.message || 'Tente novamente mais tarde',
       });
       setLoading(false);
     }

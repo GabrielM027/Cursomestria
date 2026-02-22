@@ -1,8 +1,8 @@
 /**
- * Hook useEnrollment
+ * Hook useEnrollment v2
  * 
  * Verifica se o usuário tem acesso ativo ao curso.
- * Retorna informações sobre a matrícula e status de acesso.
+ * Schema simplificado: apenas verifica status === 'active' e expires_at > now()
  */
 
 import { useEffect, useState } from 'react';
@@ -76,7 +76,7 @@ export function useEnrollment(): EnrollmentState {
     : false;
   
   const hasAccess = isActive && !isExpired;
-  const needsPurchase = !enrollment || enrollment.status === 'pending';
+  const needsPurchase = !enrollment || enrollment.status === 'inactive';
 
   return {
     enrollment,

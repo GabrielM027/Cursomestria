@@ -8,14 +8,21 @@ yarn.lock
 .env
 .env.local
 .env.production
+.env.*.local
 
 # Build
 dist/
 build/
+.output/
+
+# Vercel
+.vercel
 
 # Logs
+logs/
 *.log
 npm-debug.log*
+pnpm-debug.log*
 
 # IDE
 .vscode/
@@ -27,6 +34,11 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Temp
+# Temporários
 tmp/
 temp/
+*.tmp
+
+# Testes
+coverage/
+.nyc_output/
