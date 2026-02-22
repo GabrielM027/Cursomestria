@@ -1,44 +1,48 @@
 # Dependências
 node_modules/
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
-
-# Ambiente
-.env
-.env.local
-.env.production
-.env.*.local
+.pnpm-store/
 
 # Build
 dist/
 build/
-.output/
+.next/
+out/
+
+# Env - NUNCA commitar arquivos .env com secrets reais
+.env
+.env.local
+.env.*.local
+.env.production
 
 # Vercel
-.vercel
+.vercel/
 
 # Logs
-logs/
 *.log
 npm-debug.log*
 pnpm-debug.log*
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Temporários
-tmp/
-temp/
-*.tmp
+# IDE
+.vscode/
+.idea/
 
-# Testes
-coverage/
-.nyc_output/
+# Temporários
+*.tmp
+*.temp
+.abacus.donotdelete
+
+# Arquivos pesados - não commitar
+*.pdf
+*.zip
+*.rar
+*.mp4
+*.mov
+
+# Lock files (opcional, pnpm-lock.yaml pode ser commitado)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

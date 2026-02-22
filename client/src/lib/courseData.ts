@@ -7,7 +7,8 @@
  */
 
 // E-mail oficial do curso
-export const COURSE_EMAIL = "cursomestria@gmail.com";
+// Configure your course email in .env (ADMIN_EMAIL)
+export const COURSE_EMAIL = "seu-email-admin@exemplo.com";
 
 export interface Lesson {
   id: string;

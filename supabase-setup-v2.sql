@@ -87,8 +87,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION public.is_admin_email(email TEXT)
 RETURNS BOOLEAN AS $$
 BEGIN
-  -- IMPORTANTE: Substitua pelo seu email de admin
-  RETURN email = 'cursomestria@gmail.com';
+  -- IMPORTANTE: Substitua pelo seu email de admin real antes de executar!
+  RETURN email = 'seu-email-admin@exemplo.com';
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 

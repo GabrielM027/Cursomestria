@@ -3,7 +3,6 @@
  * Sidebar de navegação com menu hambúrguer
  * Tema escuro, acentos laranja (segurança) e azul (blueprint)
  * Sidebar limpa: apenas navegação principal (Início e Módulos)
- * Integrado com autenticação
  */
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
@@ -13,28 +12,16 @@ import {
   X,
   Home,
   Layers,
-  LogIn,
-  LogOut,
-  User,
-  ShoppingCart,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
-  const { user, profile, signOut } = useAuth();
 
   const navItems = [
     { href: "/", label: "Início", icon: Home },
     { href: "/estudos", label: "Módulos", icon: Layers },
   ];
-
-  async function handleLogout() {
-    await signOut();
-    setIsOpen(false);
-  }
 
   return (
     <>
@@ -135,72 +122,9 @@ export default function Sidebar() {
               })}
             </nav>
 
-            {/* User Section & Footer */}
-            <div className="p-4 border-t border-neutral-800/30 space-y-4">
-              {user ? (
-                <>
-                  {/* User Info */}
-                  <div className="flex items-center gap-3 p-3 bg-neutral-800/50 rounded-md">
-                    <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center shrink-0">
-                      <User className="w-5 h-5 text-orange-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-white truncate font-['IBM_Plex_Sans']">
-                        {profile?.full_name || 'Usuário'}
-                      </p>
-                      <p className="text-xs text-neutral-500 truncate font-mono">
-                        {user.email}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="space-y-2">
-                    {!profile || profile.role !== 'admin' ? (
-                      <Link href="/checkout" onClick={() => setIsOpen(false)}>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start bg-transparent border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
-                        >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Adquirir Curso
-                        </Button>
-                      </Link>
-                    ) : null}
-                    
-                    <Button
-                      onClick={handleLogout}
-                      variant="outline"
-                      className="w-full justify-start bg-transparent border-neutral-700 text-neutral-300 hover:bg-red-900/20 hover:text-red-400 hover:border-red-700"
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sair
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                /* Login/Signup Buttons */
-                <div className="space-y-2">
-                  <Link href="/login" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-                      <LogIn className="w-4 h-4 mr-2" />
-                      Entrar
-                    </Button>
-                  </Link>
-                  <Link href="/cadastro" onClick={() => setIsOpen(false)}>
-                    <Button
-                      variant="outline"
-                      className="w-full bg-transparent border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Criar Conta
-                    </Button>
-                  </Link>
-                </div>
-              )}
-              
-              {/* Copyright */}
-              <p className="text-[10px] text-neutral-700 font-mono text-center pt-2">
+            {/* Footer da Sidebar */}
+            <div className="p-4 border-t border-neutral-800/30">
+              <p className="text-[10px] text-neutral-700 font-mono text-center">
                 &copy; {new Date().getFullYear()} Mestria
               </p>
             </div>
