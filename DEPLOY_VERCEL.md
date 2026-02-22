@@ -8,7 +8,7 @@
 # Verifique se todos os arquivos estão commitados
 git status
 git add .
-git commit -m "Refatoração para arquitetura serverless Vercel"
+git commit -m "Ajustes finais pré-deploy"
 git push origin main
 ```
 
@@ -24,18 +24,40 @@ git push origin main
 
 Na Vercel, vá em **Settings > Environment Variables** e adicione:
 
-| Variável | Valor | Ambiente |
-|----------|-------|----------|
-| `VITE_SUPABASE_URL` | `https://tqkbehwjylktpfrguvlr.supabase.co` | All |
-| `VITE_SUPABASE_ANON_KEY` | `sua_supabase_anon_key_aqui` | All |
-| `VITE_APP_URL` | `https://seu-app.vercel.app` | Production |
-| `VITE_APP_URL` | `http://localhost:5173` | Development |
-| `SUPABASE_SERVICE_ROLE_KEY` | `sua_supabase_service_role_key_aqui` | All |
-| `MERCADOPAGO_ACCESS_TOKEN` | `seu_mercadopago_access_token_aqui...` | All |
-| `MERCADOPAGO_PUBLIC_KEY` | `seu_mercadopago_access_token_aquiacbcf272-8b09-4a93-...` | All |
-| `ADMIN_EMAIL` | `cursomestria@gmail.com` | All |
+#### Variáveis Públicas (Frontend)
 
-> ⚠️ **IMPORTANTE**: Substitua `seu-app.vercel.app` pela URL real após o primeiro deploy.
+Estas variáveis são expostas no código do frontend (prefixo `VITE_`):
+
+| Variável | Descrição | Exemplo |
+|----------|-----------|---------|
+| `VITE_SUPABASE_URL` | URL do projeto Supabase | `https://xyz.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | Chave pública (anon key) | `eyJhbGci...` |
+
+#### Variáveis Secretas (Backend)
+
+Estas variáveis são usadas **apenas** nas API Routes serverless:
+
+| Variável | Descrição | Exemplo |
+|----------|-----------|---------|
+| `SUPABASE_URL` | URL do Supabase (mesma do frontend) | `https://xyz.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Chave de serviço (service_role) | `eyJhbGci...` |
+| `MERCADOPAGO_ACCESS_TOKEN` | Token de acesso do Mercado Pago | `seu_mercadopago_access_token_aqui...` |
+| `ADMIN_EMAIL` | Email do administrador | `admin@exemplo.com` |
+| `APP_URL` | URL da aplicação na Vercel | `https://meu-app.vercel.app` |
+| `COURSE_PRICE` | Preço do curso (em reais) | `197` |
+| `COURSE_TITLE` | Título do curso (opcional) | `Curso Mestria - Acesso 1 Ano` |
+
+> ⚠️ **IMPORTANTE**: 
+> - `VITE_*` são públicas (expostas no frontend)
+> - As demais são secretas (apenas backend)
+> - `APP_URL` deve ser a URL real da Vercel **sem barra no final**
+> - Após o primeiro deploy, atualize `APP_URL` com a URL gerada
+
+#### Configuração por Ambiente
+
+| Variável | Development | Production |
+|----------|-------------|------------|
+| `APP_URL` | `http://localhost:5173` | `https://seu-app.vercel.app` |
 
 ### 4. Deploy
 
@@ -57,9 +79,9 @@ Clique em **Deploy** e aguarde a build.
    - **Eventos**: `Pagamentos`
 4. Salve
 
-### 7. Atualizar VITE_APP_URL
+### 7. Atualizar APP_URL
 
-Após o primeiro deploy, atualize a variável `VITE_APP_URL` com a URL real da Vercel e faça redeploy.
+Após o primeiro deploy, atualize a variável `APP_URL` com a URL real da Vercel e faça redeploy.
 
 ---
 
@@ -105,6 +127,7 @@ Após o primeiro deploy, atualize a variável `VITE_APP_URL` com a URL real da V
 ### Webhook não funciona
 
 - Verifique se a URL está correta no MP
+- Verifique se `APP_URL` está configurado corretamente na Vercel
 - Teste manualmente com cURL:
   ```bash
   curl -X POST https://seu-app.vercel.app/api/webhook-mercadopago \
@@ -115,8 +138,13 @@ Após o primeiro deploy, atualize a variável `VITE_APP_URL` com a URL real da V
 ### Matrícula não criada
 
 - Verifique logs na Vercel (Functions > Logs)
-- Verifique se `SUPABASE_SERVICE_ROLE_KEY` está configurada
+- Verifique se `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` estão configuradas
 - Verifique RLS policies no Supabase
+
+### Erro "Credenciais não configuradas"
+
+- Certifique-se de usar `SUPABASE_URL` (não `VITE_SUPABASE_URL`) no backend
+- As variáveis `VITE_*` **não** funcionam em serverless functions
 
 ---
 
@@ -144,7 +172,7 @@ curso_mestria/
 
 ---
 
-## ✅ Verificação Final
+## ✅ Checklist Final
 
 - [ ] App está acessível na URL da Vercel
 - [ ] Login/Cadastro funciona
@@ -153,3 +181,21 @@ curso_mestria/
 - [ ] Webhook atualiza matrícula no Supabase
 - [ ] Usuário tem acesso após pagamento
 - [ ] Admin tem acesso total
+
+---
+
+## 📋 Variáveis de Ambiente - Checklist para Vercel
+
+Copie e cole na Vercel (Settings > Environment Variables):
+
+```
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+MERCADOPAGO_ACCESS_TOKEN=
+ADMIN_EMAIL=
+APP_URL=
+COURSE_PRICE=197
+COURSE_TITLE=Curso Mestria - Acesso 1 Ano
+```

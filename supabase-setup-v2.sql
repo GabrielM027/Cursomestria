@@ -1,5 +1,5 @@
 -- =============================================================================
--- CURSO MESTRIA - SCHEMA SIMPLIFICADO v2
+-- CURSO MESTRIA - SCHEMA SIMPLIFICADO v2.1
 -- Arquitetura Serverless para Vercel
 -- =============================================================================
 
@@ -157,18 +157,30 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.enrollments ENABLE ROW LEVEL SECURITY;
 
 -- -----------------------------------------------------------------------------
--- PROFILES - Políticas
+-- PROFILES - Políticas (CORRIGIDO v2.1)
 -- -----------------------------------------------------------------------------
 
--- SELECT: Qualquer usuário autenticado pode ver perfis
-CREATE POLICY "profiles_select_authenticated" ON public.profiles
+-- Remover policies antigas
+DROP POLICY IF EXISTS "profiles_select_authenticated" ON public.profiles;
+DROP POLICY IF EXISTS "Profiles são visíveis para usuários autenticados" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_select_own" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_select_admin" ON public.profiles;
+
+-- SELECT: Usuário vê apenas próprio perfil
+CREATE POLICY "profiles_select_own" ON public.profiles
   FOR SELECT TO authenticated
-  USING (true);
+  USING (user_id = auth.uid());
+
+-- SELECT: Admin vê todos os perfis
+CREATE POLICY "profiles_select_admin" ON public.profiles
+  FOR SELECT TO authenticated
+  USING (public.is_admin());
 
 -- INSERT: Apenas via trigger (service_role)
 -- Nenhuma policy de INSERT = bloqueado para usuários normais
 
 -- UPDATE: Próprio usuário OU admin
+DROP POLICY IF EXISTS "profiles_update_own_or_admin" ON public.profiles;
 CREATE POLICY "profiles_update_own_or_admin" ON public.profiles
   FOR UPDATE TO authenticated
   USING (
@@ -184,6 +196,10 @@ CREATE POLICY "profiles_update_own_or_admin" ON public.profiles
 -- -----------------------------------------------------------------------------
 -- ENROLLMENTS - Políticas
 -- -----------------------------------------------------------------------------
+
+-- Remover policies antigas
+DROP POLICY IF EXISTS "enrollments_select_own_or_admin" ON public.enrollments;
+DROP POLICY IF EXISTS "enrollments_delete_admin_only" ON public.enrollments;
 
 -- SELECT: Próprio usuário OU admin
 CREATE POLICY "enrollments_select_own_or_admin" ON public.enrollments
@@ -217,5 +233,5 @@ GRANT ALL ON public.profiles TO service_role;
 GRANT ALL ON public.enrollments TO service_role;
 
 -- =============================================================================
--- FIM DO SCHEMA v2
+-- FIM DO SCHEMA v2.1
 -- =============================================================================

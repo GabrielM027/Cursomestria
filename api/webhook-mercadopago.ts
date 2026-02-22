@@ -4,6 +4,8 @@
  * Recebe notificações do Mercado Pago sobre pagamentos
  * e atualiza o status da matrícula do usuário no Supabase.
  * 
+ * IMPORTANTE: Processa TUDO antes de retornar resposta
+ * 
  * SEGURANÇA:
  * - Consulta a API do MP para validar o pagamento
  * - Usa SUPABASE_SERVICE_ROLE_KEY para bypass de RLS
@@ -19,26 +21,23 @@ const MERCADO_PAGO_API = 'https://api.mercadopago.com';
 
 // Criar cliente Supabase com service role key (bypass RLS)
 function getSupabaseAdmin() {
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  // IMPORTANTE: Usar SUPABASE_URL (não VITE_SUPABASE_URL) no backend
+  const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Credenciais do Supabase não configuradas');
+    throw new Error('Credenciais do Supabase não configuradas (SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY)');
   }
 
   return createClient(supabaseUrl, supabaseServiceKey);
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Sempre retornar 200 para o MP não reenviar
-  // Processar em background
-  res.status(200).json({ received: true });
-
   try {
     // Apenas POST é permitido
     if (req.method !== 'POST') {
       console.log('ℹ️ Método ignorado:', req.method);
-      return;
+      return res.status(200).json({ received: true });
     }
 
     const { type, data } = req.body;
@@ -47,20 +46,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Processar apenas notificações de pagamento
     if (type !== 'payment') {
       console.log('ℹ️ Tipo ignorado:', type);
-      return;
+      return res.status(200).json({ received: true });
     }
 
     const paymentId = data?.id;
     if (!paymentId) {
       console.error('❌ Payment ID não encontrado no payload');
-      return;
+      return res.status(200).json({ received: true, error: 'payment_id_missing' });
     }
 
-    // Verificar configuração
+    // Verificar configuração do Mercado Pago
     const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
     if (!accessToken) {
       console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado');
-      return;
+      return res.status(200).json({ received: true, error: 'config_error' });
     }
 
     // SEGURANÇA: Consultar API do MP para validar pagamento
@@ -74,8 +73,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     if (!paymentResponse.ok) {
-      console.error('❌ Erro ao consultar pagamento no MP');
-      return;
+      console.error('❌ Erro ao consultar pagamento no MP:', paymentResponse.status);
+      return res.status(200).json({ received: true, error: 'mp_api_error' });
     }
 
     const payment = await paymentResponse.json();
@@ -91,11 +90,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       amount,
     });
 
+    // Verificar se tem user_id
     if (!userId) {
       console.error('❌ User ID não encontrado no pagamento');
-      return;
+      return res.status(200).json({ received: true, error: 'user_id_missing' });
     }
 
+    // Verificar se pagamento foi aprovado
+    if (status !== 'approved') {
+      console.log(`ℹ️ Status do pagamento: ${status} - nenhuma ação tomada`);
+      return res.status(200).json({ received: true, status });
+    }
+
+    // Inicializar Supabase Admin
     const supabase = getSupabaseAdmin();
 
     // IDEMPOTÊNCIA: Verificar se já processamos este pagamento
@@ -107,60 +114,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (existingPayment) {
       console.log('ℹ️ Pagamento já processado:', paymentId);
-      return;
+      return res.status(200).json({ received: true, already_processed: true });
     }
 
-    // Se o pagamento foi aprovado, criar/atualizar matrícula
-    if (status === 'approved') {
-      const now = new Date();
-      const expiresAt = new Date();
-      expiresAt.setFullYear(expiresAt.getFullYear() + 1); // + 1 ano
+    // Calcular datas
+    const now = new Date();
+    const expiresAt = new Date();
+    expiresAt.setFullYear(expiresAt.getFullYear() + 1); // + 1 ano
 
-      // Verificar se já existe matrícula para o usuário
-      const { data: existingEnrollment } = await supabase
-        .from('enrollments')
-        .select('user_id')
-        .eq('user_id', userId)
-        .single();
+    // UPSERT: Criar ou atualizar matrícula
+    const { error: upsertError } = await supabase
+      .from('enrollments')
+      .upsert({
+        user_id: userId,
+        status: 'active',
+        purchased_at: now.toISOString(),
+        expires_at: expiresAt.toISOString(),
+        payment_id: paymentId.toString(),
+        updated_at: now.toISOString(),
+      }, {
+        onConflict: 'user_id',
+        ignoreDuplicates: false,
+      });
 
-      if (existingEnrollment) {
-        // Atualizar matrícula existente
-        const { error } = await supabase
-          .from('enrollments')
-          .update({
-            status: 'active',
-            purchased_at: now.toISOString(),
-            expires_at: expiresAt.toISOString(),
-            payment_id: paymentId.toString(),
-            updated_at: now.toISOString(),
-          })
-          .eq('user_id', userId);
-
-        if (error) {
-          console.error('❌ Erro ao atualizar matrícula:', error);
-        } else {
-          console.log('✅ Matrícula atualizada para usuário:', userId);
-        }
-      } else {
-        // Criar nova matrícula
-        const { error } = await supabase.from('enrollments').insert({
-          user_id: userId,
-          status: 'active',
-          purchased_at: now.toISOString(),
-          expires_at: expiresAt.toISOString(),
-          payment_id: paymentId.toString(),
-        });
-
-        if (error) {
-          console.error('❌ Erro ao criar matrícula:', error);
-        } else {
-          console.log('✅ Matrícula criada para usuário:', userId);
-        }
-      }
-    } else {
-      console.log(`ℹ️ Status do pagamento: ${status} - nenhuma ação tomada`);
+    if (upsertError) {
+      console.error('❌ Erro ao criar/atualizar matrícula:', upsertError);
+      return res.status(200).json({ received: true, error: 'db_error' });
     }
+
+    console.log('✅ Matrícula ativada para usuário:', userId);
+
+    // SÓ AGORA retornar 200 com sucesso
+    return res.status(200).json({ received: true, processed: true });
+
   } catch (error: any) {
     console.error('❌ Erro ao processar webhook:', error.message);
+    // Sempre retornar 200 para evitar retries do MP
+    return res.status(200).json({ received: true, error: error.message });
   }
 }

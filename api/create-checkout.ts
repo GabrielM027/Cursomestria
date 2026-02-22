@@ -2,6 +2,13 @@
  * Vercel Serverless Function: Create Checkout
  * 
  * Cria uma preferência de pagamento no Mercado Pago e retorna o link de checkout.
+ * 
+ * ENV VARS (backend):
+ * - MERCADOPAGO_ACCESS_TOKEN: Token de acesso do MP
+ * - APP_URL: URL da aplicação (não VITE_APP_URL)
+ * - COURSE_PRICE: Preço do curso (default: 197)
+ * - COURSE_TITLE: Título do curso (default: "Curso Mestria - Acesso 1 Ano")
+ * 
  * Endpoint: POST /api/create-checkout
  */
 
@@ -25,7 +32,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Verificar configuração
     const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-    const appUrl = process.env.VITE_APP_URL || 'http://localhost:5173';
+    // IMPORTANTE: Usar APP_URL (não VITE_APP_URL) no backend
+    const appUrl = process.env.APP_URL || 'http://localhost:5173';
+    // Preço e título configuráveis via ENV
+    const coursePrice = parseFloat(process.env.COURSE_PRICE || '197');
+    const courseTitle = process.env.COURSE_TITLE || 'Curso Mestria - Acesso 1 Ano';
 
     if (!accessToken) {
       console.error('❌ MERCADOPAGO_ACCESS_TOKEN não configurado');
@@ -34,14 +45,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    console.log('📦 Criando checkout:', {
+      userId,
+      courseTitle,
+      coursePrice,
+      appUrl: appUrl.replace(/\/$/, ''), // Log sem trailing slash
+    });
+
     // Criar preferência no Mercado Pago
     const preference = {
       items: [
         {
-          title: 'Curso Mestria - Acesso 1 Ano',
+          title: courseTitle,
           description: 'Formação completa de Mestre de Obras - 10 módulos, 80+ lições',
           quantity: 1,
-          unit_price: 197.00,
+          unit_price: coursePrice,
           currency_id: 'BRL',
         },
       ],
