@@ -27,35 +27,51 @@
 <section class="panel section" id="partidas"><div class="eyebrow">HISTÓRICO</div><h2>Partidas</h2><div id="matchesList"></div></section>
 <section class="panel section" id="galeria"><div class="eyebrow">RESENHA EM IMAGENS</div><h2>Galeria</h2><div id="galleryList" class="gallery"></div></section>
 </main>
-<footer>AMIGOS F.C. • Desde 2011 • Prévia de desenvolvimento</footer>
+<footer>AMIGOS F.C. • Desde 2011</footer>
 </div>
 
-<div id="adminDrawer" class="drawer"><div class="sheet"><div class="sheethead"><div><div class="eyebrow">ÁREA RESTRITA</div><h2>Painel do administrador</h2></div><button id="closeAdmin" class="close">✕</button></div>
-<div class="box"><div class="grid"><label>E-mail<input id="authEmail" type="email" placeholder="seuemail@gmail.com"></label><label>Senha<input id="authPassword" type="password" placeholder="mínimo 6 caracteres"></label></div><div class="actions"><button id="loginBtn" class="btn primary">Entrar</button><button id="signupBtn" class="btn gold">Criar primeiro administrador</button><button id="logoutBtn" class="btn hidden">Sair</button></div><div id="authStatus" class="status">Na primeira configuração, crie o primeiro administrador.</div></div>
-<div id="adminArea" class="hidden">
-  <div id="adminTabs" class="segments"><button class="active" data-pane="playersPane">Jogadores</button><button data-pane="matchPane">Partida</button><button data-pane="highlightsPane">Melhor/Pior</button><button data-pane="galleryPane">Galeria</button><button data-pane="historyPane">Editar</button></div>
+<div id="adminDrawer" class="drawer"><div class="sheet">
+  <div class="sheethead"><h2>Painel do administrador</h2><button id="closeAdmin" class="close">✕</button></div>
 
-  <div id="playersPane" class="adminPane active"><div class="box"><h3>👥 Cadastrar jogador</h3><div class="grid"><label>Nome<input id="playerName"></label><label>Tipo<select id="playerType"><option value="fixed">Jogador fixo</option><option value="guest">Convidado</option></select></label><label>Foto<input id="playerPhoto" type="file" accept="image/*"></label><div id="selectionFields" class="grid"><label>Time ou seleção<input id="selectionName" autocomplete="off" placeholder="Brasil, Real Madrid, Flamengo..."></label><div id="teamLookup" class="teamlookup"><div id="teamBadgePreview" class="teamBadgePreview">⚽</div><div class="grow"><b id="teamLookupTitle">Digite o nome do time ou seleção</b><div id="teamLookupMeta" class="small">O escudo será procurado automaticamente.</div></div></div></div><button id="savePlayerBtn" class="btn primary">Salvar jogador</button><div id="playerStatus" class="status"></div></div></div><div class="box"><h3>Jogadores cadastrados</h3><div id="adminPlayers"></div></div></div>
+  <div id="authBox" class="box authbox">
+    <div class="grid"><label>E-mail<input id="authEmail" type="email" placeholder="seuemail@gmail.com"></label><label>Senha<input id="authPassword" type="password" placeholder="mínimo 6 caracteres"></label></div>
+    <div class="actions"><button id="loginBtn" class="btn primary">Entrar</button><button id="signupBtn" class="btn gold">Criar primeiro administrador</button><button id="logoutBtn" class="btn hidden">Sair</button></div>
+    <div id="authStatus" class="status">Na primeira configuração, crie o primeiro administrador.</div>
+  </div>
 
-  <div id="matchPane" class="adminPane"><div class="box"><h3>⚽ Lançar partida</h3><p class="hint">Aqui entra somente o jogo: monte os dois times, informe o placar e os gols. Melhor e pior são lançados depois.</p><input id="editMatchId" type="hidden"><div class="grid"><div class="grid2"><label>Data<input id="matchDate" type="date"></label><label>Status<select id="matchStatus"><option value="published">Publicada</option><option value="draft">Rascunho</option></select></label></div><div class="grid2"><label>⚫ Placar Preto<input id="blackScore" type="number" min="0" value="0"></label><label>🔴 Placar Vermelho<input id="redScore" type="number" min="0" value="0"></label></div>
+  <div id="adminArea" class="hidden">
+    <div id="adminTabs" class="adminnav"><button class="active" data-pane="playersPane">Jogadores</button><button data-pane="matchPane">Partida</button><button data-pane="highlightsPane">Melhor/Pior</button><button data-pane="galleryPane">Galeria</button><button data-pane="historyPane">Editar</button></div>
 
-    <div><div class="hint" style="margin-bottom:8px">Selecione diretamente quem jogou em cada equipe.</div>
-      <div class="grid2" style="align-items:start">
-        <div class="box" style="margin-top:0;padding:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>⚫ Time Preto</b><span id="blackCount" class="small">0 jogadores</span></div><div id="blackTeamPicker"></div></div>
-        <div class="box" style="margin-top:0;padding:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>🔴 Time Vermelho</b><span id="redCount" class="small">0 jogadores</span></div><div id="redTeamPicker"></div></div>
-      </div>
+    <div id="playersPane" class="adminPane active">
+      <div class="box"><h3>👥 Cadastrar jogador</h3><div class="grid">
+        <label>Nome<input id="playerName"></label>
+        <label>Tipo<select id="playerType"><option value="fixed">Jogador fixo</option><option value="guest">Convidado</option></select></label>
+        <label>Foto<input id="playerPhoto" type="file" accept="image/*"></label>
+        <div id="selectionFields" class="grid"><label>Time ou seleção<input id="selectionName" autocomplete="off" placeholder="Brasil, Real Madrid, Flamengo..."></label><div id="teamLookup" class="teamlookup"><div id="teamBadgePreview" class="teamBadgePreview">⚽</div><div class="grow"><b id="teamLookupTitle">Digite o nome do time ou seleção</b><div id="teamLookupMeta" class="small">O escudo será procurado automaticamente.</div></div></div></div>
+        <button id="savePlayerBtn" class="btn primary">Salvar jogador</button><div id="playerStatus" class="status"></div>
+      </div></div>
+      <div class="box"><h3>Jogadores cadastrados</h3><div id="adminPlayers"></div></div>
     </div>
 
-    <div class="box" style="margin-top:0"><h3 style="margin-top:0">⚽ Gols</h3><p class="hint">Depois de montar os times, informe os gols somente de quem marcou.</p><div id="matchGoalsPicker" class="empty compact">Selecione os jogadores dos times primeiro.</div></div>
+    <div id="matchPane" class="adminPane"><div class="box"><h3>⚽ Lançar partida</h3><input id="editMatchId" type="hidden"><div class="grid">
+      <div class="grid2"><label>Data<input id="matchDate" type="date"></label><label>Status<select id="matchStatus"><option value="published">Publicada</option><option value="draft">Rascunho</option></select></label></div>
+      <div class="grid2"><label>⚫ Placar Preto<input id="blackScore" type="number" min="0" value="0"></label><label>🔴 Placar Vermelho<input id="redScore" type="number" min="0" value="0"></label></div>
+      <div class="teamcolumns">
+        <div class="teamselect blackselect"><div class="teamselecthead"><b>⚫ Time Preto</b><span id="blackCount" class="small">0 jogadores</span></div><div id="blackTeamPicker"></div></div>
+        <div class="teamselect redselect"><div class="teamselecthead"><b>🔴 Time Vermelho</b><span id="redCount" class="small">0 jogadores</span></div><div id="redTeamPicker"></div></div>
+      </div>
+      <div class="goalsbox"><h3>⚽ Gols</h3><div id="matchGoalsPicker" class="empty compact">Selecione os jogadores dos times primeiro.</div></div>
+      <div class="actions"><button id="saveMatchBtn" class="btn primary">Salvar partida</button><button id="clearMatchBtn" class="btn">Limpar</button></div><div id="matchSaveStatus" class="status"></div>
+    </div></div></div>
 
-    <div class="actions"><button id="saveMatchBtn" class="btn primary">Salvar partida</button><button id="clearMatchBtn" class="btn">Limpar</button></div><div id="matchSaveStatus" class="status"></div></div></div></div>
+    <div id="highlightsPane" class="adminPane"><div class="box"><h3>🏅 Melhor e pior da rodada</h3><div class="grid">
+      <label>Partida<select id="highlightMatch"><option value="">Selecione uma partida</option></select></label>
+      <div id="highlightFields" class="hidden"><label>Melhor em campo<select id="bestPlayer"></select></label><label>Foto do melhor<input id="bestPhoto" type="file" accept="image/*"></label><label>Resenha do melhor<textarea id="bestCaption" placeholder="Escreva a resenha do melhor..."></textarea></label><label>Pior em campo<select id="worstPlayer"></select></label><label>Foto do pior<input id="worstPhoto" type="file" accept="image/*"></label><label>Resenha do pior<textarea id="worstCaption" placeholder="Escreva a resenha do pior..."></textarea></label><button id="saveHighlightsBtn" class="btn primary">Salvar melhor e pior</button><div id="highlightStatus" class="status"></div></div>
+    </div></div></div>
 
-  <div id="highlightsPane" class="adminPane"><div class="box"><h3>🏅 Melhor e pior da rodada</h3><p class="hint">Primeiro lance a partida. Depois escolha a rodada aqui e publique os destaques com foto e resenha.</p><div class="grid"><label>Partida<select id="highlightMatch"><option value="">Selecione uma partida</option></select></label><div id="highlightFields" class="hidden"><label>Melhor em campo<select id="bestPlayer"></select></label><label>Foto do melhor<input id="bestPhoto" type="file" accept="image/*"></label><label>Resenha do melhor<textarea id="bestCaption" placeholder="Escreva a resenha do melhor..."></textarea></label><label>Pior em campo<select id="worstPlayer"></select></label><label>Foto do pior<input id="worstPhoto" type="file" accept="image/*"></label><label>Resenha do pior<textarea id="worstCaption" placeholder="Escreva a resenha do pior..."></textarea></label><button id="saveHighlightsBtn" class="btn primary">Salvar melhor e pior</button><div id="highlightStatus" class="status"></div></div></div></div></div>
-
-  <div id="galleryPane" class="adminPane"><div class="box"><h3>📸 Adicionar à galeria</h3><div class="grid"><label>Partida<select id="galleryMatch"></select></label><label>Arquivo<input id="galleryFile" type="file" accept="image/*,video/*"></label><label>Legenda<textarea id="galleryCaption"></textarea></label><button id="saveGalleryBtn" class="btn primary">Enviar</button><div id="galleryStatus" class="status"></div></div></div><div class="box"><h3>Mídias cadastradas</h3><div id="adminGallery"></div></div></div>
-  <div id="historyPane" class="adminPane"><div class="box"><h3>✏️ Partidas cadastradas</h3><div id="adminMatches"></div></div></div>
-</div>
-<div class="notice">A parte funcional grava no Supabase. Primeiro deixamos tudo funcionando; depois refinamos o layout.</div>
+    <div id="galleryPane" class="adminPane"><div class="box"><h3>📸 Adicionar à galeria</h3><div class="grid"><label>Partida<select id="galleryMatch"></select></label><label>Arquivo<input id="galleryFile" type="file" accept="image/*,video/*"></label><label>Legenda<textarea id="galleryCaption"></textarea></label><button id="saveGalleryBtn" class="btn primary">Enviar</button><div id="galleryStatus" class="status"></div></div></div><div class="box"><h3>Mídias cadastradas</h3><div id="adminGallery"></div></div></div>
+    <div id="historyPane" class="adminPane"><div class="box"><h3>✏️ Partidas cadastradas</h3><div id="adminMatches"></div></div></div>
+  </div>
 </div></div>
 <script src="/app-public.js"></script><script src="/app-admin.js"></script>
 </body></html>
