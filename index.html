@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10090a">
+<title>Amigos Futebol Clube</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brandrow"><div class="logoMark">AFC</div><div class="brandtxt"><b>AMIGOS</b><span>FUTEBOL CLUBE</span></div><button id="openAdmin" class="adminbtn">🛡 Painel</button></div>
+  <nav id="mainNav"><button class="active" data-view="inicio">Início</button><button data-view="ranking">Ranking</button><button data-view="artilharia">Artilharia</button><button data-view="partidas">Partidas</button><button data-view="galeria">Galeria</button></nav>
+</header>
+<main>
+<section class="panel active" id="inicio"><div class="hero"><small>✨ A CASA DA PELADA</small><h1>Todo domingo.<br><em>Toda história.</em></h1><p>Resenha, ranking, gols e os momentos que ficam depois do apito final.</p></div><div class="section"><div class="eyebrow">RESENHA DA RODADA</div><h2>Melhor & pior</h2><p class="sub">O histórico fica salvo domingo após domingo.</p><div id="feedHistory" class="empty">Nenhuma rodada publicada ainda.</div></div></section>
+<section class="panel section" id="ranking"><div class="eyebrow">TEMPORADA 2026</div><h2>Ranking</h2><div id="rankingSeg" class="segments"><button class="active" data-rank="pontos">Pontos corridos</button><button data-rank="melhores">Melhores do ano</button><button data-rank="piores">Piores do ano</button></div><div id="rankList"></div></section>
+<section class="panel section" id="artilharia"><div class="eyebrow">GOLS DA TEMPORADA</div><h2>Artilharia</h2><div id="scorersList"></div></section>
+<section class="panel section" id="partidas"><div class="eyebrow">HISTÓRICO</div><h2>Partidas</h2><div id="matchesList"></div></section>
+<section class="panel section" id="galeria"><div class="eyebrow">RESENHA EM IMAGENS</div><h2>Galeria</h2><div id="galleryList" class="gallery"></div></section>
+</main>
+<footer>AMIGOS F.C. • Desde 2011 • Prévia de desenvolvimento</footer>
+</div>
+
+<div id="adminDrawer" class="drawer"><div class="sheet"><div class="sheethead"><div><div class="eyebrow">ÁREA RESTRITA</div><h2>Painel do administrador</h2></div><button id="closeAdmin" class="close">✕</button></div>
+<div class="box"><div class="grid"><label>E-mail<input id="authEmail" type="email" placeholder="seuemail@gmail.com"></label><label>Senha<input id="authPassword" type="password" placeholder="mínimo 6 caracteres"></label></div><div class="actions"><button id="loginBtn" class="btn primary">Entrar</button><button id="signupBtn" class="btn gold">Criar primeiro administrador</button><button id="logoutBtn" class="btn hidden">Sair</button></div><div id="authStatus" class="status">Na primeira configuração, crie o primeiro administrador.</div></div>
+<div id="adminArea" class="hidden">
+  <div id="adminTabs" class="segments"><button class="active" data-pane="playersPane">Jogadores</button><button data-pane="matchPane">Partida</button><button data-pane="galleryPane">Galeria</button><button data-pane="historyPane">Editar</button></div>
+  <div id="playersPane" class="adminPane active"><div class="box"><h3>👥 Cadastrar jogador</h3><div class="grid"><label>Nome<input id="playerName"></label><label>Tipo<select id="playerType"><option value="fixed">Jogador fixo</option><option value="guest">Convidado</option></select></label><label>Foto<input id="playerPhoto" type="file" accept="image/*"></label><div id="selectionFields" class="grid2"><label>Seleção<input id="selectionName" placeholder="Marrocos"></label><label>Bandeira<input id="selectionFlag" placeholder="🇲🇦"></label></div><button id="savePlayerBtn" class="btn primary">Salvar jogador</button><div id="playerStatus" class="status"></div></div></div><div class="box"><h3>Jogadores cadastrados</h3><div id="adminPlayers"></div></div></div>
+  <div id="matchPane" class="adminPane"><div class="box"><h3>⚽ Lançar partida</h3><input id="editMatchId" type="hidden"><div class="grid"><div class="grid2"><label>Data<input id="matchDate" type="date"></label><label>Status<select id="matchStatus"><option value="published">Publicada</option><option value="draft">Rascunho</option></select></label></div><div class="grid2"><label>⚫ Preto<input id="blackScore" type="number" min="0" value="0"></label><label>🔴 Vermelho<input id="redScore" type="number" min="0" value="0"></label></div><div><div class="hint">Marque quem jogou, escolha o time e informe os gols.</div><div id="matchPlayerPicker"></div></div><div class="grid2"><label>Melhor<select id="bestPlayer"></select></label><label>Pior<select id="worstPlayer"></select></label></div><label>Resenha do melhor<textarea id="bestCaption"></textarea></label><label>Foto do melhor<input id="bestPhoto" type="file" accept="image/*"></label><label>Resenha do pior<textarea id="worstCaption"></textarea></label><label>Foto do pior<input id="worstPhoto" type="file" accept="image/*"></label><div class="actions"><button id="saveMatchBtn" class="btn primary">Salvar partida</button><button id="clearMatchBtn" class="btn">Limpar</button></div><div id="matchSaveStatus" class="status"></div></div></div></div>
+  <div id="galleryPane" class="adminPane"><div class="box"><h3>📸 Adicionar à galeria</h3><div class="grid"><label>Partida<select id="galleryMatch"></select></label><label>Arquivo<input id="galleryFile" type="file" accept="image/*,video/*"></label><label>Legenda<textarea id="galleryCaption"></textarea></label><button id="saveGalleryBtn" class="btn primary">Enviar</button><div id="galleryStatus" class="status"></div></div></div><div class="box"><h3>Mídias cadastradas</h3><div id="adminGallery"></div></div></div>
+  <div id="historyPane" class="adminPane"><div class="box"><h3>✏️ Partidas cadastradas</h3><div id="adminMatches"></div></div></div>
+</div>
+<div class="notice">A parte funcional já grava no Supabase. Depois ajustamos o layout.</div>
+</div></div>
+<script src="/app-public.js"></script><script src="/app-admin.js"></script>
+</body></html>
