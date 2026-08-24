@@ -5,17 +5,35 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10090a">
 <title>Amigos Futebol Clube</title>
-<link rel="icon" href="/assets/amigos-fc-logo.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/amigos-fc-logo-v2.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <div class="app">
 <header class="topbar">
-  <div class="brandrow"><div class="logoMark"><img src="/assets/amigos-fc-logo.svg" alt="Amigos F.C."></div><div class="brandtxt"><b>AMIGOS</b><span>FUTEBOL CLUBE</span></div><button id="openAdmin" class="adminbtn">🛡 Painel</button></div>
+  <div class="brandrow">
+    <div class="logoMark"><img src="/assets/amigos-fc-logo-v2.svg" alt="Amigos F.C."></div>
+    <div class="brandtxt"><b>AMIGOS</b><span>FUTEBOL CLUBE</span></div>
+    <button id="openAdmin" class="adminbtn">🛡 Painel</button>
+  </div>
   <nav id="mainNav"><button class="active" data-view="inicio">Início</button><button data-view="ranking">Ranking</button><button data-view="artilharia">Artilharia</button><button data-view="partidas">Partidas</button><button data-view="galeria">Galeria</button></nav>
 </header>
 <main>
-<section class="panel active" id="inicio"><div class="hero"><small>✨ A CASA DA PELADA</small><h1>Todo domingo.<br><em>Toda história.</em></h1><p>Resenha, ranking, gols e os momentos que ficam depois do apito final.</p></div><div class="section"><div class="eyebrow">RESENHA DA RODADA</div><h2>Melhor & pior</h2><p class="sub">Os destaques ficam salvos domingo após domingo.</p><div id="feedHistory" class="empty">Nenhum destaque publicado ainda.</div></div></section>
+<section class="panel active" id="inicio">
+  <div class="hero">
+    <div class="heroCopy">
+      <small>✦ A CASA DA PELADA</small>
+      <h1>Todo domingo.<br><em>Toda história.</em></h1>
+      <p>Acompanhe quem decide, quem balança a rede e quem deixa sua marca na história do Amigos Futebol Clube.</p>
+      <div class="heroActions">
+        <button class="heroPrimary" onclick="document.querySelector('#mainNav [data-view=ranking]').click()">Ver rankings <span>→</span></button>
+        <button class="heroSecondary" onclick="document.querySelector('#mainNav [data-view=partidas]').click()">Histórico de partidas <span>▣</span></button>
+      </div>
+    </div>
+    <div class="heroLogoWrap" aria-hidden="true"><div class="orbit orbit1"></div><div class="orbit orbit2"></div><img src="/assets/amigos-fc-logo-v2.svg" alt=""></div>
+  </div>
+  <div class="section homeFeed"><div class="eyebrow">RESENHA DA RODADA</div><h2>Melhor & pior</h2><div id="feedHistory" class="empty">Nenhum destaque publicado ainda.</div></div>
+</section>
 
 <section class="panel section" id="ranking">
   <div class="eyebrow">TEMPORADA 2026</div><h2>Ranking</h2>
