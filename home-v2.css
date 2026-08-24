@@ -1,0 +1,63 @@
+/* Home visual baseada no layout original enviado */
+.topbar{background:#0b090a;padding:16px 28px 12px;border-bottom:1px solid #20181b}
+.brandrow{min-height:72px;gap:14px}
+.logoMark{width:72px!important;height:72px!important;flex:0 0 72px!important;border-radius:50%!important;background:#252021!important;border:1px solid #7d6540!important;padding:5px!important;overflow:hidden!important;box-shadow:inset 0 0 0 4px rgba(0,0,0,.18)}
+.logoMark img{width:100%;height:100%;object-fit:contain;display:block}
+.brandtxt b{font-family:Impact,"Arial Narrow",sans-serif;font-size:26px;letter-spacing:.12em;line-height:1}
+.brandtxt span{font-size:11px;letter-spacing:.23em;margin-top:7px;color:#d7b66d;font-weight:800}
+.adminbtn{border-color:#665334;color:#ebcf90;padding:12px 18px;border-radius:26px;font-size:15px;background:#0d0a0b}
+.topbar nav{padding-top:10px;gap:10px;scrollbar-width:none}
+.topbar nav::-webkit-scrollbar{display:none}
+.topbar nav button{font-size:15px;padding:10px 15px}
+.topbar nav button.active{background:#2b2729}
+
+.hero{position:relative;overflow:hidden;min-height:850px;padding:96px 30px 0;background:radial-gradient(circle at 88% 20%,rgba(133,16,39,.22),transparent 34%),linear-gradient(160deg,#20080d 0%,#17090c 54%,#110d0e 100%)}
+.hero:before{content:"";position:absolute;inset:0;opacity:.14;background-image:radial-gradient(circle,rgba(197,45,74,.48) 1px,transparent 1.2px);background-size:22px 22px;mask-image:linear-gradient(to bottom,#000,transparent 70%);pointer-events:none}
+.heroCopy{position:relative;z-index:3;max-width:610px}
+.hero small{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(224,184,103,.36);border-radius:999px;padding:11px 18px;color:#e5c57e;background:rgba(59,34,20,.18);font-size:12px;letter-spacing:.21em}
+.hero h1{font-family:Impact,"Arial Narrow",sans-serif;font-size:clamp(60px,11vw,88px);line-height:.94;letter-spacing:-.018em;margin:48px 0 30px;max-width:610px}
+.hero h1 em{color:#dfbd6b;font-style:normal}
+.hero p{font-size:21px;line-height:1.85;max-width:590px;color:#afa7a9;margin:0}
+.heroActions{display:flex;flex-direction:column;align-items:flex-start;gap:18px;margin-top:42px;position:relative;z-index:4}
+.heroActions button{height:68px;border-radius:34px;padding:0 30px;font-size:18px;font-weight:900;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:18px}
+.heroPrimary{border:0;background:#c81437;min-width:270px;box-shadow:0 14px 36px rgba(184,13,49,.18)}
+.heroSecondary{border:1px solid #4b383e;background:rgba(17,13,14,.72);min-width:318px}
+.heroSecondary span{font-size:22px}
+.heroLogoWrap{position:absolute;z-index:1;width:390px;height:390px;left:50%;bottom:-175px;transform:translateX(-50%);display:grid;place-items:center}
+.heroLogoWrap img{position:relative;z-index:2;width:285px;height:285px;object-fit:contain;filter:drop-shadow(0 20px 30px rgba(0,0,0,.42))}
+.orbit{position:absolute;border:1px solid rgba(213,179,103,.18);border-radius:50%}
+.orbit1{width:365px;height:365px}
+.orbit2{width:292px;height:292px;border-style:dashed}
+
+.homeFeed{position:relative;background:#0b0b0c;padding-top:54px;border-top:1px solid #1f1719}
+.homeFeed .eyebrow{font-size:12px;letter-spacing:.24em}
+.homeFeed h2{font-size:56px;margin-top:14px;margin-bottom:24px}
+
+@media(max-width:520px){
+  .topbar{padding:14px 18px 10px}
+  .brandrow{min-height:62px;gap:10px}
+  .logoMark{width:62px!important;height:62px!important;flex-basis:62px!important;padding:4px!important}
+  .brandtxt b{font-size:22px}
+  .brandtxt span{font-size:9px;letter-spacing:.19em}
+  .adminbtn{padding:10px 14px;font-size:14px}
+  .topbar nav{gap:4px;margin:0 -4px}
+  .topbar nav button{font-size:13px;padding:9px 11px}
+  .hero{min-height:760px;padding:76px 28px 0}
+  .hero small{font-size:10px;padding:10px 15px}
+  .hero h1{font-size:58px;margin:42px 0 26px}
+  .hero p{font-size:18px;line-height:1.8}
+  .heroActions{margin-top:34px;gap:16px}
+  .heroActions button{height:60px;font-size:16px;padding:0 24px}
+  .heroPrimary{min-width:230px}
+  .heroSecondary{min-width:282px}
+  .heroLogoWrap{width:340px;height:340px;bottom:-160px}
+  .heroLogoWrap img{width:255px;height:255px}
+  .orbit1{width:320px;height:320px}.orbit2{width:258px;height:258px}
+  .homeFeed{padding-top:46px}
+  .homeFeed h2{font-size:48px}
+}
+
+@media(max-width:380px){
+  .brandtxt b{font-size:20px}.adminbtn{padding:9px 11px}.topbar nav button{padding:8px 9px;font-size:12px}
+  .hero{padding-left:22px;padding-right:22px}.hero h1{font-size:52px}.hero p{font-size:17px}.heroSecondary{min-width:260px}
+}
