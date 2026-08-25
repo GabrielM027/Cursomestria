@@ -176,6 +176,11 @@ create policy admin_profiles_read on public."adminProfiles" for select to authen
 drop policy if exists admin_profiles_update on public."adminProfiles";
 create policy admin_profiles_update on public."adminProfiles" for update to authenticated using (public.is_amigos_admin()) with check (public.is_amigos_admin());
 
+-- RLS controla quem pode gravar; estes privilégios permitem que a política seja avaliada.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('amigos-media', 'amigos-media', true, 20971520, array['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/webm','video/quicktime'])
 on conflict (id) do update set public = excluded.public, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;

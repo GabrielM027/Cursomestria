@@ -54,3 +54,5 @@
 - [x] Renomear o projeto Vercel para amigosfc e vincular o domínio amigosfc.vercel.app.
 - [x] Corrigir a política Supabase de footballEntities para o cadastro automático de bandeiras e escudos no painel.
 - [x] Exibir a bandeira ou escudo identificado como prévia compacta no formulário de jogador.
+- [x] Unificar a sessão do Painel com a identidade administrativa usada pelas políticas de gravação no Supabase.
+- [x] Conceder privilégios de tabela e sequência ao papel authenticated, mantendo as políticas RLS administrativas ativas.
