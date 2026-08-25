@@ -58,3 +58,5 @@
 - [x] Conceder privilégios de tabela e sequência ao papel authenticated, mantendo as políticas RLS administrativas ativas.
 - [x] Permitir digitação livre de time ou seleção sem substituir o texto pela primeira sugestão automática.
 - [x] Exigir confirmação explícita ao salvar antes de vincular a bandeira ou escudo sugerido ao jogador.
+- [x] Corrigir a identificação automática de Marrocos, México e outras seleções digitadas em português.
+- [x] Corrigir a busca de escudo para clubes brasileiros, incluindo Flamengo, sem exibir o ícone genérico.

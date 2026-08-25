@@ -337,22 +337,28 @@ const COUNTRY_CODES: Record<string, { code: string; name: string }> = {
   franca: { code: "fr", name: "França" }, france: { code: "fr", name: "França" }, alemanha: { code: "de", name: "Alemanha" }, germany: { code: "de", name: "Alemanha" },
   italia: { code: "it", name: "Itália" }, italy: { code: "it", name: "Itália" }, inglaterra: { code: "gb-eng", name: "Inglaterra" }, england: { code: "gb-eng", name: "Inglaterra" },
   uruguai: { code: "uy", name: "Uruguai" }, uruguay: { code: "uy", name: "Uruguai" }, chile: { code: "cl", name: "Chile" }, colombia: { code: "co", name: "Colômbia" },
+  marrocos: { code: "ma", name: "Marrocos" }, morocco: { code: "ma", name: "Marrocos" }, mexico: { code: "mx", name: "México" },
 };
 
 function normalize(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 }
 
+export function getCountryBadge(term: string) {
+  const country = COUNTRY_CODES[normalize(term)];
+  return country ? { name: country.name, category: "national_team", badgeUrl: `https://flagcdn.com/w320/${country.code}.png`, source: "FlagCDN", sourceId: country.code.toUpperCase() } : null;
+}
+
 export async function searchFootballBadge(input: { term: string }) {
   const query = input.term.trim();
   if (query.length < 2) return [];
-  const country = COUNTRY_CODES[normalize(query)];
-  if (country) return [{ name: country.name, category: "national_team", badgeUrl: `https://flagcdn.com/w320/${country.code}.png`, source: "FlagCDN", sourceId: country.code.toUpperCase() }];
+  const country = getCountryBadge(query);
+  if (country) return [country];
   try {
     const response = await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${encodeURIComponent(query)}`);
     if (!response.ok) return [];
-    const payload = await response.json() as { teams?: Array<{ idTeam: string; strTeam: string; strTeamBadge?: string }> };
-    return (payload.teams ?? []).slice(0, 5).map(team => ({ name: team.strTeam, category: "club", badgeUrl: team.strTeamBadge ?? null, source: "TheSportsDB", sourceId: team.idTeam }));
+    const payload = await response.json() as { teams?: Array<{ idTeam: string; strTeam: string; strBadge?: string; strTeamBadge?: string }> };
+    return (payload.teams ?? []).slice(0, 5).map(team => ({ name: team.strTeam, category: "club", badgeUrl: team.strBadge ?? team.strTeamBadge ?? null, source: "TheSportsDB", sourceId: team.idTeam }));
   } catch {
     return [];
   }
