@@ -56,3 +56,5 @@
 - [x] Exibir a bandeira ou escudo identificado como prévia compacta no formulário de jogador.
 - [x] Unificar a sessão do Painel com a identidade administrativa usada pelas políticas de gravação no Supabase.
 - [x] Conceder privilégios de tabela e sequência ao papel authenticated, mantendo as políticas RLS administrativas ativas.
+- [x] Permitir digitação livre de time ou seleção sem substituir o texto pela primeira sugestão automática.
+- [x] Exigir confirmação explícita ao salvar antes de vincular a bandeira ou escudo sugerido ao jogador.
