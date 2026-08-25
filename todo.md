@@ -63,3 +63,4 @@
 - [x] Ocultar a navegação pública no painel administrativo e manter apenas um retorno discreto ao site.
 - [x] Tornar os avisos de cadastro e salvamento mais visíveis no painel, especialmente em celular.
 - [x] Remover da tela inicial os botões redundantes de ranking e histórico de partidas.
+- [x] Reorganizar e destacar as abas do painel administrativo para facilitar o acesso em celular.

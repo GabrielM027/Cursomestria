@@ -8,8 +8,8 @@ type Tab = "jogadores" | "partida" | "destaques" | "galeria" | "editar" | "acess
 type TeamColor = "black" | "red";
 type PlayerType = "fixed" | "guest";
 
-const tabs: Array<{ id: Tab; label: string }> = [
-  { id: "jogadores", label: "Jogadores" }, { id: "partida", label: "Partida" }, { id: "destaques", label: "Melhor/Pior" }, { id: "galeria", label: "Galeria" }, { id: "editar", label: "Editar" }, { id: "acessos", label: "Acessos" },
+const tabs = [
+  { id: "jogadores" as const, label: "Jogadores", icon: UsersRound }, { id: "partida" as const, label: "Partida", icon: CalendarDays }, { id: "destaques" as const, label: "Melhor/Pior", icon: Trophy }, { id: "galeria" as const, label: "Galeria", icon: Upload }, { id: "editar" as const, label: "Temporada", icon: Pencil }, { id: "acessos" as const, label: "Acessos", icon: ShieldCheck },
 ];
 
 function dateInput(value?: string | Date | null) {
@@ -109,5 +109,5 @@ export default function AdminPage() {
   if (!enabled) return <AdminLogin />;
   if (dataQuery.isLoading || !data) return <PanelFrame><section className="section"><div className="club-container"><div className="empty-state"><LoaderCircle className="spin" /><strong>Organizando o painel</strong></div></div></section></PanelFrame>;
   const leavePanel = async () => { await logout.mutateAsync(); await utils.adminAuth.me.invalidate(); await utils.admin.data.invalidate(); toast.success("Você saiu do painel."); };
-  return <PanelFrame><section className="admin-section"><div className="club-container"><div className="admin-toolbar"><nav>{tabs.map(item => <button key={item.id} className={tab === item.id ? "active" : ""} onClick={() => setTab(item.id)}>{item.label}</button>)}</nav><button className="admin-exit" onClick={leavePanel}><LogOut size={15} /> Sair</button></div>{tab === "jogadores" && <PlayersTab data={data} />}{tab === "partida" && <MatchTab data={data} />}{tab === "destaques" && <HighlightsTab data={data} />}{tab === "galeria" && <GalleryTab data={data} />}{tab === "editar" && <EditTab data={data} />}{tab === "acessos" && <AccessTab />}</div></section></PanelFrame>;
+  return <PanelFrame><section className="admin-section"><div className="club-container"><div className="admin-toolbar"><nav aria-label="Funções do painel">{tabs.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? "active" : ""} onClick={() => setTab(item.id)}><Icon size={19} /><span>{item.label}</span></button>; })}</nav><button className="admin-exit" onClick={leavePanel}><LogOut size={16} /> Sair</button></div>{tab === "jogadores" && <PlayersTab data={data} />}{tab === "partida" && <MatchTab data={data} />}{tab === "destaques" && <HighlightsTab data={data} />}{tab === "galeria" && <GalleryTab data={data} />}{tab === "editar" && <EditTab data={data} />}{tab === "acessos" && <AccessTab />}</div></section></PanelFrame>;
 }
