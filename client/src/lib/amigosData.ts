@@ -61,6 +61,10 @@ export function calculateSeasonTotals(matches: ScoringMatch[]) {
   return totals;
 }
 
+export function normalizePlayerPosition(value?: string | null) {
+  return value?.trim() || null;
+}
+
 function emptyClubData() {
   return {
     activeSeason: null,
@@ -101,6 +105,7 @@ function buildClubData(input: any) {
     return {
       id: playerId,
       name: player?.name ?? "Jogador removido",
+      position: player?.position ?? null,
       participantType: player?.participantType ?? "guest",
       avatarUrl: player?.avatarUrl ?? null,
       isActive: player?.isActive ?? false,
@@ -267,7 +272,7 @@ export async function saveFootballEntity(input: any) {
 }
 
 export async function savePlayer(input: any) {
-  const values = { name: input.name, participantType: input.participantType, avatarUrl: input.avatarUrl ?? null, isActive: input.isActive };
+  const values = { name: input.name, position: normalizePlayerPosition(input.position), participantType: input.participantType, avatarUrl: input.avatarUrl ?? null, isActive: input.isActive };
   let playerId = input.id;
   if (playerId) fail((await supabase.from(TABLES.players).update(values).eq("id", playerId)).error);
   else {

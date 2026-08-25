@@ -67,3 +67,5 @@
 - [x] Exibir a foto inteira dos destaques de Melhor e Pior, sem recorte de pessoa.
 - [x] Posicionar nome, data e legenda abaixo da foto em formato de publicação de feed.
 - [x] Remover da tela inicial os indicadores de partidas oficiais, gols registrados e último placar.
+- [x] Adicionar um campo livre de posição ao cadastro e à edição de cada jogador.
+- [x] Mostrar a posição do jogador nos cards de ranking, artilharia, destaques e elenco administrativo.
