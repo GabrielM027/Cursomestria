@@ -1,0 +1,47 @@
+# Project TODO
+
+- [x] Preservar e usar o escudo oficial do AMIGOS F.C. como ativo principal da identidade visual.
+- [x] Aplicar tema escuro com vinho, vermelho, dourado e branco, inspirado fielmente nos prints enviados.
+- [x] Criar a navegação pública mobile-first: Início, Ranking, Artilharia, Partidas e Galeria.
+- [x] Construir a página inicial com hero, escudo, chamadas para ranking e partidas, e feed de resenhas.
+- [x] Criar a estrutura de dados de temporadas, participantes, times/seleções e escudos vinculados.
+- [x] Criar a estrutura de dados de partidas, escalações por cor, placar e gols individuais.
+- [x] Calcular automaticamente pontos, vitórias, artilharia e rankings a partir das partidas oficiais.
+- [x] Criar os rankings públicos de pontos corridos, melhores da pelada e piores da pelada.
+- [x] Criar artilharia pública com foto, nome, escudo/bandeira, time/seleção e gols.
+- [x] Criar histórico público de partidas com detalhes de escalações, convidados e gols.
+- [x] Criar galeria pública de fotos, vídeos e legendas vinculáveis a partidas.
+- [x] Criar área administrativa protegida com abas Jogadores, Partida, Melhor/Pior, Galeria e Editar.
+- [x] Permitir o cadastro, ativação e desativação de jogadores fixos e convidados.
+- [x] Permitir lançamento e correção de partidas, com prevenção de jogador duplicado entre os times.
+- [x] Permitir lançamento e edição independente de Melhor e Pior da rodada com foto e resenha.
+- [x] Permitir cadastro e edição de conteúdo da galeria.
+- [x] Implementar armazenamento seguro de mídias em armazenamento de arquivos e persistir apenas metadados no banco.
+- [x] Implementar procedimentos protegidos e consultas públicas para temporadas, jogadores, partidas, gols, destaques e galeria.
+- [x] Cobrir regras de cálculo e permissões administrativas com testes automatizados.
+- [x] Validar visual em telas mobile e desktop, acessibilidade, carregamento e fluxos principais.
+- [x] Permitir corrigir legendas, datas, vínculos e mídias de itens já publicados na galeria.
+- [x] Abrir a criação de temporada como primeira etapa quando ainda não houver uma temporada ativa.
+- [x] Unificar Artilharia e Ranking na mesma página pública e remover a entrada independente de Artilharia do menu.
+- [x] Remover a seleção manual “Já cadastrado” do formulário de jogadores.
+- [x] Buscar e selecionar automaticamente o escudo de clube ou a bandeira de seleção digitada no cadastro.
+- [x] Exibir o escudo ou bandeira associado logo abaixo do avatar do jogador nas listas públicas.
+- [x] Exibir o escudo ou bandeira associado logo abaixo do avatar também no elenco do painel administrativo.
+- [x] Impedir duplicação de times e seleções enquanto o sistema identifica automaticamente o escudo ou a bandeira.
+- [x] Criar autenticação administrativa por e-mail e senha para proteger o painel.
+- [x] Restringir todas as operações administrativas a sessões autenticadas por credenciais autorizadas.
+- [x] Criar gestão de acessos para adicionar e desativar administradores autorizados.
+- [x] Exibir Melhor e Pior da rodada como destaques centrais no feed inicial.
+- [x] Destacar no início o líder dos pontos corridos e o artilheiro da temporada com foto e símbolos associados.
+- [x] Criar uma prévia editorial da galeria com fotos e vídeos recentes.
+- [x] Criar cards de jogos marcantes do ano alimentados pelo placar e pelos registros oficiais.
+- [x] Organizar a tela inicial como feed editorial mobile-first, com navegação para os detalhes completos.
+- [x] Atualizar o Painel imediatamente após um login administrativo autorizado.
+- [x] Manter a sessão administrativa ativa ao voltar ao site público e reabrir o Painel.
+- [x] Corrigir o reconhecimento da sessão administrativa quando o Painel termina de carregar os dados.
+- [x] Adicionar compatibilidade de sessão administrativa para visualizações que bloqueiam cookies de terceiros.
+- [x] Testar o fallback de sessão até o carregamento de dados administrativos do Painel.
+- [x] Corrigir o carregamento de países em produção para destravar a publicação do site.
+- [x] Exportar o código, ativos, migrações e instruções do AMIGOS F.C. em um único arquivo ZIP portátil.
+- [x] Incluir uma exportação não sensível dos dados atuais da pelada no pacote ZIP.
+- [x] Documentar de forma explícita no pacote os adaptadores que precisam ser substituídos para hospedagem externa.
