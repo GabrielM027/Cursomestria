@@ -1,40 +1,25 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import AdminPage from "@/pages/AdminPage";
+import { GalleryPage, Home, MatchesPage, RankingPage } from "@/pages/PublicPages";
+import { Redirect, Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Sidebar from "./components/Sidebar";
-import Home from "./pages/Home";
-import StudyArea from "./pages/StudyArea";
-import ModulePage from "./pages/ModulePage";
 
 function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/estudos" component={StudyArea} />
-      <Route path="/modulo/:slug" component={ModulePage} />
-      <Route path="/404" component={NotFound} />
-      <Route component={NotFound} />
-    </Switch>
-  );
+  return <Switch>
+    <Route path="/" component={Home} />
+    <Route path="/ranking" component={RankingPage} />
+    <Route path="/artilharia"><Redirect to="/ranking" /></Route>
+    <Route path="/partidas" component={MatchesPage} />
+    <Route path="/galeria" component={GalleryPage} />
+    <Route path="/painel" component={AdminPage} />
+    <Route path="/404" component={NotFound} />
+    <Route component={NotFound} />
+  </Switch>;
 }
 
-function App() {
-  return (
-    <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <Toaster />
-          <Sidebar />
-          <div className="pt-14">
-            <Router />
-          </div>
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  );
+export default function App() {
+  return <ErrorBoundary><ThemeProvider defaultTheme="dark"><TooltipProvider><Toaster /><Router /></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }
-
-export default App;

@@ -1,30 +1,18 @@
-/**
- * Configuração do Supabase Client
- * 
- * Este arquivo cria e exporta o cliente Supabase para uso em toda a aplicação.
- * Usa as variáveis de ambiente definidas no arquivo .env
- */
+import { createClient } from "@supabase/supabase-js";
 
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './database.types';
+const publicSupabaseUrl = "https://tqkbehwjylktpfrguvlr.supabase.co";
+const publicSupabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxa2JlaHdqeWxrdHBmcmd1dmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3MDM3OTMsImV4cCI6MjA4NzI3OTc5M30.y3_oPDjhM-u2Bq-R5YfOhonyfv8lChjfP2_zlAlu4Wg";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || publicSupabaseUrl;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || publicSupabaseAnonKey;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Supabase URL e Anon Key são obrigatórios. Verifique seu arquivo .env'
-  );
-}
+export const supabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
-/**
- * Cliente Supabase com tipagem
- * Use este cliente em toda a aplicação para interagir com o Supabase
- */
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: true,
     persistSession: true,
+    autoRefreshToken: true,
     detectSessionInUrl: true,
+    storageKey: "amigos-fc-admin",
   },
 });

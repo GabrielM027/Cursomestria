@@ -1,115 +1,58 @@
-# 🏗️ Curso Mestria - Formação de Mestre de Obras
+# AMIGOS F.C. — Pelada de Domingo
 
-Plataforma de curso online para formação de Mestres de Obras, com arquitetura **100% serverless** para deploy na Vercel.
+Aplicativo público e administrativo do AMIGOS F.C., com feed editorial, ranking, artilharia, histórico de partidas, galeria, cadastro do elenco e lançamentos protegidos.
 
-## 🚀 Arquitetura v2 (Serverless)
+## Arquitetura
 
-```
-├── api/                         # Vercel Serverless Functions
-│   ├── create-checkout.ts       # POST /api/create-checkout
-│   └── webhook-mercadopago.ts   # POST /api/webhook-mercadopago
-├── client/                      # Frontend React + Vite
-│   ├── src/
-│   │   ├── components/          # Componentes UI
-│   │   ├── contexts/            # AuthContext
-│   │   ├── hooks/               # useEnrollment
-│   │   ├── lib/                 # Supabase, courseData
-│   │   └── pages/               # Páginas da aplicação
-│   └── index.html
-├── vercel.json                  # Configuração Vercel
-├── supabase-setup-v2.sql        # Schema do banco (simplificado)
-└── DEPLOY_VERCEL.md             # Guia de deploy
-```
+| Camada | Serviço |
+|---|---|
+| Interface | React 19, Vite e Tailwind CSS 4 |
+| Dados e autenticação | Supabase Postgres, Auth e Row Level Security |
+| Fotos e vídeos | Supabase Storage |
+| Funções seguras | Vercel Functions |
+| Hospedagem | Vercel conectada a este repositório GitHub |
 
-## ✨ Features
+## Configuração do Supabase
 
-- **Autenticação**: Supabase Auth (email/senha)
-- **Pagamentos**: Mercado Pago (PIX, Cartão, Boleto)
-- **Acesso ao Curso**: Controle por matrícula com expiração
-- **Admin**: Role-based access (admin/student)
-- **Design**: Blueprint Industrial (dark theme, orange accents)
+Crie ou selecione um projeto Supabase e execute, nesta ordem, os arquivos abaixo no SQL Editor:
 
-## 🛠️ Stack
+1. `supabase/migrations/001_amigos_fc.sql`
+2. `supabase/seed.sql`
 
-### Frontend
-- React 19 + TypeScript
-- Vite
-- Tailwind CSS
-- Wouter (routing)
-- Framer Motion (animations)
-- Radix UI (components)
+Depois siga `supabase/BOOTSTRAP_ADMIN.md` para criar a primeira conta do Painel.
 
-### Backend (Serverless)
-- Vercel Serverless Functions
-- Supabase (Auth + PostgreSQL)
-- Mercado Pago API
+## Variáveis na Vercel
 
-## 📦 Instalação Local
+Cadastre as quatro variáveis abaixo em **Project Settings → Environment Variables**, aplicando-as a Production, Preview e Development:
+
+| Variável | Origem |
+|---|---|
+| `VITE_SUPABASE_URL` | Supabase → Project Settings → API → Project URL |
+| `VITE_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → anon/publishable key |
+| `SUPABASE_URL` | O mesmo Project URL, usado somente pela função serverless |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API → service_role/secret key |
+
+> Nunca coloque `SUPABASE_SERVICE_ROLE_KEY` em uma variável iniciada por `VITE_`, pois ela é privada.
+
+## Desenvolvimento local
 
 ```bash
-# Clone o repositório
-git clone <repo-url>
-cd curso_mestria
-
-# Instale dependências
 pnpm install
-
-# Configure variáveis de ambiente
-cp .env.example .env
-# Edite .env com suas credenciais
-
-# Execute em modo de desenvolvimento
 pnpm dev
 ```
 
-## 🌐 Deploy na Vercel
+Para compilar e validar:
 
-Consulte [DEPLOY_VERCEL.md](./DEPLOY_VERCEL.md) para instruções completas.
+```bash
+pnpm check
+pnpm test
+pnpm build
+```
 
-### Resumo rápido:
+## Segurança
 
-1. Push para GitHub
-2. Conecte na Vercel
-3. Configure Environment Variables
-4. Deploy
-5. Execute SQL no Supabase
-6. Configure webhook no Mercado Pago
+As tabelas usam políticas de acesso: o público pode consultar resultados e conteúdos, mas apenas usuários autenticados com perfil ativo em `adminProfiles` podem alterar dados ou enviar mídias. A criação de novos administradores passa pela função serverless `api/create-admin.ts`, que valida o administrador atual e utiliza a chave privada somente no servidor.
 
-## 🔐 Variáveis de Ambiente
+## Recuperação do site anterior
 
-| Variável | Descrição | Onde |
-|----------|-----------|------|
-| `VITE_SUPABASE_URL` | URL do Supabase | Frontend |
-| `VITE_SUPABASE_ANON_KEY` | Chave pública Supabase | Frontend |
-| `VITE_APP_URL` | URL da aplicação | Frontend |
-| `SUPABASE_SERVICE_ROLE_KEY` | Chave de serviço (secreta) | Backend |
-| `MERCADOPAGO_ACCESS_TOKEN` | Token de acesso MP (secreto) | Backend |
-| `ADMIN_EMAIL` | Email do admin | Backend |
-
-## 🧪 Testes de Pagamento
-
-### Cartão aprovado
-- Número: `5031 4332 1540 6351`
-- Validade: `11/25`
-- CVV: `123`
-- Nome: `APRO`
-
-## 📁 Banco de Dados
-
-Schema simplificado com apenas 2 tabelas:
-
-- **profiles**: Perfis de usuários (user_id, full_name, role)
-- **enrollments**: Matrículas (user_id, status, expires_at, payment_id)
-
-Conteúdo do curso vem de `courseData.ts` (estático).
-
-## 🔒 Segurança
-
-- RLS (Row Level Security) habilitado
-- Service Role Key apenas no backend
-- Webhook valida pagamentos na API do MP
-- Idempotência via payment_id único
-
-## 📄 Licença
-
-MIT
+O estado anterior do repositório foi preservado na branch `backup-mestria-before-amigos-fc-20260825`.
