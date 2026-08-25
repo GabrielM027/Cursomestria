@@ -71,3 +71,5 @@
 - [x] Mostrar a posição do jogador nos cards de ranking, artilharia, destaques e elenco administrativo.
 - [x] Criar uma aba de Informações no painel com estatísticas esportivas consolidadas da temporada.
 - [x] Preparar na aba de Informações um resumo financeiro para mensalidades e multas, sem lançamentos financeiros nesta fase.
+- [x] Permitir convidados avulsos no lançamento de partidas, com nome, responsável pelo convite, time e gols.
+- [x] Excluir convidados avulsos de pontos, vitórias, artilharia e todos os rankings.
