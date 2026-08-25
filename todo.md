@@ -84,3 +84,4 @@
 - [x] Definir e implementar uma abertura especial na tela inicial quando a Copa estiver ativa, com confronto, chaveamento e feed normal abaixo.
 - [x] Implementar o Modo Copa apenas com estruturas aditivas e não destrutivas, preservando todos os jogadores e dados reais já cadastrados.
 - [x] Usar automaticamente as fotos de perfil existentes dos jogadores nos confrontos e chaveamentos da Copa, mantendo fallback visual até novas fotos serem enviadas.
+- [x] Redesenhar a chave editável da Copa em cartões amplos e empilhados para facilitar leitura e edição no celular.

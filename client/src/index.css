@@ -319,17 +319,18 @@ a { color: inherit; text-decoration: none; }
 .copa-entrants-admin span { min-width: 0; display: grid; gap: 2px; }
 .copa-entrants-admin small, .copa-entrants-admin em { color: #a99ea1; font-size: 9px; font-style: normal; }
 .copa-entrants-admin strong { overflow: hidden; color: #f2e8e9; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
-.copa-fixtures-admin { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
-.copa-fixture-admin { display: grid; gap: 11px; border: 1px solid rgba(234,203,130,.2); border-radius: 15px; padding: 13px; background: rgba(12,10,11,.52); }
+.copa-fixtures-admin { display: grid; gap: 18px; }
+.copa-fixture-admin { display: grid; gap: 16px; border: 1px solid rgba(234,203,130,.28); border-left: 4px solid var(--gold); border-radius: 18px; padding: 20px; background: linear-gradient(135deg, rgba(56,25,34,.88), rgba(13,11,12,.9)); box-shadow: 0 12px 27px rgba(0,0,0,.16); }
 .copa-fixture-admin--completed { border-color: rgba(116,178,132,.45); }
-.copa-fixture-admin__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #f4d77e; font-size: 12px; font-weight: 900; }
+.copa-fixture-admin__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #f4d77e; font-family: var(--font-display); font-size: 24px; line-height: 1; letter-spacing: .02em; text-transform: uppercase; }
 .copa-fixture-admin__head small { border-radius: 999px; padding: 4px 6px; color: #aebcb1; background: rgba(108,162,119,.14); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
-.copa-fixture-admin__form { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-.copa-fixture-admin__form > :first-child { grid-column: 1 / -1; }
-.copa-fixture-admin__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; }
+.copa-fixture-admin__form { display: grid; grid-template-columns: minmax(170px, .6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 13px; border: 1px solid rgba(234,203,130,.12); border-radius: 14px; background: rgba(0,0,0,.16); }
+.copa-fixture-admin__form > :first-child { grid-column: auto; }
+.copa-fixture-admin__actions { display: grid; grid-template-columns: minmax(190px, .75fr) minmax(0, 1fr) minmax(150px, .55fr); gap: 10px; align-items: end; padding-top: 3px; }
+.copa-fixture-admin__actions > .admin-secondary { min-height: 43px; justify-content: center; }
 .copa-fixture-admin__actions select, .copa-fixture-admin__actions input { min-width: 0; min-height: 43px; border: 1px solid rgba(234,203,130,.19); border-radius: 10px; padding: 8px; color: #f6f1ef; background: #130f10; font-size: 12px; }
 .copa-fixture-admin__actions .admin-save { justify-self: stretch; }
-.copa-fixture-admin__winner { margin: 0; color: #a8cfb0; font-size: 12px; }
+.copa-fixture-admin__winner { margin: 0; border-top: 1px solid rgba(255,255,255,.08); padding-top: 12px; color: #a8cfb0; font-size: 13px; }
 .amigos-toast { min-width: min(390px, calc(100vw - 28px)); border: 1px solid rgba(234,203,130,.72) !important; border-radius: 15px !important; padding: 14px 16px !important; color: #fff8ed !important; background: #2a141a !important; box-shadow: 0 16px 46px rgba(0,0,0,.55), 0 0 0 3px rgba(234,203,130,.12) !important; }
 .amigos-toast__title { color: #ffe7a0 !important; font-size: 14px !important; font-weight: 900 !important; }
 .amigos-toast__description { color: #f2e3e5 !important; font-size: 13px !important; font-weight: 700 !important; }
@@ -472,8 +473,10 @@ a { color: inherit; text-decoration: none; }
   .copa-admin__status { display: grid; }
   .copa-admin__status-actions { width: 100%; }
   .copa-admin__status-actions .admin-save, .copa-admin__status-actions .admin-secondary { width: 100%; }
-  .copa-entrants-admin, .copa-fixtures-admin { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .copa-fixture-admin__actions { grid-template-columns: 1fr; }
+  .copa-entrants-admin { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .copa-fixture-admin { gap: 13px; padding: 15px; }
+  .copa-fixture-admin__head { font-size: 22px; }
+  .copa-fixture-admin__form, .copa-fixture-admin__actions { grid-template-columns: 1fr; }
   .admin-card { padding: 17px; }
   .admin-form__grid, .admin-form__grid--four, .highlight-form { grid-template-columns: 1fr; }
   .walk-on-row { grid-template-columns: 1fr 1fr; }
