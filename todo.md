@@ -64,3 +64,6 @@
 - [x] Tornar os avisos de cadastro e salvamento mais visíveis no painel, especialmente em celular.
 - [x] Remover da tela inicial os botões redundantes de ranking e histórico de partidas.
 - [x] Reorganizar e destacar as abas do painel administrativo para facilitar o acesso em celular.
+- [x] Exibir a foto inteira dos destaques de Melhor e Pior, sem recorte de pessoa.
+- [x] Posicionar nome, data e legenda abaixo da foto em formato de publicação de feed.
+- [x] Remover da tela inicial os indicadores de partidas oficiais, gols registrados e último placar.
