@@ -45,3 +45,4 @@
 - [x] Exportar o código, ativos, migrações e instruções do AMIGOS F.C. em um único arquivo ZIP portátil.
 - [x] Incluir uma exportação não sensível dos dados atuais da pelada no pacote ZIP.
 - [x] Documentar de forma explícita no pacote os adaptadores que precisam ser substituídos para hospedagem externa.
+- [ ] Concluir a migração pelo caminho enxuto, mantendo apenas GitHub, Supabase e Vercel essenciais.
