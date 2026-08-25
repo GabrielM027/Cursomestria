@@ -24,12 +24,12 @@ function PlayerAvatar({ player }: { player: { avatarUrl: string | null; name: st
   return <span className="player-avatar-stack"><span className="person-avatar">{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</span>{player.entityBadgeUrl && <span className="player-symbol" title={player.entityName || "Time ou seleção"}><img src={player.entityBadgeUrl} alt="" /></span>}</span>;
 }
 
-function RankingItems({ rows, kind = "points" }: { rows: Array<{ id: number; name: string; position?: string | null; avatarUrl: string | null; entityName?: string | null; entityBadgeUrl?: string | null; points?: number; goals?: number; count?: number }>; kind?: "points" | "goals" | "count" }) {
+function RankingItems({ rows, kind = "points" }: { rows: Array<{ id: number; name: string; position?: string | null; avatarUrl: string | null; entityName?: string | null; entityBadgeUrl?: string | null; points?: number; goals?: number; count?: number; votes?: number }>; kind?: "points" | "goals" | "count" }) {
   if (!rows.length) return <Empty title="Ainda sem ranking">Assim que as partidas e os destaques forem lançados, a classificação aparece aqui.</Empty>;
   return <div className="ranking-list">{rows.map((row, index) => {
     const value = kind === "points" ? row.points ?? 0 : kind === "goals" ? row.goals ?? 0 : row.count ?? 0;
     const unit = kind === "points" ? "Pontos" : kind === "goals" ? "Gols" : "Vezes";
-    return <div className="ranking-item" key={row.id}><div className="ranking-position">{index + 1}º</div><div className="ranking-person"><PlayerAvatar player={row} /><div><div className="person-name">{row.name}</div>{row.position && <div className="person-position">{row.position}</div>}{row.entityName && <div className="person-team">{row.entityName}</div>}</div></div><div className="ranking-score">{value}<small>{unit}</small></div></div>;
+    return <div className="ranking-item" key={row.id}><div className="ranking-position">{index + 1}º</div><div className="ranking-person"><PlayerAvatar player={row} /><div><div className="person-name">{row.name}</div>{row.position && <div className="person-position">{row.position}</div>}{row.entityName && <div className="person-team">{row.entityName}</div>}</div></div><div className="ranking-score">{value}<small>{unit}</small>{kind === "count" && <small className="ranking-votes">{row.votes ?? 0} votos</small>}</div></div>;
   })}</div>;
 }
 

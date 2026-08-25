@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateSeasonTotals } from "./amigosData";
+import { calculateHonorTotals, calculateSeasonTotals } from "./amigosData";
 
 describe("ranking da pelada", () => {
   it("atribui três pontos e uma vitória somente aos jogadores fixos do time vencedor", () => {
@@ -48,5 +48,16 @@ describe("ranking da pelada", () => {
     expect(totals.get(1)).toEqual({ points: 3, wins: 1, goals: 0 });
     expect(totals.get(2)).toEqual({ points: 0, wins: 0, goals: 1 });
     expect(totals.has(null as never)).toBe(false);
+  });
+
+  it("soma votos e frequência de Melhor e Pior sem incluir convidados", () => {
+    const totals = calculateHonorTotals([
+      { playerId: 1, isGuest: false, bestVotes: 7, worstVotes: 1 },
+      { playerId: 2, isGuest: false, bestVotes: 3, worstVotes: 6 },
+      { playerId: null, isGuest: true, bestVotes: 99, worstVotes: 99 },
+    ], [{ playerId: 1, kind: "best" }, { playerId: 1, kind: "best" }, { playerId: 2, kind: "worst" }]);
+    expect(totals.best.get(1)).toEqual({ count: 2, votes: 7 });
+    expect(totals.worst.get(2)).toEqual({ count: 1, votes: 6 });
+    expect(totals.best.has(null as never)).toBe(false);
   });
 });

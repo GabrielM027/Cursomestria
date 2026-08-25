@@ -76,6 +76,8 @@ create table if not exists public."matchParticipants" (
   "invitedByName" varchar(120),
   "teamColor" text not null check ("teamColor" in ('black', 'red')),
   "isGuest" boolean not null default false,
+  "bestVotes" integer not null default 0 check ("bestVotes" >= 0),
+  "worstVotes" integer not null default 0 check ("worstVotes" >= 0),
   "createdAt" timestamptz not null default now(),
   unique ("matchId", "playerId")
 );

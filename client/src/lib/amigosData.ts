@@ -62,6 +62,24 @@ export function calculateSeasonTotals(matches: ScoringMatch[]) {
   return totals;
 }
 
+export function calculateHonorTotals(participants: Array<{ playerId: number | null; isGuest: boolean; bestVotes?: number | null; worstVotes?: number | null }>, highlights: Array<{ playerId: number; kind: "best" | "worst" }>) {
+  const output = { best: new Map<number, { count: number; votes: number }>(), worst: new Map<number, { count: number; votes: number }>() };
+  for (const highlight of highlights) {
+    const current = output[highlight.kind].get(highlight.playerId) ?? { count: 0, votes: 0 };
+    current.count += 1;
+    output[highlight.kind].set(highlight.playerId, current);
+  }
+  for (const participant of participants) {
+    if (participant.isGuest || participant.playerId === null) continue;
+    for (const [kind, votes] of [["best", participant.bestVotes ?? 0], ["worst", participant.worstVotes ?? 0]] as const) {
+      const current = output[kind].get(participant.playerId) ?? { count: 0, votes: 0 };
+      current.votes += votes;
+      output[kind].set(participant.playerId, current);
+    }
+  }
+  return output;
+}
+
 export function normalizePlayerPosition(value?: string | null) {
   return value?.trim() || null;
 }
@@ -125,10 +143,9 @@ function buildClubData(input: any) {
     .map(([playerId, total]) => ({ ...playerInfo(playerId), goals: total.goals }))
     .sort((a, b) => b.goals - a.goals || a.name.localeCompare(b.name));
 
+  const honorTotals = calculateHonorTotals(input.participantRows, input.highlightRows);
   const honorRankings = (["best", "worst"] as const).reduce((output, kind) => {
-    const counts = new Map<number, number>();
-    input.highlightRows.filter((row: any) => row.kind === kind).forEach((row: any) => counts.set(row.playerId, (counts.get(row.playerId) ?? 0) + 1));
-    output[kind] = Array.from(counts.entries()).map(([playerId, count]) => ({ ...playerInfo(playerId), count })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    output[kind] = Array.from(honorTotals[kind].entries()).map(([playerId, total]) => ({ ...playerInfo(playerId), ...total })).sort((a, b) => b.count - a.count || b.votes - a.votes || a.name.localeCompare(b.name));
     return output;
   }, { best: [] as any[], worst: [] as any[] });
 
@@ -314,7 +331,7 @@ export async function saveMatch(input: any) {
     const result = await supabase.from(TABLES.matches).insert(values).select("id").single();
     fail(result.error); matchId = result.data!.id;
   }
-  fail((await supabase.from(TABLES.participants).insert(input.participants.map((participant: any) => participant.isGuest ? ({ matchId, playerId: null, guestName: participant.guestName.trim(), invitedByName: participant.invitedByName?.trim() || null, teamColor: participant.teamColor, isGuest: true }) : ({ matchId, playerId: participant.playerId, guestName: null, invitedByName: null, teamColor: participant.teamColor, isGuest: playerById.get(participant.playerId)?.participantType === "guest" })))).error);
+  fail((await supabase.from(TABLES.participants).insert(input.participants.map((participant: any) => participant.isGuest ? ({ matchId, playerId: null, guestName: participant.guestName.trim(), invitedByName: participant.invitedByName?.trim() || null, teamColor: participant.teamColor, isGuest: true, bestVotes: 0, worstVotes: 0 }) : ({ matchId, playerId: participant.playerId, guestName: null, invitedByName: null, teamColor: participant.teamColor, isGuest: playerById.get(participant.playerId)?.participantType === "guest", bestVotes: Math.max(0, Number(participant.bestVotes || 0)), worstVotes: Math.max(0, Number(participant.worstVotes || 0)) })))).error);
   const validGoals = input.goals.filter((goal: any) => goal.quantity > 0);
   if (validGoals.length) fail((await supabase.from(TABLES.goals).insert(validGoals.map((goal: any) => goal.isGuest ? ({ matchId, playerId: null, guestName: goal.guestName.trim(), teamColor: goal.teamColor, quantity: goal.quantity }) : ({ matchId, playerId: goal.playerId, guestName: null, teamColor: (participantById.get(goal.playerId) as any).teamColor, quantity: goal.quantity })))).error);
   return matchId;

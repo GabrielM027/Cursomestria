@@ -293,6 +293,13 @@ a { color: inherit; text-decoration: none; }
 .goals-builder h3 { margin: 0; font-family: var(--font-display); font-size: 24px; letter-spacing: .02em; text-transform: uppercase; }
 .goals-builder > p { margin: 4px 0 13px; color: #a99ea1; font-size: 12px; }
 .goals-builder > div { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.performance-builder { border-top: 1px solid rgba(255,255,255,.09); padding-top: 17px; }
+.performance-builder h3 { margin: 0; font-family: var(--font-display); font-size: 24px; letter-spacing: .02em; text-transform: uppercase; }
+.performance-builder > p { margin: 4px 0 13px; color: #a99ea1; font-size: 12px; }
+.performance-builder > div { display: grid; gap: 9px; }
+.performance-entry { display: grid; grid-template-columns: minmax(140px, 1fr) repeat(3, minmax(86px, .5fr)); align-items: end; gap: 10px; border: 1px solid rgba(234,203,130,.16); border-radius: 12px; padding: 11px; background: rgba(255,255,255,.025); }
+.performance-entry > strong { align-self: center; color: #f1e9e9; font-size: 13px; }
+.ranking-score .ranking-votes { margin-top: 4px; color: #f1d27d; font-size: 9px; }
 .walk-on-builder { display: grid; gap: 11px; border: 1px solid rgba(234,203,130,.23); border-radius: 14px; padding: 14px; background: linear-gradient(145deg, rgba(234,203,130,.08), rgba(39,22,27,.5)); }
 .walk-on-builder__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .walk-on-builder__header h3 { margin: 0; color: #f4e9c5; font-family: var(--font-display); font-size: 23px; letter-spacing: .02em; text-transform: uppercase; }
@@ -372,6 +379,8 @@ a { color: inherit; text-decoration: none; }
   .admin-form__grid, .admin-form__grid--four, .highlight-form { grid-template-columns: 1fr; }
   .walk-on-row { grid-template-columns: 1fr 1fr; }
   .walk-on-remove { grid-column: 1 / -1; }
+  .performance-entry { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .performance-entry > strong { grid-column: 1 / -1; }
   .badge-results { grid-template-columns: 1fr; }
   .goals-builder > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

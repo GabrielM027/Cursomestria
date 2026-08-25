@@ -73,3 +73,5 @@
 - [x] Preparar na aba de Informações um resumo financeiro para mensalidades e multas, sem lançamentos financeiros nesta fase.
 - [x] Permitir convidados avulsos no lançamento de partidas, com nome, responsável pelo convite, time e gols.
 - [x] Excluir convidados avulsos de pontos, vitórias, artilharia e todos os rankings.
+- [x] Registrar votos de Melhor e Pior recebidos por cada jogador em cada partida.
+- [x] Exibir nos rankings anuais de Melhor e Pior tanto as vezes escolhido quanto o total de votos acumulados.
