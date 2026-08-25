@@ -48,3 +48,6 @@
 - [ ] Concluir a migração pelo caminho enxuto, mantendo apenas GitHub, Supabase e Vercel essenciais.
 - [ ] Substituir a tabela legada incompatível `seasons` do Cursomestria pelo esquema do AMIGOS F.C. após confirmação.
 - [x] Garantir a configuração pública do Supabase na build Vercel sem depender de edição manual das variáveis do cliente.
+- [ ] Vincular a conta administrativa já existente ao novo painel do AMIGOS F.C. no Supabase.
+- [ ] Corrigir a falha atual da prévia Vercel e validar a implantação independente.
+- [ ] Confirmar leitura pública dos dados Supabase e acesso administrativo do painel migrado.
