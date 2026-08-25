@@ -1,4 +1,3 @@
-import ClubShell from "@/components/ClubShell";
 import { trpc } from "@/lib/trpc";
 import { CalendarDays, Check, ChevronLeft, CircleUserRound, LoaderCircle, LogOut, Pencil, Search, ShieldCheck, Trophy, Upload, UserPlus, UsersRound } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
@@ -29,7 +28,7 @@ async function fileToBase64(file: File) {
 }
 
 function PanelFrame({ children }: { children: React.ReactNode }) {
-  return <ClubShell><section className="admin-hero"><div className="club-container"><Link href="/" className="admin-back"><ChevronLeft size={17} /> Voltar ao site</Link><p className="section-label">Área da organização</p><h1>Painel do <strong>AMIGOS</strong></h1></div></section>{children}</ClubShell>;
+  return <div className="admin-app"><header className="admin-header"><div className="club-container"><div className="admin-header__identity"><ShieldCheck size={18} /><span>AMIGOS F.C.<small>Painel administrativo</small></span></div><Link href="/" className="admin-site-link"><ChevronLeft size={16} /> Voltar ao site</Link></div></header><section className="admin-hero"><div className="club-container"><p className="section-label">Área da organização</p><h1>Painel do <strong>AMIGOS</strong></h1></div></section>{children}</div>;
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="admin-field"><span>{label}</span>{children}</label>; }

@@ -21,5 +21,5 @@ function Router() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="dark"><TooltipProvider><Toaster /><Router /></TooltipProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="dark"><TooltipProvider><Toaster position="top-center" richColors closeButton duration={5500} toastOptions={{ classNames: { toast: "amigos-toast", title: "amigos-toast__title", description: "amigos-toast__description" } }} /><Router /></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }

@@ -60,3 +60,5 @@
 - [x] Exigir confirmação explícita ao salvar antes de vincular a bandeira ou escudo sugerido ao jogador.
 - [x] Corrigir a identificação automática de Marrocos, México e outras seleções digitadas em português.
 - [x] Corrigir a busca de escudo para clubes brasileiros, incluindo Flamengo, sem exibir o ícone genérico.
+- [x] Ocultar a navegação pública no painel administrativo e manter apenas um retorno discreto ao site.
+- [x] Tornar os avisos de cadastro e salvamento mais visíveis no painel, especialmente em celular.

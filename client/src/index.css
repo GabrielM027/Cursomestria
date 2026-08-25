@@ -195,9 +195,15 @@ a { color: inherit; text-decoration: none; }
 .club-footer { padding: 30px 0; border-top: 1px solid rgba(234,203,130,.10); background: #090809; color: #8f8387; font-size: 12px; }
 .club-footer .club-container { display: flex; justify-content: space-between; gap: 14px; }
 
-.admin-hero { padding: 46px 0 38px; border-bottom: 1px solid rgba(234,203,130,.12); background: linear-gradient(120deg, #260b12, #100d0e 76%); }
-.admin-back { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 28px; color: #b7aaad; font-size: 13px; font-weight: 700; }
-.admin-back:hover { color: var(--gold); }
+.admin-app { min-height: 100vh; background: #0d0b0c; }
+.admin-header { border-bottom: 1px solid rgba(234,203,130,.16); background: #100c0e; }
+.admin-header .club-container { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.admin-header__identity { display: inline-flex; align-items: center; gap: 9px; color: var(--gold); font-size: 12px; font-weight: 900; letter-spacing: .1em; }
+.admin-header__identity span { display: grid; gap: 2px; color: #f1e9e7; }
+.admin-header__identity small { color: #9f9296; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.admin-site-link { display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(234,203,130,.32); border-radius: 999px; padding: 8px 11px; color: #f3d98b; background: rgba(234,203,130,.06); font-size: 11px; font-weight: 900; }
+.admin-site-link:hover { border-color: var(--gold); background: rgba(234,203,130,.13); }
+.admin-hero { padding: 38px 0 34px; border-bottom: 1px solid rgba(234,203,130,.12); background: linear-gradient(120deg, #260b12, #100d0e 76%); }
 .admin-hero h1 { margin: 10px 0 0; font-family: var(--font-display); font-size: clamp(48px, 8vw, 76px); line-height: .9; letter-spacing: -.02em; text-transform: uppercase; }
 .admin-hero h1 strong { color: var(--gold); }
 .admin-section { min-height: 62vh; padding: 30px 0 70px; background: linear-gradient(180deg, #110d0e, #0d0b0c); }
@@ -226,6 +232,9 @@ a { color: inherit; text-decoration: none; }
 .admin-save:disabled { cursor: not-allowed; opacity: .6; }
 .admin-secondary { justify-self: start; min-height: 43px; border: 1px solid rgba(234,203,130,.25); border-radius: 11px; padding: 0 15px; color: #e5daca; background: transparent; font-size: 13px; font-weight: 700; }
 .admin-actions { display: flex; align-items: center; gap: 11px; }
+.amigos-toast { min-width: min(390px, calc(100vw - 28px)); border: 1px solid rgba(234,203,130,.72) !important; border-radius: 15px !important; padding: 14px 16px !important; color: #fff8ed !important; background: #2a141a !important; box-shadow: 0 16px 46px rgba(0,0,0,.55), 0 0 0 3px rgba(234,203,130,.12) !important; }
+.amigos-toast__title { color: #ffe7a0 !important; font-size: 14px !important; font-weight: 900 !important; }
+.amigos-toast__description { color: #f2e3e5 !important; font-size: 13px !important; font-weight: 700 !important; }
 .entity-picker { display: grid; gap: 11px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 16px; }
 .automatic-badge { display: inline-grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; column-gap: 9px; width: fit-content; max-width: 100%; min-height: 42px; border: 1px solid rgba(234,203,130,.22); border-radius: 11px; padding: 5px 10px 5px 5px; color: #e9dfcf; background: rgba(234,203,130,.055); }
 .automatic-badge > img, .automatic-badge > svg { grid-row: 1 / span 2; width: 30px; height: 30px; object-fit: contain; border-radius: 6px; }
@@ -321,7 +330,10 @@ a { color: inherit; text-decoration: none; }
   .match-detail { grid-template-columns: 1fr; gap: 0; }
   .club-footer .club-container { display: block; line-height: 1.7; }
   .club-footer span + span { margin-top: 3px; display: block; }
-  .admin-hero { padding: 35px 0 31px; }
+  .admin-header .club-container { min-height: 54px; }
+  .admin-header__identity { font-size: 11px; }
+  .admin-site-link { padding: 8px 10px; font-size: 10px; }
+  .admin-hero { padding: 31px 0 30px; }
   .admin-toolbar { align-items: start; }
   .admin-toolbar nav { max-width: calc(100% - 48px); }
   .admin-two-column { grid-template-columns: 1fr; }
