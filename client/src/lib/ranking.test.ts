@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateHonorTotals, calculateSeasonTotals } from "./amigosData";
+import { buildCopaFixturePlan, calculateHonorTotals, calculateSeasonTotals } from "./amigosData";
 
 describe("ranking da pelada", () => {
   it("atribui três pontos e uma vitória somente aos jogadores fixos do time vencedor", () => {
@@ -18,9 +18,9 @@ describe("ranking da pelada", () => {
       ],
     }]);
 
-    expect(totals.get(1)).toEqual({ points: 3, wins: 1, goals: 2 });
+    expect(totals.get(1)).toEqual({ points: 3, wins: 1, goals: 2, goalBalance: 2 });
     expect(totals.get(2)).toBeUndefined();
-    expect(totals.get(3)).toEqual({ points: 0, wins: 0, goals: 2 });
+    expect(totals.get(3)).toEqual({ points: 0, wins: 0, goals: 2, goalBalance: -2 });
   });
 
   it("não atribui pontos em empate e mantém a artilharia", () => {
@@ -34,8 +34,8 @@ describe("ranking da pelada", () => {
       goals: [{ playerId: 2, quantity: 1 }],
     }]);
 
-    expect(totals.get(1)).toEqual({ points: 0, wins: 0, goals: 0 });
-    expect(totals.get(2)).toEqual({ points: 0, wins: 0, goals: 1 });
+    expect(totals.get(1)).toEqual({ points: 0, wins: 0, goals: 0, goalBalance: 0 });
+    expect(totals.get(2)).toEqual({ points: 0, wins: 0, goals: 1, goalBalance: 0 });
   });
 
   it("não inclui gols de convidados avulsos em nenhum ranking", () => {
@@ -45,8 +45,8 @@ describe("ranking da pelada", () => {
       participants: [{ playerId: 1, teamColor: "black", isGuest: false }, { playerId: null, teamColor: "black", isGuest: true }, { playerId: 2, teamColor: "red", isGuest: false }],
       goals: [{ playerId: null, quantity: 2 }, { playerId: 2, quantity: 1 }],
     }]);
-    expect(totals.get(1)).toEqual({ points: 3, wins: 1, goals: 0 });
-    expect(totals.get(2)).toEqual({ points: 0, wins: 0, goals: 1 });
+    expect(totals.get(1)).toEqual({ points: 3, wins: 1, goals: 0, goalBalance: 1 });
+    expect(totals.get(2)).toEqual({ points: 0, wins: 0, goals: 1, goalBalance: -1 });
     expect(totals.has(null as never)).toBe(false);
   });
 
@@ -59,5 +59,18 @@ describe("ranking da pelada", () => {
     expect(totals.best.get(1)).toEqual({ count: 2, votes: 7 });
     expect(totals.worst.get(2)).toEqual({ count: 1, votes: 6 });
     expect(totals.best.has(null as never)).toBe(false);
+  });
+
+  it("congela pontos e vitórias durante a Copa, mas mantém gols e saldo individuais", () => {
+    const totals = calculateSeasonTotals([{ blackScore: 4, redScore: 1, countsForStandings: false, participants: [{ playerId: 1, teamColor: "black", isGuest: false }, { playerId: 2, teamColor: "red", isGuest: false }], goals: [{ playerId: 1, quantity: 2 }, { playerId: 2, quantity: 1 }] }]);
+    expect(totals.get(1)).toEqual({ points: 0, wins: 0, goals: 2, goalBalance: 3 });
+    expect(totals.get(2)).toEqual({ points: 0, wins: 0, goals: 1, goalBalance: -3 });
+  });
+
+  it("cria quatro quartas, duas semifinais e uma final em domingos consecutivos", () => {
+    const plan = buildCopaFixturePlan(Array.from({ length: 8 }, (_, index) => ({ id: index + 1 })), "2026-10-04", false, () => 0);
+    expect(plan).toHaveLength(7);
+    expect(plan.filter(fixture => fixture.stage === "quarterfinal")).toHaveLength(4);
+    expect(plan.map(fixture => fixture.scheduledDate)).toEqual(["2026-10-04", "2026-10-11", "2026-10-18", "2026-10-25", "2026-11-01", "2026-11-08", "2026-11-15"]);
   });
 });

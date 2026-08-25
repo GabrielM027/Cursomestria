@@ -75,3 +75,12 @@
 - [x] Excluir convidados avulsos de pontos, vitórias, artilharia e todos os rankings.
 - [x] Registrar votos de Melhor e Pior recebidos por cada jogador em cada partida.
 - [x] Exibir nos rankings anuais de Melhor e Pior tanto as vezes escolhido quanto o total de votos acumulados.
+- [x] Revisar autenticação, permissões e exposição de dados do site.
+- [x] Definir e aprovar as regras, telas e dados do Modo Copa antes da implementação, com oito classificados pelos pontos corridos, congelamento de pontos e vitórias durante a Copa, estatísticas individuais de todos os participantes ativas, capitães que escolhem times, sorteio automático editável, pênaltis e reagendamento por chuva.
+- [x] Garantir controles de iniciar, pausar, editar, cancelar e reiniciar testes no Modo Copa.
+- [x] Adicionar controles de editar e excluir publicações na galeria administrativa.
+- [x] Definir correções manuais seguras para pontos, saldo de gols e demais estatísticas automáticas.
+- [ ] Aplicar o princípio de controle administrativo total a todas as próximas funções do site.
+- [x] Definir e implementar uma abertura especial na tela inicial quando a Copa estiver ativa, com confronto, chaveamento e feed normal abaixo.
+- [x] Implementar o Modo Copa apenas com estruturas aditivas e não destrutivas, preservando todos os jogadores e dados reais já cadastrados.
+- [x] Usar automaticamente as fotos de perfil existentes dos jogadores nos confrontos e chaveamentos da Copa, mantendo fallback visual até novas fotos serem enviadas.

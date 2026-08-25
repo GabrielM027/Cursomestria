@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createAdminAccount,
+  createCopaTournament,
+  deleteGalleryItem,
   createSeason,
   getAdminClubData,
   getPublicClubData,
@@ -13,6 +15,10 @@ import {
   saveHighlight,
   saveMatch,
   savePlayer,
+  postponeCopaTournament,
+  resolveCopaFixture,
+  setCopaTournamentStatus,
+  updateCopaFixture,
   searchFootballBadge,
   setAdminAccountActive,
   uploadMedia,
@@ -61,7 +67,15 @@ export const trpc = {
     saveMatch: mutationHook(saveMatch),
     saveHighlight: mutationHook(saveHighlight),
     saveGalleryItem: mutationHook(saveGalleryItem),
+    deleteGalleryItem: mutationHook(deleteGalleryItem),
     createSeason: mutationHook(createSeason),
+    copa: {
+      create: mutationHook(createCopaTournament),
+      setStatus: mutationHook(setCopaTournamentStatus),
+      updateFixture: mutationHook(updateCopaFixture),
+      postpone: mutationHook(postponeCopaTournament),
+      resolveFixture: mutationHook(resolveCopaFixture),
+    },
     uploadMedia: mutationHook(uploadMedia),
     access: {
       list: queryHook(() => ["admin", "access", "list"], () => listAdminAccounts()),
