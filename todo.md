@@ -46,3 +46,5 @@
 - [x] Incluir uma exportação não sensível dos dados atuais da pelada no pacote ZIP.
 - [x] Documentar de forma explícita no pacote os adaptadores que precisam ser substituídos para hospedagem externa.
 - [ ] Concluir a migração pelo caminho enxuto, mantendo apenas GitHub, Supabase e Vercel essenciais.
+- [ ] Substituir a tabela legada incompatível `seasons` do Cursomestria pelo esquema do AMIGOS F.C. após confirmação.
+- [x] Garantir a configuração pública do Supabase na build Vercel sem depender de edição manual das variáveis do cliente.
