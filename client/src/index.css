@@ -223,6 +223,21 @@ a { color: inherit; text-decoration: none; }
 .admin-two-column { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); gap: 18px; align-items: start; }
 .admin-card { border: 1px solid rgba(234,203,130,.16); border-radius: 22px; padding: 22px; background: linear-gradient(145deg, rgba(40,22,27,.9), rgba(22,16,18,.95)); box-shadow: 0 20px 50px rgba(0,0,0,.14); }
 .admin-card h2 { margin: 0 0 19px; color: #f3eeee; font-family: var(--font-display); font-size: 30px; font-weight: 600; line-height: 1; letter-spacing: .02em; text-transform: uppercase; }
+.admin-info { display: grid; gap: 18px; }
+.admin-info__season { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 17px; }
+.admin-info__season > div { display: grid; gap: 5px; border: 1px solid rgba(234,203,130,.15); border-left: 3px solid var(--gold); border-radius: 12px; padding: 13px; background: rgba(0,0,0,.18); }
+.admin-info__season span, .admin-info-stat span, .admin-finance span { color: #aa9ca1; font-size: 10px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.admin-info__season strong { color: #f4eeee; font-size: 15px; }
+.admin-info__season small, .admin-info-stat small, .admin-finance small { color: #b8abad; font-size: 12px; line-height: 1.35; }
+.admin-info__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.admin-info-stat { display: grid; gap: 5px; min-height: 112px; border: 1px solid rgba(234,203,130,.18); border-radius: 14px; padding: 13px; background: linear-gradient(145deg, rgba(82,37,47,.62), rgba(24,17,19,.92)); }
+.admin-info-stat strong { color: #f5d779; font-family: var(--font-display); font-size: 38px; line-height: .9; }
+.admin-info__notes { display: grid; gap: 12px; }
+.admin-info__notes p { margin: 0; color: #c9bdc0; font-size: 14px; line-height: 1.55; }
+.admin-info__notes strong { color: #f1d47e; }
+.admin-finance { display: grid; gap: 10px; margin-bottom: 14px; }
+.admin-finance > div { display: grid; gap: 5px; border: 1px dashed rgba(234,203,130,.3); border-radius: 12px; padding: 12px; background: rgba(234,203,130,.045); }
+.admin-finance strong { color: #f2e5bb; font-size: 14px; }
 .admin-form { display: grid; gap: 17px; }
 .admin-form__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
 .admin-form__grid--four { grid-template-columns: 1.35fr repeat(3, .65fr); }
@@ -345,6 +360,7 @@ a { color: inherit; text-decoration: none; }
   .admin-toolbar nav button { min-height: 64px; font-size: 12px; }
   .admin-exit { min-width: 0; font-size: 10px; }
   .admin-two-column { grid-template-columns: 1fr; }
+  .admin-info__season, .admin-info__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-card { padding: 17px; }
   .admin-form__grid, .admin-form__grid--four, .highlight-form { grid-template-columns: 1fr; }
   .badge-results { grid-template-columns: 1fr; }

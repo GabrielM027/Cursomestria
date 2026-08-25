@@ -69,3 +69,5 @@
 - [x] Remover da tela inicial os indicadores de partidas oficiais, gols registrados e último placar.
 - [x] Adicionar um campo livre de posição ao cadastro e à edição de cada jogador.
 - [x] Mostrar a posição do jogador nos cards de ranking, artilharia, destaques e elenco administrativo.
+- [x] Criar uma aba de Informações no painel com estatísticas esportivas consolidadas da temporada.
+- [x] Preparar na aba de Informações um resumo financeiro para mensalidades e multas, sem lançamentos financeiros nesta fase.

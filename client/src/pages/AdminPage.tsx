@@ -1,15 +1,15 @@
 import { trpc } from "@/lib/trpc";
-import { CalendarDays, Check, ChevronLeft, CircleUserRound, LoaderCircle, LogOut, Pencil, Search, ShieldCheck, Trophy, Upload, UserPlus, UsersRound } from "lucide-react";
+import { BarChart3, CalendarDays, Check, ChevronLeft, CircleUserRound, LoaderCircle, LogOut, Pencil, Search, ShieldCheck, Trophy, Upload, UserPlus, UsersRound } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Link } from "wouter";
 
-type Tab = "jogadores" | "partida" | "destaques" | "galeria" | "editar" | "acessos";
+type Tab = "informacoes" | "jogadores" | "partida" | "destaques" | "galeria" | "editar" | "acessos";
 type TeamColor = "black" | "red";
 type PlayerType = "fixed" | "guest";
 
 const tabs = [
-  { id: "jogadores" as const, label: "Jogadores", icon: UsersRound }, { id: "partida" as const, label: "Partida", icon: CalendarDays }, { id: "destaques" as const, label: "Melhor/Pior", icon: Trophy }, { id: "galeria" as const, label: "Galeria", icon: Upload }, { id: "editar" as const, label: "Temporada", icon: Pencil }, { id: "acessos" as const, label: "Acessos", icon: ShieldCheck },
+  { id: "informacoes" as const, label: "Informações", icon: BarChart3 }, { id: "jogadores" as const, label: "Jogadores", icon: UsersRound }, { id: "partida" as const, label: "Partida", icon: CalendarDays }, { id: "destaques" as const, label: "Melhor/Pior", icon: Trophy }, { id: "galeria" as const, label: "Galeria", icon: Upload }, { id: "editar" as const, label: "Temporada", icon: Pencil }, { id: "acessos" as const, label: "Acessos", icon: ShieldCheck },
 ];
 
 function dateInput(value?: string | Date | null) {
@@ -102,6 +102,27 @@ function AccessTab() {
   return <div className="admin-two-column"><FormCard title="Novo administrador"><form className="admin-form" onSubmit={submit}><Field label="Nome"><input required value={name} onChange={event => setName(event.target.value)} placeholder="Nome do administrador" /></Field><Field label="E-mail"><input required type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="email@exemplo.com" /></Field><Field label="Senha inicial"><input required type="password" minLength={8} value={password} onChange={event => setPassword(event.target.value)} placeholder="Mínimo de 8 caracteres" /></Field><SaveButton saving={create.isPending}><UserPlus size={17} /> Autorizar acesso</SaveButton></form></FormCard><FormCard title="Acessos autorizados"><div className="admin-player-list">{accounts.data?.map((account: any) => <div className="admin-player" key={account.id}><div><span className="admin-access-icon"><UsersRound size={19} /></span><span><strong>{account.name}</strong><small>{account.email}</small><small className={account.isActive ? "admin-access-active" : "admin-access-off"}>{account.isActive ? "Acesso ativo" : "Acesso desativado"}</small></span></div><button type="button" onClick={() => toggle(account)} disabled={setActive.isPending} title={account.isActive ? "Desativar acesso" : "Reativar acesso"}>{account.isActive ? <LogOut size={16} /> : <Check size={16} />}</button></div>) || <p className="admin-muted">Carregando os acessos autorizados.</p>}</div></FormCard></div>;
 }
 
+function InfoTab({ data }: { data: any }) {
+  const totalPlayers = data.players.length;
+  const activePlayers = data.players.filter((player: any) => player.isActive).length;
+  const fixedPlayers = data.players.filter((player: any) => player.participantType === "fixed").length;
+  const guests = data.players.filter((player: any) => player.participantType === "guest").length;
+  const totalMatches = data.matches.length;
+  const totalGoals = data.home?.stats?.goals ?? data.scorers.reduce((sum: number, player: any) => sum + (player.goals || 0), 0);
+  const latestMatch = data.matches[0];
+  const stats = [
+    { label: "Jogadores", value: totalPlayers, detail: `${activePlayers} ativos` },
+    { label: "Jogadores fixos", value: fixedPlayers, detail: "no elenco" },
+    { label: "Convidados", value: guests, detail: "cadastrados" },
+    { label: "Partidas", value: totalMatches, detail: "lançadas" },
+    { label: "Gols", value: totalGoals, detail: "registrados" },
+    { label: "Destaques", value: data.feed.length, detail: "melhor e pior" },
+    { label: "Galeria", value: data.gallery.length, detail: "publicações" },
+    { label: "Temporadas", value: data.seasons.length, detail: "cadastradas" },
+  ];
+  return <div className="admin-info"><FormCard title="Resumo da temporada"><div className="admin-info__season"><div><span>Temporada ativa</span><strong>{data.activeSeason?.name || "Nenhuma temporada ativa"}</strong><small>{data.activeSeason?.competitionLabel || "Ative uma temporada para começar"}</small></div>{latestMatch && <div><span>Última partida lançada</span><strong>Preto {latestMatch.blackScore} × {latestMatch.redScore} Vermelho</strong><small>{dateInput(latestMatch.matchDate).split("-").reverse().join("/")}</small></div>}</div><div className="admin-info__grid">{stats.map(stat => <article className="admin-info-stat" key={stat.label}><span>{stat.label}</span><strong>{stat.value}</strong><small>{stat.detail}</small></article>)}</div></FormCard><div className="admin-two-column"><FormCard title="Leitura rápida"><div className="admin-info__notes"><p><strong>Elenco ativo:</strong> {activePlayers} de {totalPlayers || 0} jogadores podem ser escalados.</p><p><strong>Conteúdo publicado:</strong> {data.feed.length} destaques e {data.gallery.length} itens mantêm o feed atualizado.</p><p><strong>Ranking:</strong> os números do painel consideram somente os registros da temporada ativa.</p></div></FormCard><FormCard title="Financeiro"><div className="admin-finance"><div><span>Mensalidades</span><strong>Em preparação</strong><small>O controle de pagamentos será ativado em uma aba financeira própria.</small></div><div><span>Multas</span><strong>Em preparação</strong><small>Futuras multas ficarão vinculadas ao jogador e ao período correspondente.</small></div></div><p className="admin-muted">Nenhuma mensalidade, pagamento ou multa foi registrada ainda. Este bloco não cria cobrança nem valor financeiro nesta fase.</p></FormCard></div></div>;
+}
+
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("jogadores"); const utils = trpc.useUtils(); const adminQuery = trpc.adminAuth.me.useQuery(undefined, { staleTime: 0, refetchOnMount: "always" }); const logout = trpc.adminAuth.logout.useMutation(); const enabled = Boolean(adminQuery.data); const dataQuery = trpc.admin.data.useQuery(undefined, { enabled }); const data = dataQuery.data as any;
   useEffect(() => { if (data && !data.activeSeason) setTab("editar"); }, [data]);
@@ -109,5 +130,5 @@ export default function AdminPage() {
   if (!enabled) return <AdminLogin />;
   if (dataQuery.isLoading || !data) return <PanelFrame><section className="section"><div className="club-container"><div className="empty-state"><LoaderCircle className="spin" /><strong>Organizando o painel</strong></div></div></section></PanelFrame>;
   const leavePanel = async () => { await logout.mutateAsync(); await utils.adminAuth.me.invalidate(); await utils.admin.data.invalidate(); toast.success("Você saiu do painel."); };
-  return <PanelFrame><section className="admin-section"><div className="club-container"><div className="admin-toolbar"><nav aria-label="Funções do painel">{tabs.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? "active" : ""} onClick={() => setTab(item.id)}><Icon size={19} /><span>{item.label}</span></button>; })}</nav><button className="admin-exit" onClick={leavePanel}><LogOut size={16} /> Sair</button></div>{tab === "jogadores" && <PlayersTab data={data} />}{tab === "partida" && <MatchTab data={data} />}{tab === "destaques" && <HighlightsTab data={data} />}{tab === "galeria" && <GalleryTab data={data} />}{tab === "editar" && <EditTab data={data} />}{tab === "acessos" && <AccessTab />}</div></section></PanelFrame>;
+  return <PanelFrame><section className="admin-section"><div className="club-container"><div className="admin-toolbar"><nav aria-label="Funções do painel">{tabs.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? "active" : ""} onClick={() => setTab(item.id)}><Icon size={19} /><span>{item.label}</span></button>; })}</nav><button className="admin-exit" onClick={leavePanel}><LogOut size={16} /> Sair</button></div>{tab === "informacoes" && <InfoTab data={data} />}{tab === "jogadores" && <PlayersTab data={data} />}{tab === "partida" && <MatchTab data={data} />}{tab === "destaques" && <HighlightsTab data={data} />}{tab === "galeria" && <GalleryTab data={data} />}{tab === "editar" && <EditTab data={data} />}{tab === "acessos" && <AccessTab />}</div></section></PanelFrame>;
 }
