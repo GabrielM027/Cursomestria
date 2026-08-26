@@ -7,3 +7,7 @@ A prévia local confirmou que as sete marcas, incluindo G&M Construções e Refo
 Para preservar a fidelidade dos logotipos claros, as versões finais de Elloskar, Point Restaurante, FormaFit, Panificadora Marques e Goldcar mantêm seus campos de contraste originais; Rota 27 usa fundo transparente. A tela inicial publicada confirmou a disponibilidade das sete marcas cadastradas.
 
 Em seguida, a marca G&M foi removida a pedido da organização. As cinco logos com fundo de contraste foram convertidas para recortes transparentes conectados às bordas, eliminando os quadrados visíveis na faixa. A prévia confirmou a exibição de Rota 27, Elloskar, Point Restaurante, FormaFit, Panificadora Marques e Goldcar sem a G&M.
+
+A Panificadora Marques recebeu um recorte dedicado para ampliar o nome. A validação mostrou que a leitura foi recuperada; o acabamento final deve manter esse recorte com o fundo branco removido, preservando o nome em vinho e reduzindo a escala para se integrar à faixa.
+
+A versão final removeu o fundo branco do recorte dedicado e aplicou uma escala intermediária. A prévia confirmou que “Marques” fica legível em vinho, sem cartão quadrado e sem alterar as demais marcas.

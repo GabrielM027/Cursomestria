@@ -115,3 +115,4 @@
 - [x] Substituir o item Ranking da navegação pública por acessos separados para Pontos Corridos, Copa e Artilheiros, na sequência definida pela organização.
 - [x] Preparar sem alterar e cadastrar as logos Rota 27, Elloskar Seminovos, Point Restaurante, FormaFit Academia, Panificadora Marques e Goldcar Automóveis na faixa de patrocinadores.
 - [x] Remover a G&M da faixa de patrocinadores e deixar as demais logos sem fundos quadrados aparentes.
+- [x] Corrigir somente a logo da Panificadora Marques para exibir nome e elementos com legibilidade na faixa de patrocinadores.
