@@ -15,3 +15,5 @@ A versão final removeu o fundo branco do recorte dedicado e aplicou uma escala 
 No ajuste seguinte, o fundo branco foi solicitado de volta, mas limitado ao próprio formato oval do balão. A imagem final usa a marca original centralizada em uma base branca oval, sem fundo fora do balão; a validação visual confirmou alinhamento com os demais patrocinadores.
 
 Para a padronização final, as seis marcas foram preparadas como cartões preenchidos com fundos originais e escala comum. A prévia local precisou ser reiniciada durante a conferência; os registros de patrocinadores permanecem ativos no banco.
+
+A prévia local confirmou os seis caminhos de imagem padronizados: Rota 27, Elloskar, Point Restaurante, FormaFit, Panificadora Marques e Goldcar passam a usar cartões preenchidos no mesmo tamanho. A produção foi consultada após o envio do commit para validar a atualização publicada.
