@@ -110,3 +110,5 @@
 - [x] Remover do topo da tela inicial a chamada grande e o selo “A casa da pelada”, mantendo o escudo em uma composição mais limpa.
 - [x] Corrigir a aba Patrocinadores do painel, que é selecionada mas não exibe seu conteúdo no celular.
 - [x] Reconfigurar a Copa: quartas 1º×8º, 2º×7º, 3º×6º e 4º×5º; semifinais Jogo 1×Jogo 4 e Jogo 2×Jogo 3; final em dois jogos nos dias configurados.
+- [x] Acelerar a faixa de patrocinadores para dar visibilidade frequente quando houver três ou quatro marcas cadastradas.
+- [x] Preparar a logo G&M Construções e Reformas com fundo transparente e cadastrá-la como patrocinadora ativa na faixa pública.
