@@ -4,13 +4,14 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Link } from "wouter";
 import { CopaAdminTab } from "@/components/CopaAdminTab";
+import { SelectionAdminTab } from "@/components/SelectionAdminTab";
 
-type Tab = "informacoes" | "copa" | "jogadores" | "partida" | "destaques" | "galeria" | "editar" | "acessos";
+type Tab = "informacoes" | "copa" | "jogadores" | "partida" | "destaques" | "selecao" | "galeria" | "editar" | "acessos";
 type TeamColor = "black" | "red";
 type PlayerType = "fixed" | "guest";
 
 const tabs = [
-  { id: "informacoes" as const, label: "Informações", icon: BarChart3 }, { id: "copa" as const, label: "Copa", icon: Trophy }, { id: "jogadores" as const, label: "Jogadores", icon: UsersRound }, { id: "partida" as const, label: "Partida", icon: CalendarDays }, { id: "destaques" as const, label: "Melhor/Pior", icon: Trophy }, { id: "galeria" as const, label: "Galeria", icon: Upload }, { id: "editar" as const, label: "Temporada", icon: Pencil }, { id: "acessos" as const, label: "Acessos", icon: ShieldCheck },
+  { id: "informacoes" as const, label: "Informações", icon: BarChart3 }, { id: "copa" as const, label: "Copa", icon: Trophy }, { id: "jogadores" as const, label: "Jogadores", icon: UsersRound }, { id: "partida" as const, label: "Partida", icon: CalendarDays }, { id: "destaques" as const, label: "Melhor/Pior", icon: Trophy }, { id: "selecao" as const, label: "Seleção do Ano", icon: Crown }, { id: "galeria" as const, label: "Galeria", icon: Upload }, { id: "editar" as const, label: "Temporada", icon: Pencil }, { id: "acessos" as const, label: "Acessos", icon: ShieldCheck },
 ];
 
 function dateInput(value?: string | Date | null) {
@@ -132,5 +133,5 @@ export default function AdminPage() {
   if (!enabled) return <AdminLogin />;
   if (dataQuery.isLoading || !data) return <PanelFrame><section className="section"><div className="club-container"><div className="empty-state"><LoaderCircle className="spin" /><strong>Organizando o painel</strong></div></div></section></PanelFrame>;
   const leavePanel = async () => { await logout.mutateAsync(); await utils.adminAuth.me.invalidate(); await utils.admin.data.invalidate(); toast.success("Você saiu do painel."); };
-  return <PanelFrame><section className="admin-section"><div className="club-container"><div className="admin-toolbar"><nav aria-label="Funções do painel">{tabs.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? "active" : ""} onClick={() => setTab(item.id)}><Icon size={19} /><span>{item.label}</span></button>; })}</nav><button className="admin-exit" onClick={leavePanel}><LogOut size={16} /> Sair</button></div>{tab === "informacoes" && <InfoTab data={data} />}{tab === "copa" && <CopaAdminTab data={data} />}{tab === "jogadores" && <PlayersTab data={data} />}{tab === "partida" && <MatchTab data={data} />}{tab === "destaques" && <HighlightsTab data={data} />}{tab === "galeria" && <GalleryTab data={data} />}{tab === "editar" && <EditTab data={data} />}{tab === "acessos" && <AccessTab />}</div></section></PanelFrame>;
+  return <PanelFrame><section className="admin-section"><div className="club-container"><div className="admin-toolbar"><nav aria-label="Funções do painel">{tabs.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? "active" : ""} onClick={() => setTab(item.id)}><Icon size={19} /><span>{item.label}</span></button>; })}</nav><button className="admin-exit" onClick={leavePanel}><LogOut size={16} /> Sair</button></div>{tab === "informacoes" && <InfoTab data={data} />}{tab === "copa" && <CopaAdminTab data={data} />}{tab === "jogadores" && <PlayersTab data={data} />}{tab === "partida" && <MatchTab data={data} />}{tab === "destaques" && <HighlightsTab data={data} />}{tab === "selecao" && <SelectionAdminTab data={data} />}{tab === "galeria" && <GalleryTab data={data} />}{tab === "editar" && <EditTab data={data} />}{tab === "acessos" && <AccessTab />}</div></section></PanelFrame>;
 }

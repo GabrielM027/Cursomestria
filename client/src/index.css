@@ -206,30 +206,56 @@ a { color: inherit; text-decoration: none; }
 .honor-rankings .ranking-score small { font-size: 6px; }
 .honor-rankings .ranking-show-more { min-height: 31px; font-size: 9px; }
 .selection-year__intro { margin-bottom: 20px; }
-.selection-field { position: relative; width: min(100%, 600px); min-height: 690px; margin: 0 auto; overflow: hidden; border: 3px solid rgba(238,216,132,.74); border-radius: 23px; background: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 11%, transparent 11% 22%), linear-gradient(135deg, #136d4a, #0b4d36); box-shadow: inset 0 0 0 2px rgba(0,0,0,.18), 0 22px 55px rgba(0,0,0,.32); }
+.selection-field { position: relative; width: min(100%, 560px); min-height: 610px; margin: 0 auto; overflow: hidden; border: 3px solid rgba(238,216,132,.74); border-radius: 21px; background: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 11%, transparent 11% 22%), linear-gradient(135deg, #136d4a, #0b4d36); box-shadow: inset 0 0 0 2px rgba(0,0,0,.18), 0 22px 55px rgba(0,0,0,.32); }
 .selection-field::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 18% 18%, rgba(255,255,255,.1), transparent 34%), radial-gradient(circle at 82% 80%, rgba(0,0,0,.16), transparent 38%); pointer-events: none; }
 .selection-field__half { position: absolute; top: 50%; right: 0; left: 0; border-top: 2px solid rgba(255,255,255,.65); }
-.selection-field__circle { position: absolute; top: 50%; left: 50%; width: 124px; height: 124px; border: 2px solid rgba(255,255,255,.65); border-radius: 50%; transform: translate(-50%, -50%); }
+.selection-field__circle { position: absolute; top: 50%; left: 50%; width: 110px; height: 110px; border: 2px solid rgba(255,255,255,.65); border-radius: 50%; transform: translate(-50%, -50%); }
 .selection-field__circle::after { content: ""; position: absolute; top: 50%; left: 50%; width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.78); transform: translate(-50%, -50%); }
-.selection-field__goal { position: absolute; left: 50%; width: 124px; height: 40px; border: 2px solid rgba(255,255,255,.65); transform: translateX(-50%); }
+.selection-field__goal { position: absolute; left: 50%; width: 108px; height: 34px; border: 2px solid rgba(255,255,255,.65); transform: translateX(-50%); }
 .selection-field__goal--top { top: -2px; border-top: 0; border-radius: 0 0 10px 10px; }
 .selection-field__goal--bottom { bottom: -2px; border-bottom: 0; border-radius: 10px 10px 0 0; }
-.selection-slot { position: absolute; z-index: 1; width: 112px; display: grid; justify-items: center; gap: 3px; border-radius: 12px; padding: 4px 3px 5px; text-align: center; background: linear-gradient(180deg, rgba(7,49,35,.82), rgba(7,31,24,.68)); box-shadow: 0 4px 14px rgba(0,0,0,.2); transform: translate(-50%, -50%); }
-.selection-slot__role { border-radius: 999px; padding: 3px 7px; color: #f9eab1; background: rgba(8,22,17,.72); font-size: 8px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
-.selection-slot__avatar { position: relative; width: 52px; height: 52px; display: grid; place-items: center; overflow: visible; border: 2px solid #f3d979; border-radius: 50%; background: #32151e; color: #f4d87b; font-family: var(--font-display); font-size: 24px; }
+.selection-slot { position: absolute; z-index: 1; width: 82px; display: grid; justify-items: center; gap: 2px; border: 0; border-radius: 10px; padding: 3px 2px 4px; text-align: center; background: linear-gradient(180deg, rgba(7,49,35,.84), rgba(7,31,24,.73)); box-shadow: 0 4px 14px rgba(0,0,0,.22); transform: translate(-50%, -50%); }
+.selection-slot__role { border-radius: 999px; padding: 2px 5px; color: #f9eab1; background: rgba(8,22,17,.72); font-size: 7px; font-weight: 900; letter-spacing: .07em; line-height: 1.1; text-transform: uppercase; }
+.selection-slot__avatar { position: relative; width: 36px; height: 36px; display: grid; place-items: center; overflow: visible; border: 2px solid #f3d979; border-radius: 50%; background: #32151e; color: #f4d87b; font-family: var(--font-display); font-size: 18px; }
 .selection-slot__avatar > img:first-child { width: 100%; height: 100%; overflow: hidden; border-radius: 50%; object-fit: cover; }
 .selection-slot__avatar--empty { color: rgba(247,226,165,.7); background: rgba(18,56,42,.8); }
-.selection-slot__badge { position: absolute; right: -4px; bottom: -3px; width: 19px; height: 19px; border: 1px solid #1a1c17; border-radius: 50%; background: #f4d87b; object-fit: contain; }
-.selection-slot strong { max-width: 104px; overflow: hidden; color: #fffaf2; font-size: 10px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
-.selection-slot small { color: #e7f0d3; font-size: 8px; font-weight: 700; line-height: 1.1; }
+.selection-slot__badge { position: absolute; right: -4px; bottom: -3px; width: 15px; height: 15px; border: 1px solid #1a1c17; border-radius: 50%; background: #f4d87b; object-fit: contain; }
+.selection-slot strong { max-width: 76px; overflow: hidden; color: #fffaf2; font-size: 9px; font-weight: 900; line-height: 1.05; text-overflow: ellipsis; white-space: nowrap; }
+.selection-slot small { color: #e7f0d3; font-size: 7px; font-weight: 700; line-height: 1.05; }
 .selection-slot--goalkeeper-1 { top: 85%; left: 50%; }
 .selection-slot--defender-1 { top: 65%; left: 25%; }
 .selection-slot--defender-2 { top: 65%; left: 75%; }
 .selection-slot--midfielder-1 { top: 43%; left: 25%; }
 .selection-slot--midfielder-2 { top: 43%; left: 75%; }
+.selection-slot--midfielder-3 { top: 42%; left: 50%; }
 .selection-slot--attacker-1 { top: 21%; left: 34%; }
 .selection-slot--attacker-2 { top: 21%; left: 66%; }
 .selection-year__status { max-width: 600px; margin: 13px auto 0; color: #b7cbb4; font-size: 12px; text-align: center; }
+.selection-admin { display: grid; gap: 18px; }
+.selection-admin__intro { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.selection-admin__intro h2, .selection-admin__field-heading h2, .selection-admin__editor-heading h2 { margin: 0; color: #f3eeee; font-family: var(--font-display); font-size: 30px; font-weight: 600; line-height: 1; letter-spacing: .02em; text-transform: uppercase; }
+.selection-admin__intro p { max-width: 700px; margin: 10px 0 0; color: #b9abad; font-size: 13px; line-height: 1.6; }
+.selection-admin__legend { flex: none; max-width: 235px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(234,203,130,.2); border-radius: 12px; padding: 11px; color: #f0db97; background: rgba(234,203,130,.06); font-size: 11px; font-weight: 800; line-height: 1.35; }
+.selection-admin__layout { display: grid; grid-template-columns: minmax(0, .82fr) minmax(370px, 1.18fr); gap: 18px; align-items: start; }
+.selection-admin__field-card { position: sticky; top: 16px; }
+.selection-admin__field-heading, .selection-admin__editor-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.selection-admin__field-heading > span { border-radius: 999px; padding: 6px 9px; color: #1b180f; background: var(--gold); font-size: 10px; font-weight: 900; letter-spacing: .09em; }
+.selection-admin__editor-heading > svg { color: var(--gold); }
+.selection-admin-field { width: 100%; min-height: 560px; border-radius: 17px; }
+.selection-admin-slot { width: 94px; cursor: grab; touch-action: none; user-select: none; }
+.selection-admin-slot:active, .selection-admin-slot.is-dragging { cursor: grabbing; outline: 2px solid rgba(255,244,183,.8); outline-offset: 2px; box-shadow: 0 12px 24px rgba(0,0,0,.35); }
+.selection-admin-slot strong { max-width: 87px; }
+.selection-admin__slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.selection-admin__slot { display: grid; gap: 10px; border: 1px solid rgba(234,203,130,.18); border-radius: 14px; padding: 11px; background: rgba(0,0,0,.17); }
+.selection-admin__slot header { display: flex; align-items: start; justify-content: space-between; gap: 10px; }
+.selection-admin__slot header > div { display: grid; gap: 3px; min-width: 0; }
+.selection-admin__slot strong { color: #f4ebea; font-size: 13px; }
+.selection-admin__slot small { color: #b2a4a8; font-size: 10px; }
+.selection-admin__slot header > span { border-radius: 999px; padding: 4px 5px; color: #221811; background: #d8b663; font-size: 8px; font-weight: 900; letter-spacing: .06em; }
+.selection-admin__coordinates { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.selection-admin__coordinates .admin-field input { min-height: 38px; padding: 8px; font-size: 12px; }
+.selection-admin__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+.selection-admin__actions .admin-secondary { display: inline-flex; align-items: center; gap: 7px; }
 .section-label { margin: 0 0 10px; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
 .section-title { margin: 0; font-family: var(--font-display); font-size: clamp(40px, 5vw, 62px); line-height: .92; letter-spacing: -.02em; text-transform: uppercase; }
 .section-copy { max-width: 385px; color: var(--muted); line-height: 1.6; }
@@ -519,11 +545,12 @@ a { color: inherit; text-decoration: none; }
   .feed-grid, .ranking-columns, .gallery-grid { grid-template-columns: 1fr; }
   .honor-rankings__grid { grid-template-columns: 1fr; gap: 13px; }
   .honor-rankings { margin-top: 30px; padding: 24px 0; }
-  .selection-field { min-height: 570px; border-radius: 17px; }
-  .selection-field__circle { width: 105px; height: 105px; }
-  .selection-slot { width: 94px; }
-  .selection-slot__avatar { width: 44px; height: 44px; font-size: 21px; }
-  .selection-slot strong { max-width: 86px; font-size: 9px; }
+  .selection-field { min-height: 520px; border-radius: 17px; }
+  .selection-field__circle { width: 94px; height: 94px; }
+  .selection-slot { width: 72px; }
+  .selection-slot__avatar { width: 32px; height: 32px; font-size: 16px; }
+  .selection-slot strong { max-width: 67px; font-size: 8px; }
+  .selection-slot small { font-size: 6px; }
   .home-pulse { padding: 32px 0 28px; }
   .home-pulse__heading { display: block; }
   .home-pulse__heading h2 { font-size: 38px; }
@@ -553,6 +580,13 @@ a { color: inherit; text-decoration: none; }
   .admin-toolbar nav button { min-height: 64px; font-size: 12px; }
   .admin-exit { min-width: 0; font-size: 10px; }
   .admin-two-column { grid-template-columns: 1fr; }
+  .selection-admin__intro { display: grid; gap: 14px; }
+  .selection-admin__legend { max-width: none; }
+  .selection-admin__layout { grid-template-columns: 1fr; }
+  .selection-admin__field-card { position: static; }
+  .selection-admin-field { min-height: 520px; }
+  .selection-admin-slot { width: 86px; }
+  .selection-admin__slots { grid-template-columns: 1fr; }
   .admin-info__season, .admin-info__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .copa-admin__status { display: grid; }
   .copa-admin__status-actions { width: 100%; }

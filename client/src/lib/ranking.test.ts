@@ -89,9 +89,13 @@ describe("ranking da pelada", () => {
       { id: 5, name: "Meia B", position: "Volante", votes: 5, count: 1, points: 9 },
       { id: 6, name: "Atacante A", position: "Atacante", votes: 11, count: 1, points: 2 },
       { id: 7, name: "Atacante B", position: "Centroavante", votes: 7, count: 1, points: 3 },
+      { id: 8, name: "Meia C", position: "Meio-campo", votes: 4, count: 1, points: 2 },
     ]);
-    expect(selection).toHaveLength(7);
+    expect(selection).toHaveLength(8);
+    expect(selection.map(slot => `${slot.role}-${slot.slot}`)).toEqual(["goalkeeper-1", "defender-1", "defender-2", "midfielder-1", "midfielder-2", "midfielder-3", "attacker-1", "attacker-2"]);
+    expect(selection.map(slot => [slot.fieldX, slot.fieldY])).toEqual([[50, 86], [26, 66], [74, 66], [18, 44], [50, 42], [82, 44], [34, 21], [66, 21]]);
     expect(selection.filter(slot => slot.role === "defender").map(slot => slot.player?.name)).toEqual(["Zagueiro A", "Zagueiro B"]);
     expect(selection.filter(slot => slot.role === "attacker").map(slot => slot.player?.name)).toEqual(["Atacante A", "Atacante B"]);
+    expect(selection.filter(slot => slot.role === "midfielder").map(slot => slot.player?.name)).toEqual(["Meia A", "Meia B", "Meia C"]);
   });
 });
