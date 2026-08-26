@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import AdminPage from "@/pages/AdminPage";
-import { GalleryPage, Home, MatchesPage, RankingPage } from "@/pages/PublicPages";
+import { GalleryPage, HighlightsPage, Home, MatchesPage, RankingPage } from "@/pages/PublicPages";
 import { Redirect, Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -11,6 +11,7 @@ function Router() {
   return <Switch>
     <Route path="/" component={Home} />
     <Route path="/ranking" component={RankingPage} />
+    <Route path="/destaques" component={HighlightsPage} />
     <Route path="/artilharia"><Redirect to="/ranking" /></Route>
     <Route path="/partidas" component={MatchesPage} />
     <Route path="/galeria" component={GalleryPage} />

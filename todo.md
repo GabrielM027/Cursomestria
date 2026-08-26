@@ -85,3 +85,5 @@
 - [x] Implementar o Modo Copa apenas com estruturas aditivas e não destrutivas, preservando todos os jogadores e dados reais já cadastrados.
 - [x] Usar automaticamente as fotos de perfil existentes dos jogadores nos confrontos e chaveamentos da Copa, mantendo fallback visual até novas fotos serem enviadas.
 - [x] Redesenhar a chave editável da Copa em cartões amplos e empilhados para facilitar leitura e edição no celular.
+- [x] Mostrar no feed principal apenas o Melhor e o Pior da última rodada.
+- [x] Criar uma aba pública de Melhor/Pior com histórico agrupado e datas separadas por domingo.

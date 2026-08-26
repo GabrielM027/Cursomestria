@@ -86,6 +86,11 @@ export function calculateHonorTotals(participants: Array<{ playerId: number | nu
   return output;
 }
 
+export function groupHighlightsBySunday<T extends { matchDate: Date | string }>(highlights: T[]) {
+  const groups = groupBy(highlights, highlight => typeof highlight.matchDate === "string" ? highlight.matchDate.slice(0, 10) : highlight.matchDate.toISOString().slice(0, 10));
+  return Array.from(groups.entries()).sort(([first], [second]) => second.localeCompare(first)).map(([date, items]) => ({ date, items }));
+}
+
 export function normalizePlayerPosition(value?: string | null) {
   return value?.trim() || null;
 }
