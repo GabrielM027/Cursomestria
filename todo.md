@@ -113,3 +113,4 @@
 - [x] Acelerar a faixa de patrocinadores para dar visibilidade frequente quando houver três ou quatro marcas cadastradas.
 - [x] Preparar a logo G&M Construções e Reformas com fundo transparente e cadastrá-la como patrocinadora ativa na faixa pública.
 - [x] Substituir o item Ranking da navegação pública por acessos separados para Pontos Corridos, Copa e Artilheiros, na sequência definida pela organização.
+- [x] Preparar sem alterar e cadastrar as logos Rota 27, Elloskar Seminovos, Point Restaurante, FormaFit Academia, Panificadora Marques e Goldcar Automóveis na faixa de patrocinadores.
