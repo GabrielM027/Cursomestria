@@ -91,3 +91,4 @@
 - [x] Tornar os títulos de Pontos Corridos, Melhores, Piores e Artilharia maiores e mais explícitos.
 - [x] Compactar títulos, nomes e números do Ranking mantendo os cards na largura total.
 - [x] Compactar os blocos e espaçamentos da tela inicial, incluindo líder, artilheiro e destaques do feed.
+- [x] Reduzir ainda mais títulos, linhas, avatares e números do Ranking mantendo a largura total dos cards.
