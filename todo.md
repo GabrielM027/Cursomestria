@@ -88,3 +88,4 @@
 - [x] Mostrar no feed principal apenas o Melhor e o Pior da última rodada.
 - [x] Criar uma aba pública de Melhor/Pior com histórico agrupado e datas separadas por domingo.
 - [x] Mostrar inicialmente somente os oito primeiros em cada ranking e oferecer abertura da lista completa.
+- [x] Tornar os títulos de Pontos Corridos, Melhores, Piores e Artilharia maiores e mais explícitos.

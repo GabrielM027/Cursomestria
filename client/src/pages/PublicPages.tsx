@@ -36,6 +36,10 @@ function RankingItems({ rows, kind = "points" }: { rows: Array<{ id: number; nam
   })}{rows.length > 8 && <button type="button" className="ranking-show-more" onClick={() => setShowAll(current => !current)}>{showAll ? "Mostrar somente os 8 primeiros" : `Ver todos os ${rows.length} jogadores`}<ChevronRight size={16} className={showAll ? "ranking-show-more__icon ranking-show-more__icon--up" : "ranking-show-more__icon"} /></button>}</div>;
 }
 
+function RankingCardTitle({ label, title }: { label: string; title: string }) {
+  return <div className="data-card__title"><span>{label}</span><strong>{title}</strong></div>;
+}
+
 function Highlights({ items }: { items: any[] }) {
   if (!items.length) return <Empty title="O próximo domingo já está na mira">Quando o apito final soar, o melhor, o pior e toda a resenha ganham lugar no mural do AMIGOS.</Empty>;
   return <div className="feed-grid">{items.map((item: any) => <article className="resenha-card" key={item.id}><div className={`resenha-card__visual${item.imageUrl ? "" : " resenha-card__visual--fallback"}`}>{item.imageUrl ? <img src={item.imageUrl} alt={`Destaque da rodada: ${item.player.name}`} /> : <Sparkles />}<span className={`resenha-pill ${item.kind === "best" ? "resenha-pill--best" : "resenha-pill--worst"}`}>{item.kind === "best" ? "Melhor da rodada" : "Pior da rodada"}</span></div><div className="resenha-card__body"><div className="resenha-card__meta">{formatDate(item.matchDate)}</div><h3 className="resenha-card__name">{item.player.name}</h3>{item.player.position && <div className="resenha-card__position">{item.player.position}</div>}<p>{item.caption || "A resenha desta rodada ficou registrada na história do AMIGOS F.C."}</p></div></article>)}</div>;
@@ -77,7 +81,7 @@ export function Home() {
 export function RankingPage() {
   const { data, isLoading } = trpc.club.publicData.useQuery();
   if (isLoading || !data) return <Loading />;
-  return <ClubShell><PageHero label="Quadro de honra" title="Ranking da pelada">Classificação, artilharia e os personagens de cada domingo reunidos em um só lugar.</PageHero><section className="section"><div className="club-container"><div className="ranking-columns"><section className="data-card"><div className="data-card__title">Pontos corridos</div><RankingItems rows={data.standings} /></section><section className="data-card"><div className="data-card__title">Melhores da pelada</div><RankingItems rows={data.honorRankings.best} kind="count" /></section><section className="data-card"><div className="data-card__title">Piores da pelada</div><RankingItems rows={data.honorRankings.worst} kind="count" /></section></div><section className="data-card ranking-scorers-card"><div className="data-card__title">Artilharia da temporada</div><RankingItems rows={data.scorers} kind="goals" /></section></div></section></ClubShell>;
+  return <ClubShell><PageHero label="Quadro de honra" title="Ranking da pelada">Classificação, artilharia e os personagens de cada domingo reunidos em um só lugar.</PageHero><section className="section"><div className="club-container"><div className="ranking-columns"><section className="data-card"><RankingCardTitle label="Classificação geral" title="Pontos Corridos" /><RankingItems rows={data.standings} /></section><section className="data-card"><RankingCardTitle label="Destaques da temporada" title="Melhores da Pelada" /><RankingItems rows={data.honorRankings.best} kind="count" /></section><section className="data-card"><RankingCardTitle label="Destaques da temporada" title="Piores da Pelada" /><RankingItems rows={data.honorRankings.worst} kind="count" /></section></div><section className="data-card ranking-scorers-card"><RankingCardTitle label="Gols da temporada" title="Artilharia" /><RankingItems rows={data.scorers} kind="goals" /></section></div></section></ClubShell>;
 }
 
 export function HighlightsPage() {
@@ -90,7 +94,7 @@ export function HighlightsPage() {
 export function ScorersPage() {
   const { data, isLoading } = trpc.club.publicData.useQuery();
   if (isLoading || !data) return <Loading />;
-  return <ClubShell><PageHero label="Artilharia" title="Quem balança a rede">Gol é gol. Cada bola na rede fica registrada na artilharia da temporada.</PageHero><section className="section"><div className="club-container"><section className="data-card"><div className="data-card__title">Artilheiros da temporada</div><RankingItems rows={data.scorers} kind="goals" /></section></div></section></ClubShell>;
+  return <ClubShell><PageHero label="Artilharia" title="Quem balança a rede">Gol é gol. Cada bola na rede fica registrada na artilharia da temporada.</PageHero><section className="section"><div className="club-container"><section className="data-card"><RankingCardTitle label="Gols da temporada" title="Artilharia" /><RankingItems rows={data.scorers} kind="goals" /></section></div></section></ClubShell>;
 }
 
 export function MatchesPage() {
