@@ -116,3 +116,4 @@
 - [x] Preparar sem alterar e cadastrar as logos Rota 27, Elloskar Seminovos, Point Restaurante, FormaFit Academia, Panificadora Marques e Goldcar Automóveis na faixa de patrocinadores.
 - [x] Remover a G&M da faixa de patrocinadores e deixar as demais logos sem fundos quadrados aparentes.
 - [x] Corrigir somente a logo da Panificadora Marques para exibir nome e elementos com legibilidade na faixa de patrocinadores.
+- [x] Exibir a Panificadora Marques em fundo branco oval, recortado e alinhado ao balão da faixa de patrocinadores.

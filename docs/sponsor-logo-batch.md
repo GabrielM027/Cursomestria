@@ -11,3 +11,5 @@ Em seguida, a marca G&M foi removida a pedido da organização. As cinco logos c
 A Panificadora Marques recebeu um recorte dedicado para ampliar o nome. A validação mostrou que a leitura foi recuperada; o acabamento final deve manter esse recorte com o fundo branco removido, preservando o nome em vinho e reduzindo a escala para se integrar à faixa.
 
 A versão final removeu o fundo branco do recorte dedicado e aplicou uma escala intermediária. A prévia confirmou que “Marques” fica legível em vinho, sem cartão quadrado e sem alterar as demais marcas.
+
+No ajuste seguinte, o fundo branco foi solicitado de volta, mas limitado ao próprio formato oval do balão. A imagem final usa a marca original centralizada em uma base branca oval, sem fundo fora do balão; a validação visual confirmou alinhamento com os demais patrocinadores.
