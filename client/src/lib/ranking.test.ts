@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCopaFixturePlan, calculateHonorTotals, calculateSeasonTotals } from "./amigosData";
+import { buildCopaFixturePlan, calculateHonorTotals, calculateSeasonTotals, visibleRankingRows } from "./amigosData";
 
 describe("ranking da pelada", () => {
   it("atribui três pontos e uma vitória somente aos jogadores fixos do time vencedor", () => {
@@ -72,5 +72,11 @@ describe("ranking da pelada", () => {
     expect(plan).toHaveLength(7);
     expect(plan.filter(fixture => fixture.stage === "quarterfinal")).toHaveLength(4);
     expect(plan.map(fixture => fixture.scheduledDate)).toEqual(["2026-10-04", "2026-10-11", "2026-10-18", "2026-10-25", "2026-11-01", "2026-11-08", "2026-11-15"]);
+  });
+
+  it("mostra somente os oito primeiros até a classificação completa ser solicitada", () => {
+    const rows = Array.from({ length: 11 }, (_, index) => index + 1);
+    expect(visibleRankingRows(rows)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(visibleRankingRows(rows, true)).toEqual(rows);
   });
 });

@@ -1,9 +1,9 @@
 import ClubShell, { ClubCrest } from "@/components/ClubShell";
 import { trpc } from "@/lib/trpc";
-import { groupHighlightsBySunday } from "@/lib/amigosData";
+import { groupHighlightsBySunday, visibleRankingRows } from "@/lib/amigosData";
 import { CalendarDays, ChevronRight, CircleUserRound, Flame, Image as ImageIcon, Play, Sparkles, Trophy } from "lucide-react";
 import { Link } from "wouter";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 type ClubData = any;
 
@@ -26,12 +26,14 @@ function PlayerAvatar({ player }: { player: { avatarUrl: string | null; name: st
 }
 
 function RankingItems({ rows, kind = "points" }: { rows: Array<{ id: number; name: string; position?: string | null; avatarUrl: string | null; entityName?: string | null; entityBadgeUrl?: string | null; points?: number; goals?: number; count?: number; votes?: number }>; kind?: "points" | "goals" | "count" }) {
+  const [showAll, setShowAll] = useState(false);
   if (!rows.length) return <Empty title="Ainda sem ranking">Assim que as partidas e os destaques forem lançados, a classificação aparece aqui.</Empty>;
-  return <div className="ranking-list">{rows.map((row, index) => {
+  const visibleRows = visibleRankingRows(rows, showAll);
+  return <div className="ranking-list">{visibleRows.map((row, index) => {
     const value = kind === "points" ? row.points ?? 0 : kind === "goals" ? row.goals ?? 0 : row.count ?? 0;
     const unit = kind === "points" ? "Pontos" : kind === "goals" ? "Gols" : "Vezes";
     return <div className="ranking-item" key={row.id}><div className="ranking-position">{index + 1}º</div><div className="ranking-person"><PlayerAvatar player={row} /><div><div className="person-name">{row.name}</div>{row.position && <div className="person-position">{row.position}</div>}{row.entityName && <div className="person-team">{row.entityName}</div>}</div></div><div className="ranking-score">{value}<small>{unit}</small>{kind === "count" && <small className="ranking-votes">{row.votes ?? 0} votos</small>}</div></div>;
-  })}</div>;
+  })}{rows.length > 8 && <button type="button" className="ranking-show-more" onClick={() => setShowAll(current => !current)}>{showAll ? "Mostrar somente os 8 primeiros" : `Ver todos os ${rows.length} jogadores`}<ChevronRight size={16} className={showAll ? "ranking-show-more__icon ranking-show-more__icon--up" : "ranking-show-more__icon"} /></button>}</div>;
 }
 
 function Highlights({ items }: { items: any[] }) {

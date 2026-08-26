@@ -219,7 +219,11 @@ a { color: inherit; text-decoration: none; }
 .ranking-scorers-card { margin-top: 18px; }
 .data-card__title { padding: 18px 18px 15px; color: var(--gold); font-size: 12px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
 
-.match-list { display: grid; gap: 14px; }
+.ranking-list { display: grid; gap: 9px; }
+.ranking-show-more { display: inline-flex; align-items: center; justify-content: center; gap: 7px; margin-top: 7px; min-height: 43px; border: 1px solid rgba(234,203,130,.32); border-radius: 11px; color: #f1d47e; background: rgba(234,203,130,.06); font-size: 12px; font-weight: 900; transition: .16s ease; }
+.ranking-show-more:hover { border-color: var(--gold); background: rgba(234,203,130,.14); }
+.ranking-show-more__icon { transition: transform .16s ease; }
+.ranking-show-more__icon--up { transform: rotate(-90deg); }
 .match-card { border: 1px solid rgba(234,203,130,.13); border-radius: 22px; background: linear-gradient(145deg, rgba(35,20,23,.95), rgba(18,15,16,.95)); }
 .match-card summary { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; padding: 20px; cursor: pointer; }
 .match-card summary::-webkit-details-marker { display: none; }

@@ -91,6 +91,10 @@ export function groupHighlightsBySunday<T extends { matchDate: Date | string }>(
   return Array.from(groups.entries()).sort(([first], [second]) => second.localeCompare(first)).map(([date, items]) => ({ date, items }));
 }
 
+export function visibleRankingRows<T>(rows: T[], showAll = false, limit = 8) {
+  return showAll ? rows : rows.slice(0, limit);
+}
+
 export function normalizePlayerPosition(value?: string | null) {
   return value?.trim() || null;
 }

@@ -87,3 +87,4 @@
 - [x] Redesenhar a chave editável da Copa em cartões amplos e empilhados para facilitar leitura e edição no celular.
 - [x] Mostrar no feed principal apenas o Melhor e o Pior da última rodada.
 - [x] Criar uma aba pública de Melhor/Pior com histórico agrupado e datas separadas por domingo.
+- [x] Mostrar inicialmente somente os oito primeiros em cada ranking e oferecer abertura da lista completa.
