@@ -1,16 +1,9 @@
 import { ShieldCheck } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import type { ReactNode } from "react";
+import { publicNavigation } from "@/lib/publicNavigation";
 
 const crestUrl = "/assets/amigos-fc-escudo.jpg";
-const links = [
-  ["/", "Início"],
-  ["/ranking", "Ranking"],
-  ["/selecao-do-ano", "Seleção do Ano"],
-  ["/destaques", "Bola Cheia/Murcha"],
-  ["/partidas", "Partidas"],
-  ["/galeria", "Galeria"],
-] as const;
 
 export function ClubCrest({ className = "" }: { className?: string }) {
   return <img className={className} src={crestUrl} alt="Escudo do AMIGOS F.C." />;
@@ -33,7 +26,7 @@ export default function ClubShell({ children }: { children: ReactNode }) {
             <Link href="/painel" className="panel-button"><ShieldCheck size={18} /><span>Painel</span></Link>
           </div>
           <nav className="club-nav" aria-label="Navegação principal">
-            {links.map(([href, label]) => <Link key={href} href={href} className={location === href ? "active" : ""}>{label}</Link>)}
+            {publicNavigation.map(([href, label]) => <Link key={href} href={href} className={location === href ? "active" : ""}>{label}</Link>)}
           </nav>
         </div>
       </header>

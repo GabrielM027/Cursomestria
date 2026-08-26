@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import AdminPage from "@/pages/AdminPage";
-import { GalleryPage, HighlightsPage, Home, MatchesPage, RankingPage, SelectionOfYearPage } from "@/pages/PublicPages";
+import { CopaPage, GalleryPage, HighlightsPage, Home, MatchesPage, ScorersPage, SelectionOfYearPage, StandingsPage } from "@/pages/PublicPages";
 import { Redirect, Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -10,10 +10,13 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 function Router() {
   return <Switch>
     <Route path="/" component={Home} />
-    <Route path="/ranking" component={RankingPage} />
+    <Route path="/pontos-corridos" component={StandingsPage} />
+    <Route path="/copa" component={CopaPage} />
+    <Route path="/artilheiros" component={ScorersPage} />
+    <Route path="/ranking"><Redirect to="/pontos-corridos" /></Route>
     <Route path="/selecao-do-ano" component={SelectionOfYearPage} />
     <Route path="/destaques" component={HighlightsPage} />
-    <Route path="/artilharia"><Redirect to="/ranking" /></Route>
+    <Route path="/artilharia"><Redirect to="/artilheiros" /></Route>
     <Route path="/partidas" component={MatchesPage} />
     <Route path="/galeria" component={GalleryPage} />
     <Route path="/painel" component={AdminPage} />

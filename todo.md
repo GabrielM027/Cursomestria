@@ -112,3 +112,4 @@
 - [x] Reconfigurar a Copa: quartas 1º×8º, 2º×7º, 3º×6º e 4º×5º; semifinais Jogo 1×Jogo 4 e Jogo 2×Jogo 3; final em dois jogos nos dias configurados.
 - [x] Acelerar a faixa de patrocinadores para dar visibilidade frequente quando houver três ou quatro marcas cadastradas.
 - [x] Preparar a logo G&M Construções e Reformas com fundo transparente e cadastrá-la como patrocinadora ativa na faixa pública.
+- [x] Substituir o item Ranking da navegação pública por acessos separados para Pontos Corridos, Copa e Artilheiros, na sequência definida pela organização.

@@ -91,6 +91,18 @@ export function RankingPage() {
   return <ClubShell><PageHero label="Classificação e gols" title="Ranking da pelada">Acompanhe os pontos corridos e quem mais balança a rede na temporada.</PageHero><section className="section"><div className="club-container"><div className="ranking-columns ranking-columns--main"><section className="data-card"><RankingCardTitle label="Classificação geral" title="Pontos Corridos" /><RankingItems rows={data.standings} /></section><section className="data-card"><RankingCardTitle label="Gols da temporada" title="Artilharia" /><RankingItems rows={data.scorers} kind="goals" /></section></div></div></section></ClubShell>;
 }
 
+export function StandingsPage() {
+  const { data, isLoading } = trpc.club.publicData.useQuery();
+  if (isLoading || !data) return <Loading />;
+  return <ClubShell><PageHero label="Classificação geral" title="Pontos Corridos">Acompanhe quem está na frente da temporada pelo desempenho em cada domingo.</PageHero><section className="section"><div className="club-container"><section className="data-card"><RankingCardTitle label="Classificação geral" title="Pontos Corridos" /><RankingItems rows={data.standings} /></section></div></section></ClubShell>;
+}
+
+export function CopaPage() {
+  const { data, isLoading } = trpc.club.publicData.useQuery();
+  if (isLoading || !data) return <Loading />;
+  return <ClubShell>{data.home.copa ? <CopaHome copa={data.home.copa} /> : <><PageHero label="Modo Copa" title="Copa do AMIGOS">Os oito melhores dos Pontos Corridos entram no mata-mata em busca da taça.</PageHero><section className="section section--dark"><div className="club-container"><Empty title="A Copa ainda não começou" icon={<Trophy />}>Quando a organização iniciar a Copa, o chaveamento e os próximos confrontos aparecerão aqui.</Empty></div></section></>}</ClubShell>;
+}
+
 function SelectionPlayer({ slot }: { slot: any }) {
   const player = slot.player;
   return <article className={`selection-slot selection-slot--${slot.role}-${slot.slot}`} style={{ left: `${slot.fieldX}%`, top: `${slot.fieldY}%` }}><span className="selection-slot__role">{slot.label}</span>{player ? <><div className="selection-slot__avatar">{player.avatarUrl ? <img src={player.avatarUrl} alt={player.name} /> : <span>{player.name.slice(0, 1).toUpperCase()}</span>}{player.entityBadgeUrl && <img className="selection-slot__badge" src={player.entityBadgeUrl} alt="" />}</div><strong>{player.name}</strong><small>{player.votes} votos de Bola Cheia</small></> : <><div className="selection-slot__avatar selection-slot__avatar--empty"><CircleUserRound size={18} /></div><strong>A definir</strong><small>Aguardando votos</small></>}</article>;
