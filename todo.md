@@ -97,3 +97,4 @@
 - [x] Renomear os rankings e destaques de Melhor/Pior como Bola Cheia e Bola Murcha.
 - [x] Exibir somente a última rodada completa e transformar as rodadas anteriores em datas expansíveis na aba Bola Cheia/Murcha.
 - [x] Reduzir ainda mais linhas, avatares, números e espaçamentos das listas de Bola Cheia e Bola Murcha.
+- [x] Compactar o layout do histórico de partidas, com placar e cards menores mantendo os detalhes expansíveis.
