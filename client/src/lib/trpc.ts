@@ -16,6 +16,7 @@ import {
   saveHighlight,
   saveMatch,
   savePlayer,
+  saveSelectionFormation,
   saveSelectionOverride,
   saveSelectionOverrides,
   postponeCopaTournament,
@@ -82,6 +83,7 @@ export const trpc = {
     selection: {
       saveOverride: mutationHook(saveSelectionOverride),
       saveOverrides: mutationHook(saveSelectionOverrides),
+      saveFormation: mutationHook(saveSelectionFormation),
       resetOverrides: mutationHook(resetSelectionOverrides),
     },
     uploadMedia: mutationHook(uploadMedia),

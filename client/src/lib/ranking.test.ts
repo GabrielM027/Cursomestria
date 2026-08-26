@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCopaFixturePlan, buildSelectionOfYear, calculateHonorTotals, calculateSeasonTotals, visibleRankingRows } from "./amigosData";
+import { buildCopaFixturePlan, buildSelectionOfYear, calculateHonorTotals, calculateSeasonTotals, isValidSelectionFormation, visibleRankingRows } from "./amigosData";
 
 describe("ranking da pelada", () => {
   it("atribui três pontos e uma vitória somente aos jogadores fixos do time vencedor", () => {
@@ -97,5 +97,19 @@ describe("ranking da pelada", () => {
     expect(selection.filter(slot => slot.role === "defender").map(slot => slot.player?.name)).toEqual(["Zagueiro A", "Zagueiro B"]);
     expect(selection.filter(slot => slot.role === "attacker").map(slot => slot.player?.name)).toEqual(["Atacante A", "Atacante B"]);
     expect(selection.filter(slot => slot.role === "midfielder").map(slot => slot.player?.name)).toEqual(["Meia A", "Meia B", "Meia C"]);
+  });
+
+  it("permite formação livre e seleciona automaticamente os melhores de cada posição", () => {
+    const players = [
+      { id: 1, name: "Goleiro", position: "Goleiro", votes: 12 },
+      { id: 2, name: "Zagueiro", position: "Zagueiro", votes: 10 },
+      ...Array.from({ length: 5 }, (_, index) => ({ id: index + 3, name: `Meia ${index + 1}`, position: "Meia", votes: 10 - index })),
+      { id: 8, name: "Atacante", position: "Atacante", votes: 8 },
+    ];
+    const formation = { goalkeeperCount: 1 as const, defenderCount: 1, midfielderCount: 5, attackerCount: 1 };
+    const selection = buildSelectionOfYear(players, formation);
+    expect(isValidSelectionFormation(formation)).toBe(true);
+    expect(selection.map(slot => slot.role)).toEqual(["goalkeeper", "defender", "midfielder", "midfielder", "midfielder", "midfielder", "midfielder", "attacker"]);
+    expect(selection.filter(slot => slot.role === "midfielder").map(slot => slot.player?.name)).toEqual(["Meia 1", "Meia 2", "Meia 3", "Meia 4", "Meia 5"]);
   });
 });

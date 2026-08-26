@@ -25,6 +25,7 @@ const TABLES = {
   copaFixtures: "copaFixtures",
   copaAudit: "copaAuditLogs",
   selectionOverrides: "selectionYearOverrides",
+  selectionFormations: "selectionYearFormations",
 } as const;
 
 function requireConfiguration() {
@@ -104,6 +105,43 @@ export function normalizePlayerPosition(value?: string | null) {
 }
 
 export type SocietyRole = "goalkeeper" | "defender" | "midfielder" | "attacker";
+export type SelectionFormation = { goalkeeperCount: 1; defenderCount: number; midfielderCount: number; attackerCount: number };
+export const DEFAULT_SELECTION_FORMATION: SelectionFormation = { goalkeeperCount: 1, defenderCount: 2, midfielderCount: 3, attackerCount: 2 };
+const selectionRoleMeta: Record<SocietyRole, { label: string; fieldY: number }> = {
+  goalkeeper: { label: "Goleiro", fieldY: 86 },
+  defender: { label: "Zagueiro", fieldY: 66 },
+  midfielder: { label: "Meio-campo", fieldY: 44 },
+  attacker: { label: "Atacante", fieldY: 21 },
+};
+
+export function isValidSelectionFormation(value?: Partial<SelectionFormation> | null): value is SelectionFormation {
+  const defenderCount = Number(value?.defenderCount ?? DEFAULT_SELECTION_FORMATION.defenderCount);
+  const midfielderCount = Number(value?.midfielderCount ?? DEFAULT_SELECTION_FORMATION.midfielderCount);
+  const attackerCount = Number(value?.attackerCount ?? DEFAULT_SELECTION_FORMATION.attackerCount);
+  return value?.goalkeeperCount === 1 && [defenderCount, midfielderCount, attackerCount].every(count => Number.isInteger(count) && count >= 0 && count <= 7) && defenderCount + midfielderCount + attackerCount === 7;
+}
+
+export function normalizeSelectionFormation(value?: Partial<SelectionFormation> | null): SelectionFormation {
+  const defenderCount = Number(value?.defenderCount ?? DEFAULT_SELECTION_FORMATION.defenderCount);
+  const midfielderCount = Number(value?.midfielderCount ?? DEFAULT_SELECTION_FORMATION.midfielderCount);
+  const attackerCount = Number(value?.attackerCount ?? DEFAULT_SELECTION_FORMATION.attackerCount);
+  if (!isValidSelectionFormation({ goalkeeperCount: value?.goalkeeperCount ?? 1, defenderCount, midfielderCount, attackerCount })) return { ...DEFAULT_SELECTION_FORMATION };
+  return { goalkeeperCount: 1, defenderCount, midfielderCount, attackerCount };
+}
+
+function selectionSlotPositions(count: number, fieldY: number, role: SocietyRole) {
+  if (!count) return [];
+  if (count === 1) return [{ fieldX: 50, fieldY }];
+  if (count === 2) return role === "attacker" ? [{ fieldX: 34, fieldY }, { fieldX: 66, fieldY }] : [{ fieldX: 26, fieldY }, { fieldX: 74, fieldY }];
+  if (count === 3) return [{ fieldX: 18, fieldY }, { fieldX: 50, fieldY: fieldY - 2 }, { fieldX: 82, fieldY }];
+  return Array.from({ length: count }, (_, index) => ({ fieldX: 15 + (70 * index) / (count - 1), fieldY }));
+}
+
+export function buildSelectionSlots(formation: SelectionFormation = DEFAULT_SELECTION_FORMATION) {
+  const normalized = normalizeSelectionFormation(formation);
+  const counts: Record<SocietyRole, number> = { goalkeeper: normalized.goalkeeperCount, defender: normalized.defenderCount, midfielder: normalized.midfielderCount, attacker: normalized.attackerCount };
+  return (Object.keys(selectionRoleMeta) as SocietyRole[]).flatMap(role => selectionSlotPositions(counts[role], selectionRoleMeta[role].fieldY, role).map((position, index) => ({ role, label: selectionRoleMeta[role].label, slot: index + 1, ...position })));
+}
 
 export function resolveSocietyRole(position?: string | null): SocietyRole | null {
   const value = position?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() || "";
@@ -114,16 +152,10 @@ export function resolveSocietyRole(position?: string | null): SocietyRole | null
   return null;
 }
 
-export function buildSelectionOfYear<T extends { id: number; name: string; position?: string | null; votes?: number; count?: number; points?: number }>(players: T[]) {
-  const formation: Array<{ role: SocietyRole; label: string; positions: Array<{ fieldX: number; fieldY: number }> }> = [
-    { role: "goalkeeper", label: "Goleiro", positions: [{ fieldX: 50, fieldY: 86 }] },
-    { role: "defender", label: "Zagueiro", positions: [{ fieldX: 26, fieldY: 66 }, { fieldX: 74, fieldY: 66 }] },
-    { role: "midfielder", label: "Meio-campo", positions: [{ fieldX: 18, fieldY: 44 }, { fieldX: 50, fieldY: 42 }, { fieldX: 82, fieldY: 44 }] },
-    { role: "attacker", label: "Atacante", positions: [{ fieldX: 34, fieldY: 21 }, { fieldX: 66, fieldY: 21 }] },
-  ];
-  return formation.flatMap(({ role, label, positions }) => {
+export function buildSelectionOfYear<T extends { id: number; name: string; position?: string | null; votes?: number; count?: number; points?: number }>(players: T[], formation: SelectionFormation = DEFAULT_SELECTION_FORMATION) {
+  return (Object.keys(selectionRoleMeta) as SocietyRole[]).flatMap(role => {
     const eligible = players.filter(player => resolveSocietyRole(player.position) === role && (player.votes ?? 0) > 0).sort((first, second) => (second.votes ?? 0) - (first.votes ?? 0) || (second.count ?? 0) - (first.count ?? 0) || (second.points ?? 0) - (first.points ?? 0) || first.name.localeCompare(second.name));
-    return positions.map((position, index) => ({ role, label, slot: index + 1, player: eligible[index] ?? null, ...position }));
+    return buildSelectionSlots(formation).filter(slot => slot.role === role).map((slot, index) => ({ ...slot, player: eligible[index] ?? null }));
   });
 }
 
@@ -163,6 +195,7 @@ function emptyClubData() {
     scorers: [],
     honorRankings: { best: [], worst: [] },
     selectionOfYear: [],
+    selectionFormation: { ...DEFAULT_SELECTION_FORMATION },
     matches: [],
     feed: [],
     gallery: [],
@@ -223,10 +256,11 @@ function buildClubData(input: any) {
     output[kind] = Array.from(honorTotals[kind].entries()).map(([playerId, total]) => ({ ...playerInfo(playerId), ...total })).sort((a, b) => b.count - a.count || b.votes - a.votes || a.name.localeCompare(b.name));
     return output;
   }, { best: [] as any[], worst: [] as any[] });
+  const selectionFormation = normalizeSelectionFormation(input.selectionFormation);
   const selectionCandidates = standings.map((player: any) => ({ ...player, ...(honorTotals.best.get(player.id) ?? { count: 0, votes: 0 }) }));
   const selectionCandidateById = new Map(selectionCandidates.map((player: any) => [player.id, player]));
   const selectionOverrideBySlot = new Map<string, any>((input.selectionOverrideRows ?? []).map((override: any) => [`${override.role}-${override.slotNumber}`, override]));
-  const selectionOfYear = buildSelectionOfYear(selectionCandidates).map((slot: any) => {
+  const selectionOfYear = buildSelectionOfYear(selectionCandidates, selectionFormation).map((slot: any) => {
     const override = selectionOverrideBySlot.get(`${slot.role}-${slot.slot}`);
     return { ...slot, player: override ? (override.playerId ? selectionCandidateById.get(override.playerId) ?? null : null) : slot.player, fieldX: override?.fieldX === undefined ? slot.fieldX : Number(override.fieldX), fieldY: override?.fieldY === undefined ? slot.fieldY : Number(override.fieldY), isManual: Boolean(override) };
   });
@@ -269,6 +303,7 @@ function buildClubData(input: any) {
     standings,
     scorers,
     honorRankings,
+    selectionFormation,
     selectionOfYear,
     matches: matchesWithDetails,
     feed,
@@ -299,7 +334,7 @@ export async function getPublicClubData() {
   const activeSeason = seasonResult.data;
   if (!activeSeason) return emptyClubData();
 
-  const [playersResult, entitiesResult, registrationsResult, matchesResult, galleryResult, copaResult, selectionOverridesResult] = await Promise.all([
+  const [playersResult, entitiesResult, registrationsResult, matchesResult, galleryResult, copaResult, selectionOverridesResult, selectionFormationResult] = await Promise.all([
     supabase.from(TABLES.players).select("*").order("name"),
     supabase.from(TABLES.entities).select("*").order("name"),
     supabase.from(TABLES.registrations).select("*").eq("seasonId", activeSeason.id),
@@ -307,8 +342,9 @@ export async function getPublicClubData() {
     supabase.from(TABLES.gallery).select("*").eq("seasonId", activeSeason.id).order("capturedAt", { ascending: false }).order("id", { ascending: false }),
     supabase.from(TABLES.copaTournaments).select("*").eq("seasonId", activeSeason.id).in("status", ["active", "paused", "completed"]).order("createdAt", { ascending: false }),
     supabase.from(TABLES.selectionOverrides).select("*").eq("seasonId", activeSeason.id),
+    supabase.from(TABLES.selectionFormations).select("*").eq("seasonId", activeSeason.id).maybeSingle(),
   ]);
-  [playersResult, entitiesResult, registrationsResult, matchesResult, galleryResult, copaResult, selectionOverridesResult].forEach(result => fail(result.error));
+  [playersResult, entitiesResult, registrationsResult, matchesResult, galleryResult, copaResult, selectionOverridesResult, selectionFormationResult].forEach(result => fail(result.error));
   const matchRows = matchesResult.data ?? [];
   const matchIds = matchRows.map(match => match.id);
   let participantRows: any[] = [];
@@ -335,7 +371,7 @@ export async function getPublicClubData() {
     copaEntrantRows = entrantsResult.data ?? [];
     copaFixtureRows = fixturesResult.data ?? [];
   }
-  return buildClubData({ activeSeason, allPlayers: playersResult.data ?? [], allEntities: entitiesResult.data ?? [], allRegistrations: registrationsResult.data ?? [], matchRows, participantRows, goalRows, highlightRows, galleryRows: galleryResult.data ?? [], copaRows, copaEntrantRows, copaFixtureRows, selectionOverrideRows: selectionOverridesResult.data ?? [] });
+  return buildClubData({ activeSeason, allPlayers: playersResult.data ?? [], allEntities: entitiesResult.data ?? [], allRegistrations: registrationsResult.data ?? [], matchRows, participantRows, goalRows, highlightRows, galleryRows: galleryResult.data ?? [], copaRows, copaEntrantRows, copaFixtureRows, selectionOverrideRows: selectionOverridesResult.data ?? [], selectionFormation: selectionFormationResult.data ?? DEFAULT_SELECTION_FORMATION });
 }
 
 export async function requireAdmin() {
@@ -349,7 +385,7 @@ export async function requireAdmin() {
 
 export async function getAdminClubData() {
   if (!await requireAdmin()) throw new Error("Faça login com uma conta administrativa.");
-  const [club, seasons, players, entities, registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides] = await Promise.all([
+  const [club, seasons, players, entities, registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides, selectionFormations] = await Promise.all([
     getPublicClubData(),
     selectAll(TABLES.seasons),
     selectAll(TABLES.players),
@@ -360,8 +396,9 @@ export async function getAdminClubData() {
     selectAll(TABLES.copaFixtures),
     selectAll(TABLES.copaAudit),
     selectAll(TABLES.selectionOverrides),
+    selectAll(TABLES.selectionFormations),
   ]);
-  return { ...club, seasons: seasons.sort((a: any, b: any) => b.year - a.year), players: players.sort((a: any, b: any) => a.name.localeCompare(b.name)), entities: entities.sort((a: any, b: any) => a.name.localeCompare(b.name)), registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides };
+  return { ...club, seasons: seasons.sort((a: any, b: any) => b.year - a.year), players: players.sort((a: any, b: any) => a.name.localeCompare(b.name)), entities: entities.sort((a: any, b: any) => a.name.localeCompare(b.name)), registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides, selectionFormations };
 }
 
 export async function saveSelectionOverride(input: { seasonId: number; role: SocietyRole; slotNumber: number; playerId: number | null; fieldX: number; fieldY: number }) {
@@ -371,10 +408,11 @@ export async function saveSelectionOverride(input: { seasonId: number; role: Soc
   fail((await supabase.from(TABLES.selectionOverrides).upsert({ ...input, updatedBy: admin.userId }, { onConflict: "seasonId,role,slotNumber" })).error);
 }
 
-export async function saveSelectionOverrides(input: { seasonId: number; slots: Array<{ role: SocietyRole; slotNumber: number; playerId: number | null; fieldX: number; fieldY: number }> }) {
+export async function saveSelectionOverrides(input: { seasonId: number; formation: SelectionFormation; slots: Array<{ role: SocietyRole; slotNumber: number; playerId: number | null; fieldX: number; fieldY: number }> }) {
   const admin = await requireAdmin();
   if (!admin) throw new Error("Faça login com uma conta administrativa.");
-  const expectedSlots = new Set(["goalkeeper-1", "defender-1", "defender-2", "midfielder-1", "midfielder-2", "midfielder-3", "attacker-1", "attacker-2"]);
+  if (!isValidSelectionFormation(input.formation)) throw new Error("A formação precisa ter um goleiro e sete jogadores de linha.");
+  const expectedSlots = new Set(buildSelectionSlots(input.formation).map(slot => `${slot.role}-${slot.slot}`));
   const receivedSlots = new Set(input.slots.map(slot => `${slot.role}-${slot.slotNumber}`));
   if (input.slots.length !== expectedSlots.size || receivedSlots.size !== expectedSlots.size || Array.from(receivedSlots).some(slot => !expectedSlots.has(slot))) throw new Error("A formação precisa ter 1 goleiro, 2 zagueiros, 3 meio-campistas e 2 atacantes.");
   if (input.slots.some(slot => !Number.isFinite(slot.fieldX) || !Number.isFinite(slot.fieldY) || slot.fieldX < 5 || slot.fieldX > 95 || slot.fieldY < 5 || slot.fieldY > 95)) throw new Error("Mantenha todos os jogadores dentro dos limites do campo.");
@@ -382,6 +420,14 @@ export async function saveSelectionOverrides(input: { seasonId: number; slots: A
   if (new Set(selectedPlayerIds).size !== selectedPlayerIds.length) throw new Error("Um mesmo jogador não pode ocupar duas posições na seleção.");
   const rows = input.slots.map(slot => ({ seasonId: input.seasonId, ...slot, fieldX: Math.round(slot.fieldX * 100) / 100, fieldY: Math.round(slot.fieldY * 100) / 100, updatedBy: admin.userId }));
   fail((await supabase.from(TABLES.selectionOverrides).upsert(rows, { onConflict: "seasonId,role,slotNumber" })).error);
+}
+
+export async function saveSelectionFormation(input: { seasonId: number; formation: SelectionFormation }) {
+  const admin = await requireAdmin();
+  if (!admin) throw new Error("Faça login com uma conta administrativa.");
+  if (!isValidSelectionFormation(input.formation)) throw new Error("A formação precisa ter um goleiro e sete jogadores de linha.");
+  fail((await supabase.from(TABLES.selectionFormations).upsert({ seasonId: input.seasonId, ...input.formation, updatedBy: admin.userId }, { onConflict: "seasonId" })).error);
+  fail((await supabase.from(TABLES.selectionOverrides).delete().eq("seasonId", input.seasonId)).error);
 }
 
 export async function resetSelectionOverrides(input: { seasonId: number }) {

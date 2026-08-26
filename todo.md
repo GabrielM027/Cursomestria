@@ -102,3 +102,4 @@
 - [x] Ajustar a distribuição visual da Seleção do Ano e remover a explicação de desempate do campo.
 - [x] Ajustar a Seleção do Ano para 7 jogadores na linha e 1 goleiro, com cartões menores.
 - [x] Criar uma aba administrativa de Seleção do Ano para mover, trocar, ajustar e restaurar a formação automática.
+- [x] Permitir que o administrador configure livremente a quantidade de jogadores por posição na Seleção do Ano e preencha automaticamente os melhores de cada grupo.
