@@ -107,3 +107,4 @@
 - [x] Adicionar na tela inicial, acima do logo, uma faixa compacta de patrocinadores com movimento automático contínuo e responsivo.
 - [x] Remover o rótulo fixo da faixa de patrocinadores e aumentar discretamente os cartões em movimento.
 - [x] Criar no painel o cadastro, edição, ordenação, visibilidade, upload, redimensionamento e exclusão de logos de patrocinadores para a faixa pública.
+- [x] Remover do topo da tela inicial a chamada grande e o selo “A casa da pelada”, mantendo o escudo em uma composição mais limpa.
