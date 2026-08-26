@@ -23,7 +23,7 @@ describe("ranking da pelada", () => {
     expect(totals.get(3)).toEqual({ points: 0, wins: 0, goals: 2, goalBalance: -2 });
   });
 
-  it("não atribui pontos em empate e mantém a artilharia", () => {
+  it("atribui um ponto aos jogadores fixos dos dois times em empate e mantém a artilharia", () => {
     const totals = calculateSeasonTotals([{
       blackScore: 1,
       redScore: 1,
@@ -34,8 +34,8 @@ describe("ranking da pelada", () => {
       goals: [{ playerId: 2, quantity: 1 }],
     }]);
 
-    expect(totals.get(1)).toEqual({ points: 0, wins: 0, goals: 0, goalBalance: 0 });
-    expect(totals.get(2)).toEqual({ points: 0, wins: 0, goals: 1, goalBalance: 0 });
+    expect(totals.get(1)).toEqual({ points: 1, wins: 0, goals: 0, goalBalance: 0 });
+    expect(totals.get(2)).toEqual({ points: 1, wins: 0, goals: 1, goalBalance: 0 });
   });
 
   it("não inclui gols de convidados avulsos em nenhum ranking", () => {

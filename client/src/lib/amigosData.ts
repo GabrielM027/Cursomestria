@@ -58,9 +58,12 @@ export function calculateSeasonTotals(matches: ScoringMatch[]) {
       if (participant.isGuest || participant.playerId === null) continue;
       const total = ensure(participant.playerId);
       total.goalBalance += participant.teamColor === "black" ? match.blackScore - match.redScore : match.redScore - match.blackScore;
-      if (match.countsForStandings !== false && winner === participant.teamColor) {
-        total.points += 3;
-        total.wins += 1;
+      if (match.countsForStandings !== false) {
+        if (winner === null) total.points += 1;
+        else if (winner === participant.teamColor) {
+          total.points += 3;
+          total.wins += 1;
+        }
       }
     }
     for (const goal of match.goals) if (goal.playerId !== null && rankingPlayerIds.has(goal.playerId)) ensure(goal.playerId).goals += goal.quantity;
