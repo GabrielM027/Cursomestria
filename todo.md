@@ -105,3 +105,5 @@
 - [x] Permitir que o administrador configure livremente a quantidade de jogadores por posição na Seleção do Ano e preencha automaticamente os melhores de cada grupo.
 - [x] Permitir editar e excluir no painel os lançamentos existentes de Bola Cheia e Bola Murcha, incluindo jogador, foto, nome e legenda.
 - [x] Adicionar na tela inicial, acima do logo, uma faixa compacta de patrocinadores com movimento automático contínuo e responsivo.
+- [x] Remover o rótulo fixo da faixa de patrocinadores e aumentar discretamente os cartões em movimento.
+- [x] Criar no painel o cadastro, edição, ordenação, visibilidade, upload, redimensionamento e exclusão de logos de patrocinadores para a faixa pública.

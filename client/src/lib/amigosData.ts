@@ -1,4 +1,5 @@
 import { supabase, supabaseConfigured } from "./supabase";
+import { normalizeSponsorPresentation } from "./sponsors";
 
 type TeamColor = "black" | "red";
 type ScoringMatch = {
@@ -26,6 +27,7 @@ const TABLES = {
   copaAudit: "copaAuditLogs",
   selectionOverrides: "selectionYearOverrides",
   selectionFormations: "selectionYearFormations",
+  sponsors: "sponsors",
 } as const;
 
 function requireConfiguration() {
@@ -196,6 +198,7 @@ function emptyClubData() {
     honorRankings: { best: [], worst: [] },
     selectionOfYear: [],
     selectionFormation: { ...DEFAULT_SELECTION_FORMATION },
+    sponsors: [],
     matches: [],
     feed: [],
     gallery: [],
@@ -264,6 +267,7 @@ function buildClubData(input: any) {
     const override = selectionOverrideBySlot.get(`${slot.role}-${slot.slot}`);
     return { ...slot, player: override ? (override.playerId ? selectionCandidateById.get(override.playerId) ?? null : null) : slot.player, fieldX: override?.fieldX === undefined ? slot.fieldX : Number(override.fieldX), fieldY: override?.fieldY === undefined ? slot.fieldY : Number(override.fieldY), isManual: Boolean(override) };
   });
+  const sponsors = (input.sponsorRows ?? []).filter((sponsor: any) => sponsor.isActive).sort((first: any, second: any) => first.sortOrder - second.sortOrder || first.id - second.id);
 
   const participantDetails = (participant: any) => {
     const player = participant.playerId ? playerInfo(participant.playerId) : null;
@@ -305,6 +309,7 @@ function buildClubData(input: any) {
     honorRankings,
     selectionFormation,
     selectionOfYear,
+    sponsors,
     matches: matchesWithDetails,
     feed,
     gallery: input.galleryRows,
@@ -334,7 +339,7 @@ export async function getPublicClubData() {
   const activeSeason = seasonResult.data;
   if (!activeSeason) return emptyClubData();
 
-  const [playersResult, entitiesResult, registrationsResult, matchesResult, galleryResult, copaResult, selectionOverridesResult, selectionFormationResult] = await Promise.all([
+  const [playersResult, entitiesResult, registrationsResult, matchesResult, galleryResult, copaResult, selectionOverridesResult, selectionFormationResult, sponsorsResult] = await Promise.all([
     supabase.from(TABLES.players).select("*").order("name"),
     supabase.from(TABLES.entities).select("*").order("name"),
     supabase.from(TABLES.registrations).select("*").eq("seasonId", activeSeason.id),
@@ -343,8 +348,9 @@ export async function getPublicClubData() {
     supabase.from(TABLES.copaTournaments).select("*").eq("seasonId", activeSeason.id).in("status", ["active", "paused", "completed"]).order("createdAt", { ascending: false }),
     supabase.from(TABLES.selectionOverrides).select("*").eq("seasonId", activeSeason.id),
     supabase.from(TABLES.selectionFormations).select("*").eq("seasonId", activeSeason.id).maybeSingle(),
+    supabase.from(TABLES.sponsors).select("*").eq("isActive", true).order("sortOrder").order("id"),
   ]);
-  [playersResult, entitiesResult, registrationsResult, matchesResult, galleryResult, copaResult, selectionOverridesResult, selectionFormationResult].forEach(result => fail(result.error));
+  [playersResult, entitiesResult, registrationsResult, matchesResult, galleryResult, copaResult, selectionOverridesResult, selectionFormationResult, sponsorsResult].forEach(result => fail(result.error));
   const matchRows = matchesResult.data ?? [];
   const matchIds = matchRows.map(match => match.id);
   let participantRows: any[] = [];
@@ -371,7 +377,7 @@ export async function getPublicClubData() {
     copaEntrantRows = entrantsResult.data ?? [];
     copaFixtureRows = fixturesResult.data ?? [];
   }
-  return buildClubData({ activeSeason, allPlayers: playersResult.data ?? [], allEntities: entitiesResult.data ?? [], allRegistrations: registrationsResult.data ?? [], matchRows, participantRows, goalRows, highlightRows, galleryRows: galleryResult.data ?? [], copaRows, copaEntrantRows, copaFixtureRows, selectionOverrideRows: selectionOverridesResult.data ?? [], selectionFormation: selectionFormationResult.data ?? DEFAULT_SELECTION_FORMATION });
+  return buildClubData({ activeSeason, allPlayers: playersResult.data ?? [], allEntities: entitiesResult.data ?? [], allRegistrations: registrationsResult.data ?? [], matchRows, participantRows, goalRows, highlightRows, galleryRows: galleryResult.data ?? [], copaRows, copaEntrantRows, copaFixtureRows, selectionOverrideRows: selectionOverridesResult.data ?? [], selectionFormation: selectionFormationResult.data ?? DEFAULT_SELECTION_FORMATION, sponsorRows: sponsorsResult.data ?? [] });
 }
 
 export async function requireAdmin() {
@@ -385,7 +391,7 @@ export async function requireAdmin() {
 
 export async function getAdminClubData() {
   if (!await requireAdmin()) throw new Error("Faça login com uma conta administrativa.");
-  const [club, seasons, players, entities, registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides, selectionFormations] = await Promise.all([
+  const [club, seasons, players, entities, registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides, selectionFormations, sponsors] = await Promise.all([
     getPublicClubData(),
     selectAll(TABLES.seasons),
     selectAll(TABLES.players),
@@ -397,8 +403,9 @@ export async function getAdminClubData() {
     selectAll(TABLES.copaAudit),
     selectAll(TABLES.selectionOverrides),
     selectAll(TABLES.selectionFormations),
+    selectAll(TABLES.sponsors),
   ]);
-  return { ...club, seasons: seasons.sort((a: any, b: any) => b.year - a.year), players: players.sort((a: any, b: any) => a.name.localeCompare(b.name)), entities: entities.sort((a: any, b: any) => a.name.localeCompare(b.name)), registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides, selectionFormations };
+  return { ...club, seasons: seasons.sort((a: any, b: any) => b.year - a.year), players: players.sort((a: any, b: any) => a.name.localeCompare(b.name)), entities: entities.sort((a: any, b: any) => a.name.localeCompare(b.name)), registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides, selectionFormations, sponsors: sponsors.sort((a: any, b: any) => a.sortOrder - b.sortOrder || a.id - b.id) };
 }
 
 export async function saveSelectionOverride(input: { seasonId: number; role: SocietyRole; slotNumber: number; playerId: number | null; fieldX: number; fieldY: number }) {
@@ -614,6 +621,30 @@ export async function deleteHighlight(input: { id: number }) {
   fail(highlightResult.error);
   fail((await supabase.from(TABLES.highlights).delete().eq("id", input.id)).error);
   if (highlightResult.data?.imageKey) await supabase.storage.from("amigos-media").remove([highlightResult.data.imageKey]);
+}
+
+export async function saveSponsor(input: { id?: number; name: string; logoUrl?: string | null; logoKey?: string | null; displayScale?: number | null; sortOrder?: number | null; isActive: boolean }) {
+  const admin = await requireAdmin();
+  if (!admin) throw new Error("Faça login com uma conta administrativa.");
+  const name = input.name.trim();
+  if (!name) throw new Error("Informe o nome do patrocinador.");
+  const presentation = normalizeSponsorPresentation(input);
+  const values = { name, logoUrl: input.logoUrl ?? null, logoKey: input.logoKey ?? null, ...presentation, isActive: input.isActive };
+  if (input.id) {
+    fail((await supabase.from(TABLES.sponsors).update(values).eq("id", input.id)).error);
+    return input.id;
+  }
+  const result = await supabase.from(TABLES.sponsors).insert({ ...values, createdBy: admin.userId }).select("id").single();
+  fail(result.error);
+  return result.data!.id;
+}
+
+export async function deleteSponsor(input: { id: number }) {
+  if (!await requireAdmin()) throw new Error("Faça login com uma conta administrativa.");
+  const sponsorResult = await supabase.from(TABLES.sponsors).select("logoKey").eq("id", input.id).single();
+  fail(sponsorResult.error);
+  fail((await supabase.from(TABLES.sponsors).delete().eq("id", input.id)).error);
+  if (sponsorResult.data?.logoKey) await supabase.storage.from("amigos-media").remove([sponsorResult.data.logoKey]);
 }
 
 export async function saveGalleryItem(input: any) {
