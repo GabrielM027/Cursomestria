@@ -17,5 +17,12 @@ export function buildSponsorTickerItems(sponsors: string[]) {
 }
 
 export function usesFilledSponsorCard(name: string) {
-  return name.trim().toLocaleLowerCase("pt-BR") === "panificadora marques";
+  return new Set([
+    "rota 27",
+    "elloskar seminovos",
+    "point restaurante",
+    "formafit academia",
+    "panificadora marques",
+    "goldcar automóveis",
+  ]).has(name.trim().toLocaleLowerCase("pt-BR"));
 }

@@ -13,3 +13,5 @@ A Panificadora Marques recebeu um recorte dedicado para ampliar o nome. A valida
 A versão final removeu o fundo branco do recorte dedicado e aplicou uma escala intermediária. A prévia confirmou que “Marques” fica legível em vinho, sem cartão quadrado e sem alterar as demais marcas.
 
 No ajuste seguinte, o fundo branco foi solicitado de volta, mas limitado ao próprio formato oval do balão. A imagem final usa a marca original centralizada em uma base branca oval, sem fundo fora do balão; a validação visual confirmou alinhamento com os demais patrocinadores.
+
+Para a padronização final, as seis marcas foram preparadas como cartões preenchidos com fundos originais e escala comum. A prévia local precisou ser reiniciada durante a conferência; os registros de patrocinadores permanecem ativos no banco.

@@ -11,8 +11,9 @@ describe("faixa de patrocinadores", () => {
     expect(normalizeSponsorPresentation({ displayScale: .92, sortOrder: 12.7 })).toEqual({ displayScale: .92, sortOrder: 13 });
   });
 
-  it("marca somente a Panificadora Marques para preencher todo o cartão", () => {
+  it("marca todas as patrocinadoras ativas para preencher todo o cartão", () => {
     expect(usesFilledSponsorCard("Panificadora Marques")).toBe(true);
-    expect(usesFilledSponsorCard("Goldcar Automóveis")).toBe(false);
+    expect(usesFilledSponsorCard("Goldcar Automóveis")).toBe(true);
+    expect(usesFilledSponsorCard("Marca fora da faixa")).toBe(false);
   });
 });
