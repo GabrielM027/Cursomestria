@@ -93,3 +93,5 @@
 - [x] Compactar os blocos e espaçamentos da tela inicial, incluindo líder, artilheiro e destaques do feed.
 - [x] Reduzir ainda mais títulos, linhas, avatares e números do Ranking mantendo a largura total dos cards.
 - [x] Corrigir a regra de um ponto para cada jogador fixo em partidas empatadas e recalcular os jogos já lançados.
+- [x] Remover os rankings de Melhor e Pior da aba Ranking e mostrá-los abaixo dos destaques na aba Melhor/Pior.
+- [x] Renomear os rankings e destaques de Melhor/Pior como Bola Cheia e Bola Murcha.

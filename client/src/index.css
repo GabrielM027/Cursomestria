@@ -173,9 +173,13 @@ a { color: inherit; text-decoration: none; }
 .section-heading__aside .section-copy { max-width: 330px; }
 .highlight-history { display: grid; gap: 38px; }
 .highlight-history__round { display: grid; gap: 16px; }
+.highlight-history__heading { margin-top: 38px; }
 .highlight-history__date { display: flex; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid rgba(234,203,130,.3); border-bottom: 1px solid rgba(234,203,130,.14); padding: 14px 0; }
 .highlight-history__date span { color: var(--gold); font-size: 10px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
 .highlight-history__date strong { color: #f5edea; font-family: var(--font-display); font-size: 25px; letter-spacing: .02em; text-transform: uppercase; }
+.honor-rankings { margin: 38px 0 0; padding: 30px 0; border-top: 1px solid rgba(234,203,130,.28); border-bottom: 1px solid rgba(234,203,130,.16); }
+.honor-rankings__heading { margin-bottom: 18px; }
+.honor-rankings__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .section-label { margin: 0 0 10px; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
 .section-title { margin: 0; font-family: var(--font-display); font-size: clamp(40px, 5vw, 62px); line-height: .92; letter-spacing: -.02em; text-transform: uppercase; }
 .section-copy { max-width: 385px; color: var(--muted); line-height: 1.6; }
@@ -216,6 +220,7 @@ a { color: inherit; text-decoration: none; }
 .ranking-score { color: #fff; font-family: var(--font-display); font-size: 20px; letter-spacing: .02em; text-align: right; }
 .ranking-score small { display: block; margin-top: 0; color: #a99ea1; font-family: var(--font-sans); font-size: 7px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
 .ranking-columns { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 18px; }
+.ranking-columns--main { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ranking-scorers-card { margin-top: 18px; }
 .data-card__title { display: grid; gap: 2px; border-bottom: 1px solid rgba(234,203,130,.18); padding: 10px 12px 9px; background: linear-gradient(90deg, rgba(234,203,130,.1), transparent 72%); }
 .data-card__title span { color: var(--gold); font-size: 7px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
@@ -453,10 +458,13 @@ a { color: inherit; text-decoration: none; }
   .section-heading { display: block; margin-bottom: 24px; }
   .section-heading__aside { display: flex; align-items: start; flex-direction: column; gap: 10px; margin-top: 10px; }
   .highlight-history { gap: 30px; }
+  .highlight-history__heading { margin-top: 30px; }
   .highlight-history__date { align-items: start; flex-direction: column; gap: 5px; }
   .highlight-history__date strong { font-size: 23px; }
   .section-copy { margin: 10px 0 0; }
   .feed-grid, .ranking-columns, .gallery-grid { grid-template-columns: 1fr; }
+  .honor-rankings__grid { grid-template-columns: 1fr; gap: 13px; }
+  .honor-rankings { margin-top: 30px; padding: 24px 0; }
   .home-pulse { padding: 32px 0 28px; }
   .home-pulse__heading { display: block; }
   .home-pulse__heading h2 { font-size: 38px; }

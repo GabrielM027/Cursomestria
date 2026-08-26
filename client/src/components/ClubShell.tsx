@@ -6,7 +6,7 @@ const crestUrl = "/assets/amigos-fc-escudo.jpg";
 const links = [
   ["/", "Início"],
   ["/ranking", "Ranking"],
-  ["/destaques", "Melhor/Pior"],
+  ["/destaques", "Bola Cheia/Murcha"],
   ["/partidas", "Partidas"],
   ["/galeria", "Galeria"],
 ] as const;
