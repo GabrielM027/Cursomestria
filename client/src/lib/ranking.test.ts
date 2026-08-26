@@ -76,11 +76,13 @@ describe("ranking da pelada", () => {
     expect(totals.get(2)).toEqual({ points: 0, wins: 0, goals: 1, goalBalance: -3 });
   });
 
-  it("cria quatro quartas, duas semifinais e uma final em domingos consecutivos", () => {
-    const plan = buildCopaFixturePlan(Array.from({ length: 8 }, (_, index) => ({ id: index + 1 })), "2026-10-04", false, () => 0);
-    expect(plan).toHaveLength(7);
+  it("cria a chave por colocação, semifinais cruzadas e final em dois jogos", () => {
+    const plan = buildCopaFixturePlan(Array.from({ length: 8 }, (_, index) => ({ id: index + 1, seed: index + 1 })), "2026-10-04");
+    expect(plan).toHaveLength(8);
     expect(plan.filter(fixture => fixture.stage === "quarterfinal")).toHaveLength(4);
-    expect(plan.map(fixture => fixture.scheduledDate)).toEqual(["2026-10-04", "2026-10-11", "2026-10-18", "2026-10-25", "2026-11-01", "2026-11-08", "2026-11-15"]);
+    expect(plan.filter(fixture => fixture.stage === "final")).toHaveLength(2);
+    expect(plan.slice(0, 4).map(fixture => [fixture.homeEntrantId, fixture.awayEntrantId])).toEqual([[1, 8], [2, 7], [3, 6], [4, 5]]);
+    expect(plan.map(fixture => fixture.scheduledDate)).toEqual(["2026-10-04", "2026-10-11", "2026-10-18", "2026-10-25", "2026-11-01", "2026-11-08", "2026-11-15", "2026-11-22"]);
   });
 
   it("mostra somente os oito primeiros até a classificação completa ser solicitada", () => {

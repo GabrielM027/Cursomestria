@@ -161,7 +161,7 @@ export function buildSelectionOfYear<T extends { id: number; name: string; posit
   });
 }
 
-type CopaPlanEntrant = { id: number };
+type CopaPlanEntrant = { id: number; seed?: number };
 type CopaFixturePlan = { stage: "quarterfinal" | "semifinal" | "final" | "third_place"; slotNumber: number; scheduledDate: string; homeEntrantId: number | null; awayEntrantId: number | null };
 
 function addDays(dateValue: string, days: number) {
@@ -170,21 +170,16 @@ function addDays(dateValue: string, days: number) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-export function buildCopaFixturePlan(entrants: CopaPlanEntrant[], startDate: string, includeThirdPlace = false, random = Math.random): CopaFixturePlan[] {
+export function buildCopaFixturePlan(entrants: CopaPlanEntrant[], startDate: string, includeThirdPlace = false, _random = Math.random): CopaFixturePlan[] {
   if (entrants.length !== 8) throw new Error("A Copa precisa de exatamente oito classificados.");
-  const draw = [...entrants];
-  for (let index = draw.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(random() * (index + 1));
-    [draw[index], draw[swapIndex]] = [draw[swapIndex], draw[index]];
-  }
-  const fixtures: CopaFixturePlan[] = draw.reduce<CopaFixturePlan[]>((items, entrant, index) => {
-    if (index % 2 === 0) items.push({ stage: "quarterfinal", slotNumber: index / 2 + 1, scheduledDate: addDays(startDate, (index / 2) * 7), homeEntrantId: entrant.id, awayEntrantId: draw[index + 1].id });
-    return items;
-  }, []);
+  const classified = entrants.map((entrant, index) => ({ ...entrant, seed: entrant.seed ?? index + 1 })).sort((first, second) => first.seed - second.seed);
+  const quarterfinalPairs = [[0, 7], [1, 6], [2, 5], [3, 4]];
+  const fixtures: CopaFixturePlan[] = quarterfinalPairs.map(([homeIndex, awayIndex], index) => ({ stage: "quarterfinal", slotNumber: index + 1, scheduledDate: addDays(startDate, index * 7), homeEntrantId: classified[homeIndex].id, awayEntrantId: classified[awayIndex].id }));
   fixtures.push(
     { stage: "semifinal", slotNumber: 1, scheduledDate: addDays(startDate, 28), homeEntrantId: null, awayEntrantId: null },
     { stage: "semifinal", slotNumber: 2, scheduledDate: addDays(startDate, 35), homeEntrantId: null, awayEntrantId: null },
     { stage: "final", slotNumber: 1, scheduledDate: addDays(startDate, 42), homeEntrantId: null, awayEntrantId: null },
+    { stage: "final", slotNumber: 2, scheduledDate: addDays(startDate, 49), homeEntrantId: null, awayEntrantId: null },
   );
   if (includeThirdPlace) fixtures.push({ stage: "third_place", slotNumber: 1, scheduledDate: addDays(startDate, 42), homeEntrantId: null, awayEntrantId: null });
   return fixtures;
@@ -482,7 +477,7 @@ export async function createCopaTournament(input: { title: string; startDate: st
   fail(tournamentResult.error);
   const tournament = tournamentResult.data!;
   const entrantsPayload = classified.map((player: any, index: number) => ({ tournamentId: tournament.id, playerId: player.id, seed: index + 1, qualificationPoints: player.points, qualificationWins: player.wins, qualificationGoals: player.goals, playerNameSnapshot: player.name, avatarUrlSnapshot: player.avatarUrl ?? null, entityNameSnapshot: player.entityName ?? null, entityBadgeUrlSnapshot: player.entityBadgeUrl ?? null }));
-  const entrantsResult = await supabase.from(TABLES.copaEntrants).insert(entrantsPayload).select("id");
+  const entrantsResult = await supabase.from(TABLES.copaEntrants).insert(entrantsPayload).select("id,seed");
   fail(entrantsResult.error);
   const fixtures = buildCopaFixturePlan(entrantsResult.data ?? [], input.startDate).map(fixture => ({ ...fixture, tournamentId: tournament.id, status: "scheduled" }));
   fail((await supabase.from(TABLES.copaFixtures).insert(fixtures)).error);
@@ -525,24 +520,60 @@ export async function resolveCopaFixture(input: { fixtureId: number; matchId: nu
   fail(fixtureResult.error);
   const fixture = fixtureResult.data!;
   if (!fixture.homeEntrantId || !fixture.awayEntrantId) throw new Error("Defina os dois capitães antes de encerrar esse confronto.");
-  const tied = input.blackScore === input.redScore;
-  if (tied && (input.homePenaltyScore === undefined || input.awayPenaltyScore === undefined || input.homePenaltyScore === input.awayPenaltyScore)) throw new Error("Em empate, informe um placar de pênaltis com vencedor definido.");
-  const homeWon = tied ? Number(input.homePenaltyScore) > Number(input.awayPenaltyScore) : input.blackScore > input.redScore;
-  const winnerEntrantId = homeWon ? fixture.homeEntrantId : fixture.awayEntrantId;
-  const updates = { status: "completed", winnerEntrantId, homePenaltyScore: tied ? input.homePenaltyScore : null, awayPenaltyScore: tied ? input.awayPenaltyScore : null };
+  if (fixture.status === "completed") throw new Error("Este confronto já foi concluído.");
+  const finalLegsResult = fixture.stage === "final" ? await supabase.from(TABLES.copaFixtures).select("id").eq("tournamentId", fixture.tournamentId).eq("stage", "final") : { data: [], error: null };
+  fail(finalLegsResult.error);
+  const hasTwoLegFinal = (finalLegsResult.data ?? []).length >= 2;
+  const isFirstFinalLeg = fixture.stage === "final" && hasTwoLegFinal && fixture.slotNumber === 1;
+  const isSecondFinalLeg = fixture.stage === "final" && hasTwoLegFinal && fixture.slotNumber === 2;
+  let winnerEntrantId: number | null = null;
+  let homePenaltyScore: number | null = null;
+  let awayPenaltyScore: number | null = null;
+
+  if (!isFirstFinalLeg) {
+    let homeScore = input.blackScore;
+    let awayScore = input.redScore;
+    if (isSecondFinalLeg) {
+      const firstFinalResult = await supabase.from(TABLES.copaFixtures).select("*").eq("tournamentId", fixture.tournamentId).eq("stage", "final").eq("slotNumber", 1).single();
+      fail(firstFinalResult.error);
+      const firstFinal = firstFinalResult.data!;
+      if (firstFinal.status !== "completed") throw new Error("Registre primeiro o Jogo 1 da final.");
+      if (firstFinal.homeEntrantId !== fixture.homeEntrantId || firstFinal.awayEntrantId !== fixture.awayEntrantId) throw new Error("Os dois jogos da final precisam manter os mesmos finalistas.");
+      const firstFinalMatchResult = await supabase.from(TABLES.matches).select("blackScore,redScore").eq("copaFixtureId", firstFinal.id).maybeSingle();
+      fail(firstFinalMatchResult.error);
+      if (!firstFinalMatchResult.data) throw new Error("Não foi possível localizar o placar do primeiro jogo da final.");
+      homeScore += firstFinalMatchResult.data.blackScore;
+      awayScore += firstFinalMatchResult.data.redScore;
+    }
+    const tied = homeScore === awayScore;
+    if (tied && (input.homePenaltyScore === undefined || input.awayPenaltyScore === undefined || input.homePenaltyScore === input.awayPenaltyScore)) throw new Error(isSecondFinalLeg ? "No empate do placar agregado, informe os pênaltis com vencedor definido." : "Em empate, informe um placar de pênaltis com vencedor definido.");
+    const homeWon = tied ? Number(input.homePenaltyScore) > Number(input.awayPenaltyScore) : homeScore > awayScore;
+    winnerEntrantId = homeWon ? fixture.homeEntrantId : fixture.awayEntrantId;
+    homePenaltyScore = tied ? Number(input.homePenaltyScore) : null;
+    awayPenaltyScore = tied ? Number(input.awayPenaltyScore) : null;
+  }
+
+  const updates = { status: "completed", winnerEntrantId, homePenaltyScore, awayPenaltyScore };
   fail((await supabase.from(TABLES.copaFixtures).update(updates).eq("id", fixture.id)).error);
   fail((await supabase.from(TABLES.matches).update({ copaFixtureId: fixture.id, countsForStandings: false }).eq("id", input.matchId)).error);
-  const nextStage = fixture.stage === "quarterfinal" ? "semifinal" : fixture.stage === "semifinal" ? "final" : null;
-  if (nextStage) {
-    const nextSlot = fixture.stage === "quarterfinal" ? Math.ceil(fixture.slotNumber / 2) : 1;
-    const nextResult = await supabase.from(TABLES.copaFixtures).select("*").eq("tournamentId", fixture.tournamentId).eq("stage", nextStage).eq("slotNumber", nextSlot).single();
+  if (fixture.stage === "quarterfinal" && winnerEntrantId) {
+    const progression: Record<number, { nextSlot: number; field: "homeEntrantId" | "awayEntrantId" }> = {
+      1: { nextSlot: 1, field: "homeEntrantId" }, 4: { nextSlot: 1, field: "awayEntrantId" },
+      2: { nextSlot: 2, field: "homeEntrantId" }, 3: { nextSlot: 2, field: "awayEntrantId" },
+    };
+    const next = progression[fixture.slotNumber];
+    const nextResult = await supabase.from(TABLES.copaFixtures).select("id").eq("tournamentId", fixture.tournamentId).eq("stage", "semifinal").eq("slotNumber", next.nextSlot).single();
     fail(nextResult.error);
-    const field = fixture.slotNumber % 2 === 1 ? "homeEntrantId" : "awayEntrantId";
-    fail((await supabase.from(TABLES.copaFixtures).update({ [field]: winnerEntrantId }).eq("id", nextResult.data!.id)).error);
-  } else if (fixture.stage === "final") {
+    fail((await supabase.from(TABLES.copaFixtures).update({ [next.field]: winnerEntrantId }).eq("id", nextResult.data!.id)).error);
+  } else if (fixture.stage === "semifinal" && winnerEntrantId) {
+    const finalField = fixture.slotNumber === 1 ? "homeEntrantId" : "awayEntrantId";
+    const finalsResult = await supabase.from(TABLES.copaFixtures).select("id").eq("tournamentId", fixture.tournamentId).eq("stage", "final");
+    fail(finalsResult.error);
+    for (const finalFixture of finalsResult.data ?? []) fail((await supabase.from(TABLES.copaFixtures).update({ [finalField]: winnerEntrantId }).eq("id", finalFixture.id)).error);
+  } else if (fixture.stage === "final" && winnerEntrantId && (!hasTwoLegFinal || isSecondFinalLeg)) {
     await setCopaTournamentStatus({ tournamentId: fixture.tournamentId, status: "completed", reason: "Final concluída." });
   }
-  await writeCopaAudit(fixture.tournamentId, "fixture_resolved", "Confronto encerrado e chave atualizada.", fixture, { ...updates, matchId: input.matchId });
+  await writeCopaAudit(fixture.tournamentId, "fixture_resolved", isFirstFinalLeg ? "Primeiro jogo da final registrado." : isSecondFinalLeg ? "Final em dois jogos concluída pelo placar agregado." : "Confronto encerrado e chave atualizada.", fixture, { ...updates, matchId: input.matchId });
 }
 
 export async function saveFootballEntity(input: any) {

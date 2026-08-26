@@ -109,3 +109,4 @@
 - [x] Criar no painel o cadastro, edição, ordenação, visibilidade, upload, redimensionamento e exclusão de logos de patrocinadores para a faixa pública.
 - [x] Remover do topo da tela inicial a chamada grande e o selo “A casa da pelada”, mantendo o escudo em uma composição mais limpa.
 - [x] Corrigir a aba Patrocinadores do painel, que é selecionada mas não exibe seu conteúdo no celular.
+- [x] Reconfigurar a Copa: quartas 1º×8º, 2º×7º, 3º×6º e 4º×5º; semifinais Jogo 1×Jogo 4 e Jogo 2×Jogo 3; final em dois jogos nos dias configurados.
