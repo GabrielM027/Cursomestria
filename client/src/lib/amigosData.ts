@@ -102,6 +102,30 @@ export function normalizePlayerPosition(value?: string | null) {
   return value?.trim() || null;
 }
 
+export type SocietyRole = "goalkeeper" | "defender" | "midfielder" | "attacker";
+
+export function resolveSocietyRole(position?: string | null): SocietyRole | null {
+  const value = position?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() || "";
+  if (value.includes("goleir")) return "goalkeeper";
+  if (value.includes("zague") || value.includes("defens") || value.includes("lateral")) return "defender";
+  if (value.includes("meia") || value.includes("meio") || value.includes("volante") || value.includes("ala")) return "midfielder";
+  if (value.includes("atac") || value.includes("avante") || value.includes("centroav") || value.includes("ponta")) return "attacker";
+  return null;
+}
+
+export function buildSelectionOfYear<T extends { id: number; name: string; position?: string | null; votes?: number; count?: number; points?: number }>(players: T[]) {
+  const formation: Array<{ role: SocietyRole; label: string; count: number }> = [
+    { role: "goalkeeper", label: "Goleiro", count: 1 },
+    { role: "defender", label: "Zagueiro", count: 2 },
+    { role: "midfielder", label: "Meio-campo", count: 2 },
+    { role: "attacker", label: "Atacante", count: 2 },
+  ];
+  return formation.flatMap(({ role, label, count }) => {
+    const eligible = players.filter(player => resolveSocietyRole(player.position) === role && (player.votes ?? 0) > 0).sort((first, second) => (second.votes ?? 0) - (first.votes ?? 0) || (second.count ?? 0) - (first.count ?? 0) || (second.points ?? 0) - (first.points ?? 0) || first.name.localeCompare(second.name));
+    return Array.from({ length: count }, (_, index) => ({ role, label, slot: index + 1, player: eligible[index] ?? null }));
+  });
+}
+
 type CopaPlanEntrant = { id: number };
 type CopaFixturePlan = { stage: "quarterfinal" | "semifinal" | "final" | "third_place"; slotNumber: number; scheduledDate: string; homeEntrantId: number | null; awayEntrantId: number | null };
 
@@ -137,6 +161,7 @@ function emptyClubData() {
     standings: [],
     scorers: [],
     honorRankings: { best: [], worst: [] },
+    selectionOfYear: [],
     matches: [],
     feed: [],
     gallery: [],
@@ -197,6 +222,7 @@ function buildClubData(input: any) {
     output[kind] = Array.from(honorTotals[kind].entries()).map(([playerId, total]) => ({ ...playerInfo(playerId), ...total })).sort((a, b) => b.count - a.count || b.votes - a.votes || a.name.localeCompare(b.name));
     return output;
   }, { best: [] as any[], worst: [] as any[] });
+  const selectionOfYear = buildSelectionOfYear(standings.map((player: any) => ({ ...player, ...(honorTotals.best.get(player.id) ?? { count: 0, votes: 0 }) })));
 
   const participantDetails = (participant: any) => {
     const player = participant.playerId ? playerInfo(participant.playerId) : null;
@@ -236,6 +262,7 @@ function buildClubData(input: any) {
     standings,
     scorers,
     honorRankings,
+    selectionOfYear,
     matches: matchesWithDetails,
     feed,
     gallery: input.galleryRows,

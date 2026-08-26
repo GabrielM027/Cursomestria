@@ -205,6 +205,32 @@ a { color: inherit; text-decoration: none; }
 .honor-rankings .ranking-score { font-size: 18px; }
 .honor-rankings .ranking-score small { font-size: 6px; }
 .honor-rankings .ranking-show-more { min-height: 31px; font-size: 9px; }
+.selection-year__intro { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 23px; }
+.selection-year__intro .section-copy { max-width: 380px; }
+.selection-field { position: relative; width: min(100%, 600px); min-height: 690px; margin: 0 auto; overflow: hidden; border: 3px solid rgba(238,216,132,.74); border-radius: 23px; background: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 11%, transparent 11% 22%), linear-gradient(135deg, #136d4a, #0b4d36); box-shadow: inset 0 0 0 2px rgba(0,0,0,.18), 0 22px 55px rgba(0,0,0,.32); }
+.selection-field::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 18% 18%, rgba(255,255,255,.1), transparent 34%), radial-gradient(circle at 82% 80%, rgba(0,0,0,.16), transparent 38%); pointer-events: none; }
+.selection-field__half { position: absolute; top: 50%; right: 0; left: 0; border-top: 2px solid rgba(255,255,255,.65); }
+.selection-field__circle { position: absolute; top: 50%; left: 50%; width: 124px; height: 124px; border: 2px solid rgba(255,255,255,.65); border-radius: 50%; transform: translate(-50%, -50%); }
+.selection-field__circle::after { content: ""; position: absolute; top: 50%; left: 50%; width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.78); transform: translate(-50%, -50%); }
+.selection-field__goal { position: absolute; left: 50%; width: 124px; height: 40px; border: 2px solid rgba(255,255,255,.65); transform: translateX(-50%); }
+.selection-field__goal--top { top: -2px; border-top: 0; border-radius: 0 0 10px 10px; }
+.selection-field__goal--bottom { bottom: -2px; border-bottom: 0; border-radius: 10px 10px 0 0; }
+.selection-slot { position: absolute; z-index: 1; width: 112px; display: grid; justify-items: center; gap: 3px; text-align: center; transform: translate(-50%, -50%); }
+.selection-slot__role { border-radius: 999px; padding: 3px 7px; color: #f9eab1; background: rgba(8,22,17,.72); font-size: 8px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.selection-slot__avatar { position: relative; width: 52px; height: 52px; display: grid; place-items: center; overflow: visible; border: 2px solid #f3d979; border-radius: 50%; background: #32151e; color: #f4d87b; font-family: var(--font-display); font-size: 24px; }
+.selection-slot__avatar > img:first-child { width: 100%; height: 100%; overflow: hidden; border-radius: 50%; object-fit: cover; }
+.selection-slot__avatar--empty { color: rgba(247,226,165,.7); background: rgba(18,56,42,.8); }
+.selection-slot__badge { position: absolute; right: -4px; bottom: -3px; width: 19px; height: 19px; border: 1px solid #1a1c17; border-radius: 50%; background: #f4d87b; object-fit: contain; }
+.selection-slot strong { max-width: 112px; overflow: hidden; color: #fffaf2; font-size: 11px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+.selection-slot small { color: #e7f0d3; font-size: 8px; font-weight: 700; line-height: 1.1; }
+.selection-slot--goalkeeper-1 { top: 82%; left: 50%; }
+.selection-slot--defender-1 { top: 64%; left: 28%; }
+.selection-slot--defender-2 { top: 64%; left: 72%; }
+.selection-slot--midfielder-1 { top: 45%; left: 27%; }
+.selection-slot--midfielder-2 { top: 45%; left: 73%; }
+.selection-slot--attacker-1 { top: 25%; left: 34%; }
+.selection-slot--attacker-2 { top: 25%; left: 66%; }
+.selection-year__status { max-width: 600px; margin: 13px auto 0; color: #b7cbb4; font-size: 12px; text-align: center; }
 .section-label { margin: 0 0 10px; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
 .section-title { margin: 0; font-family: var(--font-display); font-size: clamp(40px, 5vw, 62px); line-height: .92; letter-spacing: -.02em; text-transform: uppercase; }
 .section-copy { max-width: 385px; color: var(--muted); line-height: 1.6; }
@@ -494,6 +520,12 @@ a { color: inherit; text-decoration: none; }
   .feed-grid, .ranking-columns, .gallery-grid { grid-template-columns: 1fr; }
   .honor-rankings__grid { grid-template-columns: 1fr; gap: 13px; }
   .honor-rankings { margin-top: 30px; padding: 24px 0; }
+  .selection-year__intro { align-items: start; flex-direction: column; gap: 8px; }
+  .selection-field { min-height: 570px; border-radius: 17px; }
+  .selection-field__circle { width: 105px; height: 105px; }
+  .selection-slot { width: 94px; }
+  .selection-slot__avatar { width: 44px; height: 44px; font-size: 21px; }
+  .selection-slot strong { max-width: 94px; font-size: 10px; }
   .home-pulse { padding: 32px 0 28px; }
   .home-pulse__heading { display: block; }
   .home-pulse__heading h2 { font-size: 38px; }

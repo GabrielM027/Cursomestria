@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCopaFixturePlan, calculateHonorTotals, calculateSeasonTotals, visibleRankingRows } from "./amigosData";
+import { buildCopaFixturePlan, buildSelectionOfYear, calculateHonorTotals, calculateSeasonTotals, visibleRankingRows } from "./amigosData";
 
 describe("ranking da pelada", () => {
   it("atribui três pontos e uma vitória somente aos jogadores fixos do time vencedor", () => {
@@ -78,5 +78,20 @@ describe("ranking da pelada", () => {
     const rows = Array.from({ length: 11 }, (_, index) => index + 1);
     expect(visibleRankingRows(rows)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     expect(visibleRankingRows(rows, true)).toEqual(rows);
+  });
+
+  it("monta a Seleção do Ano por votos de Bola Cheia, posição e desempates", () => {
+    const selection = buildSelectionOfYear([
+      { id: 1, name: "Goleiro", position: "Goleiro", votes: 9, count: 2, points: 4 },
+      { id: 2, name: "Zagueiro A", position: "Zagueiro", votes: 8, count: 2, points: 7 },
+      { id: 3, name: "Zagueiro B", position: "Lateral", votes: 8, count: 1, points: 20 },
+      { id: 4, name: "Meia A", position: "Meia", votes: 6, count: 2, points: 5 },
+      { id: 5, name: "Meia B", position: "Volante", votes: 5, count: 1, points: 9 },
+      { id: 6, name: "Atacante A", position: "Atacante", votes: 11, count: 1, points: 2 },
+      { id: 7, name: "Atacante B", position: "Centroavante", votes: 7, count: 1, points: 3 },
+    ]);
+    expect(selection).toHaveLength(7);
+    expect(selection.filter(slot => slot.role === "defender").map(slot => slot.player?.name)).toEqual(["Zagueiro A", "Zagueiro B"]);
+    expect(selection.filter(slot => slot.role === "attacker").map(slot => slot.player?.name)).toEqual(["Atacante A", "Atacante B"]);
   });
 });
