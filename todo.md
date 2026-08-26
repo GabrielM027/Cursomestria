@@ -95,3 +95,5 @@
 - [x] Corrigir a regra de um ponto para cada jogador fixo em partidas empatadas e recalcular os jogos já lançados.
 - [x] Remover os rankings de Melhor e Pior da aba Ranking e mostrá-los abaixo dos destaques na aba Melhor/Pior.
 - [x] Renomear os rankings e destaques de Melhor/Pior como Bola Cheia e Bola Murcha.
+- [ ] Exibir somente a última rodada completa e transformar as rodadas anteriores em datas expansíveis na aba Bola Cheia/Murcha.
+- [x] Reduzir ainda mais linhas, avatares, números e espaçamentos das listas de Bola Cheia e Bola Murcha.
