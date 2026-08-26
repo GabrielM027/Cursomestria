@@ -104,3 +104,4 @@
 - [x] Criar uma aba administrativa de Seleção do Ano para mover, trocar, ajustar e restaurar a formação automática.
 - [x] Permitir que o administrador configure livremente a quantidade de jogadores por posição na Seleção do Ano e preencha automaticamente os melhores de cada grupo.
 - [x] Permitir editar e excluir no painel os lançamentos existentes de Bola Cheia e Bola Murcha, incluindo jogador, foto, nome e legenda.
+- [x] Adicionar na tela inicial, acima do logo, uma faixa compacta de patrocinadores com movimento automático contínuo e responsivo.
