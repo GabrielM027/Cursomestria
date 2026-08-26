@@ -99,3 +99,4 @@
 - [x] Reduzir ainda mais linhas, avatares, números e espaçamentos das listas de Bola Cheia e Bola Murcha.
 - [x] Compactar o layout do histórico de partidas, com placar e cards menores mantendo os detalhes expansíveis.
 - [x] Criar a aba Seleção do Ano em campo society com 1 goleiro, 2 zagueiros, 2 meio-campistas e 2 atacantes, calculada pelos votos de Bola Cheia por posição.
+- [x] Ajustar a distribuição visual da Seleção do Ano e remover a explicação de desempate do campo.
