@@ -654,7 +654,7 @@ export async function deleteHighlight(input: { id: number }) {
   if (highlightResult.data?.imageKey) await supabase.storage.from("amigos-media").remove([highlightResult.data.imageKey]);
 }
 
-export async function saveSponsor(input: { id?: number; name: string; logoUrl?: string | null; logoKey?: string | null; displayScale?: number | null; sortOrder?: number | null; isActive: boolean }) {
+export async function saveSponsor(input: { id?: number; name: string; logoUrl?: string | null; logoKey?: string | null; displayScale?: number | null; sortOrder?: number | null; offsetX?: number | null; offsetY?: number | null; fitMode?: string | null; isActive: boolean }) {
   const admin = await requireAdmin();
   if (!admin) throw new Error("Faça login com uma conta administrativa.");
   const name = input.name.trim();
