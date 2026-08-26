@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createAdminAccount,
   createCopaTournament,
+  deleteHighlight,
   deleteGalleryItem,
   createSeason,
   getAdminClubData,
@@ -70,6 +71,7 @@ export const trpc = {
     savePlayer: mutationHook(savePlayer),
     saveMatch: mutationHook(saveMatch),
     saveHighlight: mutationHook(saveHighlight),
+    deleteHighlight: mutationHook(deleteHighlight),
     saveGalleryItem: mutationHook(saveGalleryItem),
     deleteGalleryItem: mutationHook(deleteGalleryItem),
     createSeason: mutationHook(createSeason),

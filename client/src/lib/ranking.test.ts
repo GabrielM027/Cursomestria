@@ -61,6 +61,15 @@ describe("ranking da pelada", () => {
     expect(totals.best.has(null as never)).toBe(false);
   });
 
+  it("reflete a exclusão de um lançamento de Bola Cheia sem alterar os votos da partida", () => {
+    const participants = [{ playerId: 1, isGuest: false, bestVotes: 5, worstVotes: 1 }];
+    const beforeDeletion = calculateHonorTotals(participants, [{ playerId: 1, kind: "best" }]);
+    const afterDeletion = calculateHonorTotals(participants, []);
+    expect(beforeDeletion.best.get(1)).toEqual({ count: 1, votes: 5 });
+    expect(afterDeletion.best.get(1)).toEqual({ count: 0, votes: 5 });
+    expect(afterDeletion.worst.get(1)).toEqual({ count: 0, votes: 1 });
+  });
+
   it("congela pontos e vitórias durante a Copa, mas mantém gols e saldo individuais", () => {
     const totals = calculateSeasonTotals([{ blackScore: 4, redScore: 1, countsForStandings: false, participants: [{ playerId: 1, teamColor: "black", isGuest: false }, { playerId: 2, teamColor: "red", isGuest: false }], goals: [{ playerId: 1, quantity: 2 }, { playerId: 2, quantity: 1 }] }]);
     expect(totals.get(1)).toEqual({ points: 0, wins: 0, goals: 2, goalBalance: 3 });

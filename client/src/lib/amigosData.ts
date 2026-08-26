@@ -601,10 +601,19 @@ export async function saveMatch(input: any) {
 }
 
 export async function saveHighlight(input: any) {
+  if (!await requireAdmin()) throw new Error("Faça login com uma conta administrativa.");
   const participant = await supabase.from(TABLES.participants).select("id").eq("matchId", input.matchId).eq("playerId", input.playerId).maybeSingle();
   fail(participant.error);
   if (!participant.data) throw new Error("O destaque deve ser escolhido entre os jogadores da partida.");
-  fail((await supabase.from(TABLES.highlights).upsert({ matchId: input.matchId, kind: input.kind, playerId: input.playerId, imageUrl: input.imageUrl ?? null, caption: input.caption ?? null }, { onConflict: "matchId,kind" })).error);
+  fail((await supabase.from(TABLES.highlights).upsert({ matchId: input.matchId, kind: input.kind, playerId: input.playerId, imageUrl: input.imageUrl ?? null, imageKey: input.imageKey ?? null, caption: input.caption ?? null }, { onConflict: "matchId,kind" })).error);
+}
+
+export async function deleteHighlight(input: { id: number }) {
+  if (!await requireAdmin()) throw new Error("Faça login com uma conta administrativa.");
+  const highlightResult = await supabase.from(TABLES.highlights).select("imageKey,kind").eq("id", input.id).single();
+  fail(highlightResult.error);
+  fail((await supabase.from(TABLES.highlights).delete().eq("id", input.id)).error);
+  if (highlightResult.data?.imageKey) await supabase.storage.from("amigos-media").remove([highlightResult.data.imageKey]);
 }
 
 export async function saveGalleryItem(input: any) {
