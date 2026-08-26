@@ -117,3 +117,4 @@
 - [x] Remover a G&M da faixa de patrocinadores e deixar as demais logos sem fundos quadrados aparentes.
 - [x] Corrigir somente a logo da Panificadora Marques para exibir nome e elementos com legibilidade na faixa de patrocinadores.
 - [x] Exibir a Panificadora Marques em fundo branco oval, recortado e alinhado ao balão da faixa de patrocinadores.
+- [x] Fazer a logo da Panificadora Marques preencher todo o retângulo arredondado tracejado do seu cartão na faixa.

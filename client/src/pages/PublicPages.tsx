@@ -1,7 +1,7 @@
 import ClubShell, { ClubCrest } from "@/components/ClubShell";
 import { trpc } from "@/lib/trpc";
 import { groupHighlightsBySunday, visibleRankingRows } from "@/lib/amigosData";
-import { buildSponsorTickerItems, sponsorSlots } from "@/lib/sponsors";
+import { buildSponsorTickerItems, sponsorSlots, usesFilledSponsorCard } from "@/lib/sponsors";
 import { CalendarDays, ChevronRight, CircleUserRound, Flame, Image as ImageIcon, Play, Sparkles, Trophy } from "lucide-react";
 import { Link } from "wouter";
 import { useState, type ReactNode } from "react";
@@ -70,7 +70,7 @@ function CopaHome({ copa }: { copa: any }) { const fixtures = copa.fixtures || [
 function SponsorsMarquee({ sponsors }: { sponsors: any[] }) {
   const registered = sponsors.filter(sponsor => sponsor.isActive);
   const items = registered.length ? [...registered, ...registered] : buildSponsorTickerItems(sponsorSlots).map((name, index) => ({ id: `placeholder-${index}`, name, logoUrl: null, displayScale: 1 }));
-  return <div className="sponsors-marquee" aria-label="Espaços de patrocínio da pelada"><div className="club-container sponsors-marquee__inner"><div className="sponsors-marquee__viewport"><div className="sponsors-marquee__track">{items.map((sponsor, index) => <span className={`sponsors-marquee__item${sponsor.logoUrl ? " sponsors-marquee__item--logo" : ""}`} style={{ "--sponsor-scale": String(sponsor.displayScale ?? 1) } as React.CSSProperties} key={`${sponsor.id}-${index}`}>{sponsor.logoUrl ? <img src={sponsor.logoUrl} alt={sponsor.name} /> : sponsor.name}</span>)}</div></div></div></div>;
+  return <div className="sponsors-marquee" aria-label="Espaços de patrocínio da pelada"><div className="club-container sponsors-marquee__inner"><div className="sponsors-marquee__viewport"><div className="sponsors-marquee__track">{items.map((sponsor, index) => { const fillsCard = Boolean(sponsor.logoUrl && usesFilledSponsorCard(sponsor.name)); return <span className={`sponsors-marquee__item${sponsor.logoUrl ? " sponsors-marquee__item--logo" : ""}${fillsCard ? " sponsors-marquee__item--full-card" : ""}`} style={{ "--sponsor-scale": String(sponsor.displayScale ?? 1) } as React.CSSProperties} key={`${sponsor.id}-${index}`}>{sponsor.logoUrl ? <img src={sponsor.logoUrl} alt={sponsor.name} /> : sponsor.name}</span>; })}</div></div></div></div>;
 }
 
 export function Home() {

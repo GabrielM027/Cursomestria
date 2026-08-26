@@ -15,3 +15,7 @@ export function buildSponsorTickerItems(sponsors: string[]) {
   const cleaned = sponsors.map(sponsor => sponsor.trim()).filter(Boolean);
   return [...cleaned, ...cleaned];
 }
+
+export function usesFilledSponsorCard(name: string) {
+  return name.trim().toLocaleLowerCase("pt-BR") === "panificadora marques";
+}

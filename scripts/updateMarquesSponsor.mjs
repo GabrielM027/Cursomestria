@@ -20,8 +20,8 @@ const response = await fetch(`${supabaseUrl}/rest/v1/sponsors?name=eq.Panificado
     Prefer: "return=minimal",
   },
   body: JSON.stringify({
-    logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-panificadora-marques-oval-exact.png",
-    displayScale: 1.08,
+    logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-panificadora-marques-full-card.png",
+    displayScale: 1,
   }),
 });
 if (!response.ok) throw new Error(`Falha ao atualizar Panificadora Marques: ${response.status}`);
