@@ -120,3 +120,5 @@
 - [x] Fazer a logo da Panificadora Marques preencher todo o retângulo arredondado tracejado do seu cartão na faixa.
 - [x] Padronizar Rota 27, Elloskar, Point Restaurante, FormaFit e Goldcar no mesmo cartão preenchido da Panificadora, com fundos originais e escala visual equilibrada.
 - [x] Transformar o cartão oval tracejado em máscara real e permitir ajustar escala e posição de cada logo dentro desse limite no painel administrativo.
+- [x] Corrigir o desalinhamento entre a prévia administrativa e a faixa pública de patrocinadores.
+- [x] Padronizar todas as patrocinadoras em fundos pretos, preservando integralmente suas logos e incluindo a Goldcar já compatível com esse acabamento.

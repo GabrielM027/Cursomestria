@@ -2,12 +2,12 @@ const supabaseUrl = "https://tqkbehwjylktpfrguvlr.supabase.co";
 const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxa2JlaHdqeWxrdHBmcmd1dmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3MDM3OTMsImV4cCI6MjA4NzI3OTc5M30.y3_oPDjhM-u2Bq-R5YfOhonyfv8lChjfP2_zlAlu4Wg";
 
 const sponsors = [
-  { name: "Rota 27", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-rota-27-card.png", displayScale: 1, sortOrder: 20 },
-  { name: "Elloskar Seminovos", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-elloskar-card.png", displayScale: 1, sortOrder: 30 },
-  { name: "Point Restaurante", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-point-restaurante-card.png", displayScale: 1, sortOrder: 40 },
-  { name: "FormaFit Academia", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-formafit-card.png", displayScale: 1, sortOrder: 50 },
-  { name: "Panificadora Marques", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-panificadora-marques-full-card.png", displayScale: 1, sortOrder: 60 },
-  { name: "Goldcar Automóveis", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-goldcar-card.png", displayScale: 1, sortOrder: 70 },
+  { name: "Rota 27", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-rota-27-black-card.png", displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover", sortOrder: 20 },
+  { name: "Elloskar Seminovos", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-elloskar-black-card.png", displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover", sortOrder: 30 },
+  { name: "Point Restaurante", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-point-restaurante-black-card.png", displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover", sortOrder: 40 },
+  { name: "FormaFit Academia", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-formafit-black-card.png", displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover", sortOrder: 50 },
+  { name: "Panificadora Marques", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-panificadora-marques-black-card.png", displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover", sortOrder: 60 },
+  { name: "Goldcar Automóveis", logoUrl: "https://github.com/GabrielM027/Cursomestria/releases/download/sponsor-assets-2026/sponsor-goldcar-black-card.png", displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover", sortOrder: 70 },
 ];
 
 function headers(token, extra = {}) {
