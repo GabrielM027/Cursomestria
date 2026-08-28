@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSponsorTickerItems, normalizeSponsorPresentation, usesFilledSponsorCard } from "./sponsors";
+import { buildSponsorTickerItems, normalizeSponsorPresentation, sponsorAt, usesFilledSponsorCard } from "./sponsors";
 
 describe("faixa de patrocinadores", () => {
   it("repete somente os nomes preenchidos para manter uma rolagem contínua", () => {
@@ -16,5 +16,12 @@ describe("faixa de patrocinadores", () => {
     expect(usesFilledSponsorCard("Goldcar Automóveis")).toBe(true);
     expect(usesFilledSponsorCard("Marca fora da faixa")).toBe(true);
     expect(usesFilledSponsorCard(" ")).toBe(false);
+  });
+
+  it("alterna as marcas em ordem e reinicia após a última", () => {
+    const sponsors = ["Rota 27", "Elloskar", "Point"];
+    expect(sponsorAt(sponsors, 0)).toBe("Rota 27");
+    expect(sponsorAt(sponsors, 4)).toBe("Elloskar");
+    expect(sponsorAt([], 0)).toBeNull();
   });
 });

@@ -124,3 +124,4 @@
 - [x] Padronizar todas as patrocinadoras em fundos pretos, preservando integralmente suas logos e incluindo a Goldcar já compatível com esse acabamento.
 - [x] Elaborar e entregar relatório do status atual das funcionalidades de patrocínio.
 - [x] Exibir a posição cadastrada de cada atleta nos controles de escolha dos times durante o lançamento de partidas.
+- [x] Transformar a faixa atual em um único destaque grande de patrocinadores na entrada, com uma logo ampla alternando automaticamente.

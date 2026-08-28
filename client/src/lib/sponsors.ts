@@ -21,6 +21,11 @@ export function buildSponsorTickerItems(sponsors: string[]) {
   return [...cleaned, ...cleaned];
 }
 
+export function sponsorAt<T>(sponsors: T[], index: number) {
+  if (!sponsors.length) return null;
+  return sponsors[((index % sponsors.length) + sponsors.length) % sponsors.length];
+}
+
 export function usesFilledSponsorCard(name: string) {
   return Boolean(name.trim());
 }

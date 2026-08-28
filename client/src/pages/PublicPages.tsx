@@ -1,10 +1,10 @@
 import ClubShell, { ClubCrest } from "@/components/ClubShell";
 import { trpc } from "@/lib/trpc";
 import { groupHighlightsBySunday, visibleRankingRows } from "@/lib/amigosData";
-import { buildSponsorTickerItems, sponsorSlots, usesFilledSponsorCard } from "@/lib/sponsors";
+import { sponsorAt, sponsorSlots, usesFilledSponsorCard } from "@/lib/sponsors";
 import { CalendarDays, ChevronRight, CircleUserRound, Flame, Image as ImageIcon, Play, Sparkles, Trophy } from "lucide-react";
 import { Link } from "wouter";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type ClubData = any;
 
@@ -69,8 +69,14 @@ function CopaHome({ copa }: { copa: any }) { const fixtures = copa.fixtures || [
 
 function SponsorsMarquee({ sponsors }: { sponsors: any[] }) {
   const registered = sponsors.filter(sponsor => sponsor.isActive);
-  const items = registered.length ? [...registered, ...registered] : buildSponsorTickerItems(sponsorSlots).map((name, index) => ({ id: `placeholder-${index}`, name, logoUrl: null, displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover" }));
-  return <div className="sponsors-marquee" aria-label="Espaços de patrocínio da pelada"><div className="club-container sponsors-marquee__inner"><div className="sponsors-marquee__viewport"><div className="sponsors-marquee__track">{items.map((sponsor, index) => { const fillsCard = Boolean(sponsor.logoUrl && usesFilledSponsorCard(sponsor.name)); const fitMode = sponsor.fitMode === "contain" ? "contain" : "cover"; return <span className={`sponsors-marquee__item${sponsor.logoUrl ? " sponsors-marquee__item--logo" : ""}${fillsCard ? " sponsors-marquee__item--full-card" : ""} sponsors-marquee__item--${fitMode}`} style={{ "--sponsor-scale": String(sponsor.displayScale ?? 1), "--sponsor-offset-x": `${Number(sponsor.offsetX ?? 0)}%`, "--sponsor-offset-y": `${Number(sponsor.offsetY ?? 0)}%` } as React.CSSProperties} key={`${sponsor.id}-${index}`}>{sponsor.logoUrl ? <img src={sponsor.logoUrl} alt={sponsor.name} /> : sponsor.name}</span>; })}</div></div></div></div>;
+  const fallback = sponsorSlots.map((name, index) => ({ id: `placeholder-${index}`, name, logoUrl: null, displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover" }));
+  const visibleSponsors = registered.length ? registered : fallback;
+  const [activeIndex, setActiveIndex] = useState(0);
+  useEffect(() => { setActiveIndex(0); const timer = window.setInterval(() => setActiveIndex(index => (index + 1) % visibleSponsors.length), 3800); return () => window.clearInterval(timer); }, [visibleSponsors.length]);
+  const sponsor = sponsorAt(visibleSponsors, activeIndex)!;
+  const fillsCard = Boolean(sponsor.logoUrl && usesFilledSponsorCard(sponsor.name));
+  const fitMode = sponsor.fitMode === "contain" ? "contain" : "cover";
+  return <section className="sponsors-marquee sponsors-marquee--featured" aria-label="Patrocinadores oficiais do AMIGOS F.C."><div className="club-container sponsors-marquee__inner"><div className="sponsors-marquee__copy"><span>Patrocinadores oficiais</span><strong>Quem fortalece a resenha<br />joga junto com a gente.</strong></div><div className="sponsors-marquee__spotlight"><div className={`sponsors-marquee__item sponsors-marquee__item--spotlight${sponsor.logoUrl ? " sponsors-marquee__item--logo" : ""}${fillsCard ? " sponsors-marquee__item--full-card" : ""} sponsors-marquee__item--${fitMode}`} style={{ "--sponsor-scale": String(sponsor.displayScale ?? 1), "--sponsor-offset-x": `${Number(sponsor.offsetX ?? 0)}%`, "--sponsor-offset-y": `${Number(sponsor.offsetY ?? 0)}%` } as React.CSSProperties} key={sponsor.id}>{sponsor.logoUrl ? <img src={sponsor.logoUrl} alt={sponsor.name} /> : sponsor.name}</div><div className="sponsors-marquee__dots" aria-hidden="true">{visibleSponsors.map((item, index) => <i className={index === activeIndex ? "active" : ""} key={item.id} />)}</div></div></div></section>;
 }
 
 export function Home() {
