@@ -125,3 +125,4 @@
 - [x] Elaborar e entregar relatório do status atual das funcionalidades de patrocínio.
 - [x] Exibir a posição cadastrada de cada atleta nos controles de escolha dos times durante o lançamento de partidas.
 - [x] Transformar a faixa atual em um único destaque grande de patrocinadores na entrada, com uma logo ampla alternando automaticamente.
+- [x] Centralizar o destaque de patrocinadores, colocar a frase acima e integrar a logo grande ao fundo da página sem cartão oval.
