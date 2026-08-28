@@ -122,5 +122,5 @@
 - [x] Transformar o cartão oval tracejado em máscara real e permitir ajustar escala e posição de cada logo dentro desse limite no painel administrativo.
 - [x] Corrigir o desalinhamento entre a prévia administrativa e a faixa pública de patrocinadores.
 - [x] Padronizar todas as patrocinadoras em fundos pretos, preservando integralmente suas logos e incluindo a Goldcar já compatível com esse acabamento.
-- [ ] Elaborar e entregar relatório do status atual das funcionalidades de patrocínio.
+- [x] Elaborar e entregar relatório do status atual das funcionalidades de patrocínio.
 - [x] Exibir a posição cadastrada de cada atleta nos controles de escolha dos times durante o lançamento de partidas.
