@@ -106,6 +106,25 @@ export function normalizePlayerPosition(value?: string | null) {
   return value?.trim() || null;
 }
 
+export type PlayerPositionSummary = { position: string; total: number; active: number };
+
+export function summarizePlayersByPosition<T extends { position?: string | null; isActive?: boolean }>(players: T[]): PlayerPositionSummary[] {
+  const summaries = new Map<string, PlayerPositionSummary>();
+  for (const player of players) {
+    const position = normalizePlayerPosition(player.position) || "Sem posição";
+    const key = position.toLocaleLowerCase("pt-BR");
+    const current = summaries.get(key) || { position, total: 0, active: 0 };
+    current.total += 1;
+    if (player.isActive) current.active += 1;
+    summaries.set(key, current);
+  }
+  return Array.from(summaries.values()).sort((first, second) => {
+    if (first.position === "Sem posição") return 1;
+    if (second.position === "Sem posição") return -1;
+    return second.total - first.total || first.position.localeCompare(second.position, "pt-BR");
+  });
+}
+
 export type SocietyRole = "goalkeeper" | "defender" | "midfielder" | "attacker";
 export type SelectionFormation = { goalkeeperCount: 1; defenderCount: number; midfielderCount: number; attackerCount: number };
 export const DEFAULT_SELECTION_FORMATION: SelectionFormation = { goalkeeperCount: 1, defenderCount: 2, midfielderCount: 3, attackerCount: 2 };

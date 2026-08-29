@@ -7,6 +7,7 @@ import { CopaAdminTab } from "@/components/CopaAdminTab";
 import { SelectionAdminTab } from "@/components/SelectionAdminTab";
 import { SponsorsAdminTab } from "@/components/SponsorsAdminTab";
 import { teamSelectionLabel } from "@/lib/teamSelection";
+import { summarizePlayersByPosition } from "@/lib/amigosData";
 
 type Tab = "informacoes" | "copa" | "jogadores" | "partida" | "destaques" | "selecao" | "patrocinadores" | "galeria" | "editar" | "acessos";
 type TeamColor = "black" | "red";
@@ -119,6 +120,7 @@ function InfoTab({ data }: { data: any }) {
   const totalMatches = data.matches.length;
   const totalGoals = data.home?.stats?.goals ?? data.scorers.reduce((sum: number, player: any) => sum + (player.goals || 0), 0);
   const latestMatch = data.matches[0];
+  const playersByPosition = summarizePlayersByPosition(data.players);
   const stats = [
     { label: "Jogadores", value: totalPlayers, detail: `${activePlayers} ativos` },
     { label: "Jogadores fixos", value: fixedPlayers, detail: "no elenco" },
@@ -128,6 +130,7 @@ function InfoTab({ data }: { data: any }) {
     { label: "Destaques", value: data.feed.length, detail: "melhor e pior" },
     { label: "Galeria", value: data.gallery.length, detail: "publicações" },
     { label: "Temporadas", value: data.seasons.length, detail: "cadastradas" },
+    ...playersByPosition.map(summary => ({ label: `Posição · ${summary.position}`, value: summary.total, detail: `${summary.active} ativo${summary.active === 1 ? "" : "s"}` })),
   ];
   return <div className="admin-info"><FormCard title="Resumo da temporada"><div className="admin-info__season"><div><span>Temporada ativa</span><strong>{data.activeSeason?.name || "Nenhuma temporada ativa"}</strong><small>{data.activeSeason?.competitionLabel || "Ative uma temporada para começar"}</small></div>{latestMatch && <div><span>Última partida lançada</span><strong>Preto {latestMatch.blackScore} × {latestMatch.redScore} Vermelho</strong><small>{dateInput(latestMatch.matchDate).split("-").reverse().join("/")}</small></div>}</div><div className="admin-info__grid">{stats.map(stat => <article className="admin-info-stat" key={stat.label}><span>{stat.label}</span><strong>{stat.value}</strong><small>{stat.detail}</small></article>)}</div></FormCard><div className="admin-two-column"><FormCard title="Leitura rápida"><div className="admin-info__notes"><p><strong>Elenco ativo:</strong> {activePlayers} de {totalPlayers || 0} jogadores podem ser escalados.</p><p><strong>Conteúdo publicado:</strong> {data.feed.length} destaques e {data.gallery.length} itens mantêm o feed atualizado.</p><p><strong>Ranking:</strong> os números do painel consideram somente os registros da temporada ativa.</p></div></FormCard><FormCard title="Financeiro"><div className="admin-finance"><div><span>Mensalidades</span><strong>Em preparação</strong><small>O controle de pagamentos será ativado em uma aba financeira própria.</small></div><div><span>Multas</span><strong>Em preparação</strong><small>Futuras multas ficarão vinculadas ao jogador e ao período correspondente.</small></div></div><p className="admin-muted">Nenhuma mensalidade, pagamento ou multa foi registrada ainda. Este bloco não cria cobrança nem valor financeiro nesta fase.</p></FormCard></div></div>;
 }
