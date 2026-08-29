@@ -128,3 +128,4 @@
 - [x] Centralizar o destaque de patrocinadores, colocar a frase acima e integrar a logo grande ao fundo da página sem cartão oval.
 - [x] Substituir a faixa fina interna por uma área quadrada ampla e centralizada para alternar uma logo de patrocinador por vez.
 - [x] Exibir logos transparentes no destaque de patrocinadores sem cartão, fundo ou moldura visível em volta da imagem.
+- [x] Restaurar a rolagem horizontal contínua das logos de patrocinadores, preservando tamanho atual e sem contornos visíveis.
