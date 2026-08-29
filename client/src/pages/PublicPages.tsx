@@ -4,7 +4,7 @@ import { groupHighlightsBySunday, visibleRankingRows } from "@/lib/amigosData";
 import { sponsorSlots, usesFilledSponsorCard } from "@/lib/sponsors";
 import { CalendarDays, ChevronRight, CircleUserRound, Flame, Image as ImageIcon, Play, Sparkles, Trophy } from "lucide-react";
 import { Link } from "wouter";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type ClubData = any;
 
@@ -71,7 +71,19 @@ function SponsorsMarquee({ sponsors }: { sponsors: any[] }) {
   const registered = sponsors.filter(sponsor => sponsor.isActive);
   const fallback = sponsorSlots.map((name, index) => ({ id: `placeholder-${index}`, name, logoUrl: null, displayScale: 1, offsetX: 0, offsetY: 0, fitMode: "cover" }));
   const visibleSponsors = registered.length ? registered : fallback;
-  return <section className="sponsors-marquee sponsors-marquee--featured" aria-label="Patrocinadores oficiais do AMIGOS F.C."><div className="club-container sponsors-marquee__inner"><div className="sponsors-marquee__copy"><span>Patrocinadores oficiais</span><strong>Quem fortalece a resenha joga junto com a gente.</strong></div><div className="sponsors-marquee__viewport"><div className="sponsors-marquee__track sponsors-marquee__track--featured">{[0, 1].map(groupIndex => <div className="sponsors-marquee__group" aria-hidden={groupIndex === 1} key={groupIndex}>{visibleSponsors.map(sponsor => { const fillsCard = Boolean(sponsor.logoUrl && usesFilledSponsorCard(sponsor.name)); const fitMode = sponsor.fitMode === "contain" ? "contain" : "cover"; return <div className={`sponsors-marquee__item sponsors-marquee__item--spotlight${sponsor.logoUrl ? " sponsors-marquee__item--logo" : ""}${fillsCard ? " sponsors-marquee__item--full-card" : ""} sponsors-marquee__item--${fitMode}`} style={{ "--sponsor-scale": String(sponsor.displayScale ?? 1), "--sponsor-offset-x": `${Number(sponsor.offsetX ?? 0)}%`, "--sponsor-offset-y": `${Number(sponsor.offsetY ?? 0)}%` } as React.CSSProperties} key={`${sponsor.id}-${groupIndex}`}>{sponsor.logoUrl ? <img src={sponsor.logoUrl} alt={sponsor.name} /> : sponsor.name}</div>; })}</div>)}</div></div></div></section>;
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [loopDistance, setLoopDistance] = useState<string>();
+  useEffect(() => {
+    const track = trackRef.current;
+    const group = track?.querySelector<HTMLElement>(".sponsors-marquee__group");
+    if (!group) return;
+    const syncLoopDistance = () => setLoopDistance(`-${group.getBoundingClientRect().width}px`);
+    syncLoopDistance();
+    const observer = new ResizeObserver(syncLoopDistance);
+    observer.observe(group);
+    return () => observer.disconnect();
+  }, [visibleSponsors.length]);
+  return <section className="sponsors-marquee sponsors-marquee--featured" aria-label="Patrocinadores oficiais do AMIGOS F.C."><div className="club-container sponsors-marquee__inner"><div className="sponsors-marquee__copy"><span>Patrocinadores oficiais</span><strong>Quem fortalece a resenha joga junto com a gente.</strong></div><div className="sponsors-marquee__viewport"><div ref={trackRef} className="sponsors-marquee__track sponsors-marquee__track--featured" style={loopDistance ? { "--sponsor-loop-distance": loopDistance } as React.CSSProperties : undefined}>{[0, 1].map(groupIndex => <div className="sponsors-marquee__group" aria-hidden={groupIndex === 1} key={groupIndex}>{visibleSponsors.map(sponsor => { const fillsCard = Boolean(sponsor.logoUrl && usesFilledSponsorCard(sponsor.name)); const fitMode = sponsor.fitMode === "contain" ? "contain" : "cover"; return <div className={`sponsors-marquee__item sponsors-marquee__item--spotlight${sponsor.logoUrl ? " sponsors-marquee__item--logo" : ""}${fillsCard ? " sponsors-marquee__item--full-card" : ""} sponsors-marquee__item--${fitMode}`} style={{ "--sponsor-scale": String(sponsor.displayScale ?? 1), "--sponsor-offset-x": `${Number(sponsor.offsetX ?? 0)}%`, "--sponsor-offset-y": `${Number(sponsor.offsetY ?? 0)}%` } as React.CSSProperties} key={`${sponsor.id}-${groupIndex}`}>{sponsor.logoUrl ? <img src={sponsor.logoUrl} alt={sponsor.name} /> : sponsor.name}</div>; })}</div>)}</div></div></div></section>;
 }
 
 export function Home() {

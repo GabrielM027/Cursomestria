@@ -9,3 +9,5 @@ A validação visual local confirmou a composição: bloco escuro amplo, frase d
 Após o refinamento de centralização, a prévia local permaneceu no estado de carregamento de dados durante a primeira tentativa de revisão. A validação do código foi concluída com sucesso; a publicação deve ser conferida pela implantação oficial após o envio.
 
 Na revisão seguinte, a logo continuou pequena porque a regra genérica de logo substituía a dimensão específica do destaque. A prioridade do estilo foi corrigida para que o bloco grande do patrocinador mantenha seu tamanho no site.
+
+Na correção do ciclo contínuo, o deslocamento final passou a usar a largura real do primeiro grupo duplicado. A validação em execução confirmou dois grupos e o mesmo valor de largura no deslocamento, eliminando o cálculo aproximado por porcentagem que causava o salto visual.

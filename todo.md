@@ -130,3 +130,4 @@
 - [x] Exibir logos transparentes no destaque de patrocinadores sem cartão, fundo ou moldura visível em volta da imagem.
 - [x] Restaurar a rolagem horizontal contínua das logos de patrocinadores, preservando tamanho atual e sem contornos visíveis.
 - [x] Corrigir o loop da faixa para conectar a última logo à primeira sem pausa, salto ou reaparecimento brusco.
+- [x] Eliminar o salto visual persistente da faixa, fazendo a primeira logo entrar antes de a última sair da tela.
