@@ -129,3 +129,4 @@
 - [x] Substituir a faixa fina interna por uma área quadrada ampla e centralizada para alternar uma logo de patrocinador por vez.
 - [x] Exibir logos transparentes no destaque de patrocinadores sem cartão, fundo ou moldura visível em volta da imagem.
 - [x] Restaurar a rolagem horizontal contínua das logos de patrocinadores, preservando tamanho atual e sem contornos visíveis.
+- [x] Corrigir o loop da faixa para conectar a última logo à primeira sem pausa, salto ou reaparecimento brusco.
