@@ -132,3 +132,6 @@
 - [x] Corrigir o loop da faixa para conectar a última logo à primeira sem pausa, salto ou reaparecimento brusco.
 - [x] Eliminar o salto visual persistente da faixa, fazendo a primeira logo entrar antes de a última sair da tela.
 - [x] Exibir na aba Informações do painel a quantidade de atletas cadastrados por posição.
+- [x] Atualizar o rascunho da Copa para acompanhar automaticamente os oito primeiros dos pontos corridos e refazer o chaveamento por sementes.
+- [x] Congelar classificados e posições no chaveamento ao iniciar a Copa, sem alterações por partidas futuras.
+- [x] Sincronizar a Copa 2026 já existente com a nova regra dinâmica de rascunho, sem recriá-la.

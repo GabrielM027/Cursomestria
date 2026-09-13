@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCopaFixturePlan, buildSelectionOfYear, calculateHonorTotals, calculateSeasonTotals, isValidSelectionFormation, visibleRankingRows } from "./amigosData";
+import { buildCopaDraftEntrants, buildCopaFixturePlan, buildSelectionOfYear, calculateHonorTotals, calculateSeasonTotals, isValidSelectionFormation, visibleRankingRows } from "./amigosData";
 
 describe("ranking da pelada", () => {
   it("atribui três pontos e uma vitória somente aos jogadores fixos do time vencedor", () => {
@@ -83,6 +83,23 @@ describe("ranking da pelada", () => {
     expect(plan.filter(fixture => fixture.stage === "final")).toHaveLength(2);
     expect(plan.slice(0, 4).map(fixture => [fixture.homeEntrantId, fixture.awayEntrantId])).toEqual([[1, 8], [2, 7], [3, 6], [4, 5]]);
     expect(plan.map(fixture => fixture.scheduledDate)).toEqual(["2026-10-04", "2026-10-11", "2026-10-18", "2026-10-25", "2026-11-01", "2026-11-08", "2026-11-15", "2026-11-22"]);
+  });
+
+  it("recalcula as sementes do rascunho usando os oito primeiros da classificação atual", () => {
+    const qualification = buildCopaDraftEntrants([
+      { id: 9, name: "Nono que entrou", points: 25, wins: 8, goals: 12 },
+      { id: 2, name: "Segundo", points: 24, wins: 8, goals: 10 },
+      { id: 1, name: "Primeiro anterior", points: 23, wins: 7, goals: 14 },
+      { id: 3, name: "Terceiro", points: 22, wins: 7, goals: 11 },
+      { id: 4, name: "Quarto", points: 20, wins: 6, goals: 9 },
+      { id: 5, name: "Quinto", points: 18, wins: 5, goals: 8 },
+      { id: 6, name: "Sexto", points: 17, wins: 5, goals: 7 },
+      { id: 7, name: "Sétimo", points: 16, wins: 5, goals: 6 },
+      { id: 8, name: "Oitavo que saiu", points: 15, wins: 4, goals: 6 },
+    ]);
+    expect(qualification.map(entrant => [entrant.seed, entrant.playerId])).toEqual([[1, 9], [2, 2], [3, 1], [4, 3], [5, 4], [6, 5], [7, 6], [8, 7]]);
+    const bracket = buildCopaFixturePlan(qualification.map(entrant => ({ id: entrant.playerId, seed: entrant.seed })), "2026-10-04");
+    expect(bracket.slice(0, 4).map(fixture => [fixture.homeEntrantId, fixture.awayEntrantId])).toEqual([[9, 7], [2, 6], [1, 5], [3, 4]]);
   });
 
   it("mostra somente os oito primeiros até a classificação completa ser solicitada", () => {

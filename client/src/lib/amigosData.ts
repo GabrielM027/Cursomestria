@@ -182,6 +182,8 @@ export function buildSelectionOfYear<T extends { id: number; name: string; posit
 
 type CopaPlanEntrant = { id: number; seed?: number };
 type CopaFixturePlan = { stage: "quarterfinal" | "semifinal" | "final" | "third_place"; slotNumber: number; scheduledDate: string; homeEntrantId: number | null; awayEntrantId: number | null };
+type CopaQualifiedPlayer = { id: number; points: number; wins: number; goals: number; name: string; avatarUrl?: string | null; entityName?: string | null; entityBadgeUrl?: string | null };
+type CopaDraftEntrantPayload = { playerId: number; seed: number; qualificationPoints: number; qualificationWins: number; qualificationGoals: number; playerNameSnapshot: string; avatarUrlSnapshot: string | null; entityNameSnapshot: string | null; entityBadgeUrlSnapshot: string | null };
 
 function addDays(dateValue: string, days: number) {
   const date = new Date(`${dateValue}T12:00:00`);
@@ -202,6 +204,21 @@ export function buildCopaFixturePlan(entrants: CopaPlanEntrant[], startDate: str
   );
   if (includeThirdPlace) fixtures.push({ stage: "third_place", slotNumber: 1, scheduledDate: addDays(startDate, 42), homeEntrantId: null, awayEntrantId: null });
   return fixtures;
+}
+
+export function buildCopaDraftEntrants(standings: CopaQualifiedPlayer[]): CopaDraftEntrantPayload[] {
+  if (standings.length < 8) throw new Error("São necessários oito jogadores fixos ativos para criar ou iniciar a Copa.");
+  return standings.slice(0, 8).map((player, index) => ({
+    playerId: player.id,
+    seed: index + 1,
+    qualificationPoints: player.points,
+    qualificationWins: player.wins,
+    qualificationGoals: player.goals,
+    playerNameSnapshot: player.name,
+    avatarUrlSnapshot: player.avatarUrl ?? null,
+    entityNameSnapshot: player.entityName ?? null,
+    entityBadgeUrlSnapshot: player.entityBadgeUrl ?? null,
+  }));
 }
 
 function emptyClubData() {
@@ -419,7 +436,11 @@ export async function getAdminClubData() {
     selectAll(TABLES.selectionFormations),
     selectAll(TABLES.sponsors),
   ]);
-  return { ...club, seasons: seasons.sort((a: any, b: any) => b.year - a.year), players: players.sort((a: any, b: any) => a.name.localeCompare(b.name)), entities: entities.sort((a: any, b: any) => a.name.localeCompare(b.name)), registrations, copaTournaments, copaEntrants, copaFixtures, copaAudit, selectionOverrides, selectionFormations, sponsors: sponsors.sort((a: any, b: any) => a.sortOrder - b.sortOrder || a.id - b.id) };
+  const draft = copaTournaments.find((tournament: any) => tournament.status === "draft" && tournament.seasonId === club.activeSeason?.id);
+  const synchronizedDraft = draft ? await synchronizeCopaDraft(draft, club.standings) : null;
+  const synchronizedEntrants = synchronizedDraft ? await selectAll(TABLES.copaEntrants) : copaEntrants;
+  const synchronizedFixtures = synchronizedDraft ? await selectAll(TABLES.copaFixtures) : copaFixtures;
+  return { ...club, seasons: seasons.sort((a: any, b: any) => b.year - a.year), players: players.sort((a: any, b: any) => a.name.localeCompare(b.name)), entities: entities.sort((a: any, b: any) => a.name.localeCompare(b.name)), registrations, copaTournaments, copaEntrants: synchronizedEntrants, copaFixtures: synchronizedFixtures, copaAudit, selectionOverrides, selectionFormations, sponsors: sponsors.sort((a: any, b: any) => a.sortOrder - b.sortOrder || a.id - b.id) };
 }
 
 export async function saveSelectionOverride(input: { seasonId: number; role: SocietyRole; slotNumber: number; playerId: number | null; fieldX: number; fieldY: number }) {
@@ -485,22 +506,68 @@ async function writeCopaAudit(tournamentId: number, action: string, reason?: str
   fail((await supabase.from(TABLES.copaAudit).insert({ tournamentId, action, reason: reason ?? null, beforeData: beforeData ?? null, afterData: afterData ?? null, performedBy: admin.userId })).error);
 }
 
+function isSameCopaDraftOrder(currentEntrants: Array<{ playerId: number; seed: number }>, qualified: CopaDraftEntrantPayload[]) {
+  return currentEntrants.length === qualified.length && qualified.every(entrant => currentEntrants.some(current => current.playerId === entrant.playerId && current.seed === entrant.seed));
+}
+
+async function synchronizeCopaDraft(tournament: { id: number; status: string; startDate: string }, standings: CopaQualifiedPlayer[]) {
+  if (tournament.status !== "draft") return { qualified: [] as CopaDraftEntrantPayload[], rebuiltBracket: false };
+  const qualified = buildCopaDraftEntrants(standings);
+  const [entrantsResult, fixturesResult] = await Promise.all([
+    supabase.from(TABLES.copaEntrants).select("*").eq("tournamentId", tournament.id).order("seed"),
+    supabase.from(TABLES.copaFixtures).select("*").eq("tournamentId", tournament.id),
+  ]);
+  fail(entrantsResult.error); fail(fixturesResult.error);
+  const currentEntrants = entrantsResult.data ?? [];
+  const currentFixtures = fixturesResult.data ?? [];
+  const rebuiltBracket = !isSameCopaDraftOrder(currentEntrants, qualified);
+
+  if (!rebuiltBracket) {
+    for (const entrant of currentEntrants) {
+      const updated = qualified.find(item => item.playerId === entrant.playerId)!;
+      fail((await supabase.from(TABLES.copaEntrants).update(updated).eq("id", entrant.id)).error);
+    }
+    return { qualified, rebuiltBracket: false };
+  }
+
+  if (currentFixtures.some(fixture => fixture.status === "completed")) throw new Error("Não é possível alterar automaticamente um rascunho que já possui confronto concluído.");
+  const fixtureIds = currentFixtures.map(fixture => fixture.id);
+  if (fixtureIds.length) {
+    const matchesResult = await supabase.from(TABLES.matches).select("id").in("copaFixtureId", fixtureIds).limit(1);
+    fail(matchesResult.error);
+    if ((matchesResult.data ?? []).length) throw new Error("Há partida vinculada a este rascunho. Para preservar os dados, o G8 não foi alterado automaticamente.");
+  }
+
+  const beforeData = { entrants: currentEntrants, fixtures: currentFixtures };
+  const fixturesBySlot = new Map(currentFixtures.map(fixture => [`${fixture.stage}-${fixture.slotNumber}`, fixture]));
+  if (currentFixtures.length) fail((await supabase.from(TABLES.copaFixtures).delete().eq("tournamentId", tournament.id)).error);
+  if (currentEntrants.length) fail((await supabase.from(TABLES.copaEntrants).delete().eq("tournamentId", tournament.id)).error);
+  const insertedResult = await supabase.from(TABLES.copaEntrants).insert(qualified.map(entrant => ({ tournamentId: tournament.id, ...entrant }))).select("id,seed");
+  fail(insertedResult.error);
+  const fixtureRows = buildCopaFixturePlan(insertedResult.data ?? [], tournament.startDate).map(fixture => {
+    const previous = fixturesBySlot.get(`${fixture.stage}-${fixture.slotNumber}`);
+    return { ...fixture, tournamentId: tournament.id, status: previous?.status === "postponed" ? "postponed" : "scheduled", scheduledDate: previous?.scheduledDate ?? fixture.scheduledDate, notes: previous?.notes ?? null };
+  });
+  fail((await supabase.from(TABLES.copaFixtures).insert(fixtureRows)).error);
+  await writeCopaAudit(tournament.id, "draft_qualification_synced", "Rascunho sincronizado com o G8 atual dos pontos corridos.", beforeData, { qualifiedPlayerIds: qualified.map(entrant => entrant.playerId), fixtures: fixtureRows });
+  return { qualified, rebuiltBracket: true };
+}
+
 export async function createCopaTournament(input: { title: string; startDate: string }) {
   const admin = await requireAdmin();
   if (!admin) throw new Error("Faça login com uma conta administrativa.");
   const club = await getPublicClubData();
   if (!club.activeSeason) throw new Error("Ative uma temporada antes de criar a Copa.");
-  const classified = club.standings.slice(0, 8);
-  if (classified.length < 8) throw new Error("São necessários oito jogadores fixos ativos para criar a Copa.");
+  const classified = buildCopaDraftEntrants(club.standings);
   const tournamentResult = await supabase.from(TABLES.copaTournaments).insert({ seasonId: club.activeSeason.id, title: input.title.trim() || `Copa ${club.activeSeason.year}`, status: "draft", startDate: input.startDate, createdBy: admin.userId }).select("*").single();
   fail(tournamentResult.error);
   const tournament = tournamentResult.data!;
-  const entrantsPayload = classified.map((player: any, index: number) => ({ tournamentId: tournament.id, playerId: player.id, seed: index + 1, qualificationPoints: player.points, qualificationWins: player.wins, qualificationGoals: player.goals, playerNameSnapshot: player.name, avatarUrlSnapshot: player.avatarUrl ?? null, entityNameSnapshot: player.entityName ?? null, entityBadgeUrlSnapshot: player.entityBadgeUrl ?? null }));
+  const entrantsPayload = classified.map(entrant => ({ tournamentId: tournament.id, ...entrant }));
   const entrantsResult = await supabase.from(TABLES.copaEntrants).insert(entrantsPayload).select("id,seed");
   fail(entrantsResult.error);
   const fixtures = buildCopaFixturePlan(entrantsResult.data ?? [], input.startDate).map(fixture => ({ ...fixture, tournamentId: tournament.id, status: "scheduled" }));
   fail((await supabase.from(TABLES.copaFixtures).insert(fixtures)).error);
-  await writeCopaAudit(tournament.id, "created", "Copa criada em rascunho com os oito melhores dos pontos corridos.", null, { classifiedPlayerIds: classified.map((player: any) => player.id), startDate: input.startDate });
+  await writeCopaAudit(tournament.id, "created", "Copa criada em rascunho com os oito melhores dos pontos corridos.", null, { classifiedPlayerIds: classified.map(entrant => entrant.playerId), startDate: input.startDate });
   return tournament;
 }
 
@@ -508,11 +575,18 @@ export async function setCopaTournamentStatus(input: { tournamentId: number; sta
   const currentResult = await supabase.from(TABLES.copaTournaments).select("*").eq("id", input.tournamentId).single();
   fail(currentResult.error);
   const current = currentResult.data!;
+  let frozenQualification: CopaDraftEntrantPayload[] | null = null;
+  if (input.status === "active" && current.status === "draft") {
+    const club = await getPublicClubData();
+    if (!club.activeSeason || club.activeSeason.id !== current.seasonId) throw new Error("A Copa precisa estar vinculada à temporada ativa para congelar o G8.");
+    const synchronization = await synchronizeCopaDraft(current, club.standings);
+    frozenQualification = synchronization.qualified;
+  }
   const updates: Record<string, unknown> = { status: input.status };
   if (input.status === "active" && !current.standingsFrozenAt) updates.standingsFrozenAt = new Date().toISOString();
   if (input.status === "cancelled") updates.cancelReason = input.reason?.trim() || "Cancelada pelo administrador";
   fail((await supabase.from(TABLES.copaTournaments).update(updates).eq("id", input.tournamentId)).error);
-  await writeCopaAudit(input.tournamentId, `status_${input.status}`, input.reason, current, updates);
+  await writeCopaAudit(input.tournamentId, `status_${input.status}`, input.reason, current, { ...updates, frozenQualification });
 }
 
 export async function updateCopaFixture(input: { fixtureId: number; scheduledDate?: string; homeEntrantId?: number | null; awayEntrantId?: number | null; notes?: string | null }) {
@@ -520,6 +594,9 @@ export async function updateCopaFixture(input: { fixtureId: number; scheduledDat
   fail(currentResult.error);
   const current = currentResult.data!;
   if (current.status === "completed") throw new Error("Este confronto já foi concluído. Corrija o resultado antes de editar a chave.");
+  const tournamentResult = await supabase.from(TABLES.copaTournaments).select("status").eq("id", current.tournamentId).single();
+  fail(tournamentResult.error);
+  if (tournamentResult.data!.status === "draft" && (input.homeEntrantId !== undefined || input.awayEntrantId !== undefined)) throw new Error("No rascunho, os confrontos seguem automaticamente as sementes do G8. Você ainda pode alterar datas e observações.");
   const updates = { scheduledDate: input.scheduledDate ?? current.scheduledDate, homeEntrantId: input.homeEntrantId ?? null, awayEntrantId: input.awayEntrantId ?? null, notes: input.notes ?? null };
   if (updates.homeEntrantId && updates.homeEntrantId === updates.awayEntrantId) throw new Error("Um capitão não pode enfrentar ele mesmo.");
   fail((await supabase.from(TABLES.copaFixtures).update(updates).eq("id", input.fixtureId)).error);
@@ -538,6 +615,9 @@ export async function resolveCopaFixture(input: { fixtureId: number; matchId: nu
   const fixtureResult = await supabase.from(TABLES.copaFixtures).select("*").eq("id", input.fixtureId).single();
   fail(fixtureResult.error);
   const fixture = fixtureResult.data!;
+  const tournamentResult = await supabase.from(TABLES.copaTournaments).select("status").eq("id", fixture.tournamentId).single();
+  fail(tournamentResult.error);
+  if (tournamentResult.data!.status === "draft") throw new Error("Inicie a Copa antes de registrar resultados no chaveamento.");
   if (!fixture.homeEntrantId || !fixture.awayEntrantId) throw new Error("Defina os dois capitães antes de encerrar esse confronto.");
   if (fixture.status === "completed") throw new Error("Este confronto já foi concluído.");
   const finalLegsResult = fixture.stage === "final" ? await supabase.from(TABLES.copaFixtures).select("id").eq("tournamentId", fixture.tournamentId).eq("stage", "final") : { data: [], error: null };
@@ -654,6 +734,14 @@ export async function saveMatch(input: any) {
   fail((await supabase.from(TABLES.participants).insert(input.participants.map((participant: any) => participant.isGuest ? ({ matchId, playerId: null, guestName: participant.guestName.trim(), invitedByName: participant.invitedByName?.trim() || null, teamColor: participant.teamColor, isGuest: true, bestVotes: 0, worstVotes: 0 }) : ({ matchId, playerId: participant.playerId, guestName: null, invitedByName: null, teamColor: participant.teamColor, isGuest: playerById.get(participant.playerId)?.participantType === "guest", bestVotes: Math.max(0, Number(participant.bestVotes || 0)), worstVotes: Math.max(0, Number(participant.worstVotes || 0)) })))).error);
   const validGoals = input.goals.filter((goal: any) => goal.quantity > 0);
   if (validGoals.length) fail((await supabase.from(TABLES.goals).insert(validGoals.map((goal: any) => goal.isGuest ? ({ matchId, playerId: null, guestName: goal.guestName.trim(), teamColor: goal.teamColor, quantity: goal.quantity }) : ({ matchId, playerId: goal.playerId, guestName: null, teamColor: (participantById.get(goal.playerId) as any).teamColor, quantity: goal.quantity })))).error);
+  if (values.countsForStandings) {
+    const draftResult = await supabase.from(TABLES.copaTournaments).select("*").eq("seasonId", input.seasonId).eq("status", "draft").maybeSingle();
+    fail(draftResult.error);
+    if (draftResult.data) {
+      const club = await getPublicClubData();
+      await synchronizeCopaDraft(draftResult.data, club.standings);
+    }
+  }
   return matchId;
 }
 
