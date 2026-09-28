@@ -186,9 +186,10 @@ type CopaQualifiedPlayer = { id: number; points: number; wins: number; goals: nu
 type CopaDraftEntrantPayload = { playerId: number; seed: number; qualificationPoints: number; qualificationWins: number; qualificationGoals: number; playerNameSnapshot: string; avatarUrlSnapshot: string | null; entityNameSnapshot: string | null; entityBadgeUrlSnapshot: string | null };
 
 function addDays(dateValue: string, days: number) {
-  const date = new Date(`${dateValue}T12:00:00`);
-  date.setDate(date.getDate() + days);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue);
+  if (!match) throw new Error("Data inválida.");
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]) + days));
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`;
 }
 
 export function buildCopaFixturePlan(entrants: CopaPlanEntrant[], startDate: string, includeThirdPlace = false, _random = Math.random): CopaFixturePlan[] {
