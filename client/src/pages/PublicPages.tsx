@@ -9,7 +9,14 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 type ClubData = any;
 
 function formatDate(value: Date | string) {
-  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(value));
+  let date: Date;
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    date = new Date(year, month - 1, day, 12);
+  } else {
+    date = value instanceof Date ? value : new Date(value);
+  }
+  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "long", year: "numeric" }).format(date);
 }
 
 function Loading() { return <ClubShell><section className="section"><div className="club-container"><div className="empty-state"><Trophy /><strong>Carregando a história</strong></div></div></section></ClubShell>; }
