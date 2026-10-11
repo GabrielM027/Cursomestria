@@ -722,7 +722,7 @@ export async function saveMatch(input: any) {
   fail(playersResult.error);
   const playerById = new Map((playersResult.data ?? []).map(player => [player.id, player]));
   const participantById = new Map(registeredParticipants.map((participant: any) => [participant.playerId, participant]));
-  const values = { seasonId: input.seasonId, matchDate: input.matchDate, blackScore: input.blackScore, redScore: input.redScore, notes: input.notes ?? null, countsForStandings: input.countsForStandings !== false, copaFixtureId: input.copaFixtureId ?? null };
+  const values = { seasonId: input.seasonId, matchDate: input.matchDate, blackScore: input.blackScore, redScore: input.redScore, notes: input.notes ?? null, countsForStandings: input.countsForStandings !== false, ...(input.copaFixtureId !== undefined ? { copaFixtureId: input.copaFixtureId } : {}) };
   let matchId = input.id;
   if (matchId) {
     fail((await supabase.from(TABLES.matches).update(values).eq("id", matchId)).error);
