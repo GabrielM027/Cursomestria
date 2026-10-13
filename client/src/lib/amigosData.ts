@@ -1,5 +1,6 @@
 import { supabase, supabaseConfigured } from "./supabase";
 import { normalizeSponsorPresentation } from "./sponsors";
+import type { CopaCorrectionState, CopaMatchChanges } from "./copaCorrection";
 
 type TeamColor = "black" | "red";
 type ScoringMatch = {
@@ -612,68 +613,35 @@ export async function postponeCopaTournament(input: { tournamentId: number; from
   await writeCopaAudit(input.tournamentId, "fixtures_postponed", input.reason || "Pelada cancelada; chave empurrada uma semana.", fixtures, { fromDate: input.fromDate, delayedFixtures: fixtures.length });
 }
 
+export async function getCopaMatchState(input: { fixtureId: number; matchId: number }): Promise<CopaCorrectionState> {
+  if (!await requireAdmin()) throw new Error("Faça login com uma conta administrativa.");
+  const result = await supabase.rpc("get_copa_match_state", { p_fixture_id: input.fixtureId, p_match_id: input.matchId });
+  if (result.error?.code === "PGRST202") throw new Error("A migração de correção da Copa precisa ser instalada antes de usar esta função.");
+  fail(result.error);
+  return result.data as CopaCorrectionState;
+}
+
+export async function correctCopaMatch(input: { fixtureId: number; matchId: number; expectedRevision: string; changes: CopaMatchChanges; reason: string }) {
+  if (!await requireAdmin()) throw new Error("Faça login com uma conta administrativa.");
+  const result = await supabase.rpc("save_copa_match_result", {
+    p_fixture_id: input.fixtureId, p_match_id: input.matchId, p_expected_revision: input.expectedRevision,
+    p_changes: input.changes, p_reason: input.reason, p_correction: true,
+  });
+  fail(result.error);
+  return result.data;
+}
+
 export async function resolveCopaFixture(input: { fixtureId: number; matchId: number; blackScore: number; redScore: number; homePenaltyScore?: number; awayPenaltyScore?: number }) {
-  const fixtureResult = await supabase.from(TABLES.copaFixtures).select("*").eq("id", input.fixtureId).single();
-  fail(fixtureResult.error);
-  const fixture = fixtureResult.data!;
-  const tournamentResult = await supabase.from(TABLES.copaTournaments).select("status").eq("id", fixture.tournamentId).single();
-  fail(tournamentResult.error);
-  if (tournamentResult.data!.status === "draft") throw new Error("Inicie a Copa antes de registrar resultados no chaveamento.");
-  if (!fixture.homeEntrantId || !fixture.awayEntrantId) throw new Error("Defina os dois capitães antes de encerrar esse confronto.");
-  if (fixture.status === "completed") throw new Error("Este confronto já foi concluído.");
-  const finalLegsResult = fixture.stage === "final" ? await supabase.from(TABLES.copaFixtures).select("id").eq("tournamentId", fixture.tournamentId).eq("stage", "final") : { data: [], error: null };
-  fail(finalLegsResult.error);
-  const hasTwoLegFinal = (finalLegsResult.data ?? []).length >= 2;
-  const isFirstFinalLeg = fixture.stage === "final" && hasTwoLegFinal && fixture.slotNumber === 1;
-  const isSecondFinalLeg = fixture.stage === "final" && hasTwoLegFinal && fixture.slotNumber === 2;
-  let winnerEntrantId: number | null = null;
-  let homePenaltyScore: number | null = null;
-  let awayPenaltyScore: number | null = null;
-
-  if (!isFirstFinalLeg) {
-    let homeScore = input.blackScore;
-    let awayScore = input.redScore;
-    if (isSecondFinalLeg) {
-      const firstFinalResult = await supabase.from(TABLES.copaFixtures).select("*").eq("tournamentId", fixture.tournamentId).eq("stage", "final").eq("slotNumber", 1).single();
-      fail(firstFinalResult.error);
-      const firstFinal = firstFinalResult.data!;
-      if (firstFinal.status !== "completed") throw new Error("Registre primeiro o Jogo 1 da final.");
-      if (firstFinal.homeEntrantId !== fixture.homeEntrantId || firstFinal.awayEntrantId !== fixture.awayEntrantId) throw new Error("Os dois jogos da final precisam manter os mesmos finalistas.");
-      const firstFinalMatchResult = await supabase.from(TABLES.matches).select("blackScore,redScore").eq("copaFixtureId", firstFinal.id).maybeSingle();
-      fail(firstFinalMatchResult.error);
-      if (!firstFinalMatchResult.data) throw new Error("Não foi possível localizar o placar do primeiro jogo da final.");
-      homeScore += firstFinalMatchResult.data.blackScore;
-      awayScore += firstFinalMatchResult.data.redScore;
-    }
-    const tied = homeScore === awayScore;
-    if (tied && (input.homePenaltyScore === undefined || input.awayPenaltyScore === undefined || input.homePenaltyScore === input.awayPenaltyScore)) throw new Error(isSecondFinalLeg ? "No empate do placar agregado, informe os pênaltis com vencedor definido." : "Em empate, informe um placar de pênaltis com vencedor definido.");
-    const homeWon = tied ? Number(input.homePenaltyScore) > Number(input.awayPenaltyScore) : homeScore > awayScore;
-    winnerEntrantId = homeWon ? fixture.homeEntrantId : fixture.awayEntrantId;
-    homePenaltyScore = tied ? Number(input.homePenaltyScore) : null;
-    awayPenaltyScore = tied ? Number(input.awayPenaltyScore) : null;
-  }
-
-  const updates = { status: "completed", winnerEntrantId, homePenaltyScore, awayPenaltyScore };
-  fail((await supabase.from(TABLES.copaFixtures).update(updates).eq("id", fixture.id)).error);
-  fail((await supabase.from(TABLES.matches).update({ copaFixtureId: fixture.id, countsForStandings: false }).eq("id", input.matchId)).error);
-  if (fixture.stage === "quarterfinal" && winnerEntrantId) {
-    const progression: Record<number, { nextSlot: number; field: "homeEntrantId" | "awayEntrantId" }> = {
-      1: { nextSlot: 1, field: "homeEntrantId" }, 4: { nextSlot: 1, field: "awayEntrantId" },
-      2: { nextSlot: 2, field: "homeEntrantId" }, 3: { nextSlot: 2, field: "awayEntrantId" },
-    };
-    const next = progression[fixture.slotNumber];
-    const nextResult = await supabase.from(TABLES.copaFixtures).select("id").eq("tournamentId", fixture.tournamentId).eq("stage", "semifinal").eq("slotNumber", next.nextSlot).single();
-    fail(nextResult.error);
-    fail((await supabase.from(TABLES.copaFixtures).update({ [next.field]: winnerEntrantId }).eq("id", nextResult.data!.id)).error);
-  } else if (fixture.stage === "semifinal" && winnerEntrantId) {
-    const finalField = fixture.slotNumber === 1 ? "homeEntrantId" : "awayEntrantId";
-    const finalsResult = await supabase.from(TABLES.copaFixtures).select("id").eq("tournamentId", fixture.tournamentId).eq("stage", "final");
-    fail(finalsResult.error);
-    for (const finalFixture of finalsResult.data ?? []) fail((await supabase.from(TABLES.copaFixtures).update({ [finalField]: winnerEntrantId }).eq("id", finalFixture.id)).error);
-  } else if (fixture.stage === "final" && winnerEntrantId && (!hasTwoLegFinal || isSecondFinalLeg)) {
-    await setCopaTournamentStatus({ tournamentId: fixture.tournamentId, status: "completed", reason: "Final concluída." });
-  }
-  await writeCopaAudit(fixture.tournamentId, "fixture_resolved", isFirstFinalLeg ? "Primeiro jogo da final registrado." : isSecondFinalLeg ? "Final em dois jogos concluída pelo placar agregado." : "Confronto encerrado e chave atualizada.", fixture, { ...updates, matchId: input.matchId });
+  const state = await getCopaMatchState(input);
+  const match = state.data.matches.find(item => item.id === input.matchId);
+  if (!match || match.blackScore !== input.blackScore || match.redScore !== input.redScore) throw new Error("O placar foi alterado. Atualize as partidas antes de encerrar o confronto.");
+  const result = await supabase.rpc("save_copa_match_result", {
+    p_fixture_id: input.fixtureId, p_match_id: input.matchId, p_expected_revision: state.revision,
+    p_changes: { homePenaltyScore: input.homePenaltyScore ?? null, awayPenaltyScore: input.awayPenaltyScore ?? null },
+    p_reason: "Confronto encerrado e chave atualizada.", p_correction: false,
+  });
+  fail(result.error);
+  return result.data;
 }
 
 export async function saveFootballEntity(input: any) {
@@ -713,6 +681,12 @@ export async function savePlayer(input: any) {
 }
 
 export async function saveMatch(input: any) {
+  if (input.id) {
+    const current = await supabase.from(TABLES.matches).select("copaFixtureId,countsForStandings").eq("id", input.id).single();
+    fail(current.error);
+    if (current.data?.copaFixtureId) throw new Error("Use Corrigir partida na aba Copa para editar uma partida vinculada ao chaveamento.");
+    input = { ...input, countsForStandings: current.data?.countsForStandings !== false };
+  }
   const registeredParticipants = input.participants.filter((participant: any) => !participant.isGuest);
   const walkOnParticipants = input.participants.filter((participant: any) => participant.isGuest);
   const participantIds = registeredParticipants.map((participant: any) => participant.playerId);

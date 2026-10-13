@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createAdminAccount,
   createCopaTournament,
+  correctCopaMatch,
+  getCopaMatchState,
   deleteSponsor,
   deleteHighlight,
   deleteGalleryItem,
@@ -85,6 +87,8 @@ export const trpc = {
       updateFixture: mutationHook(updateCopaFixture),
       postpone: mutationHook(postponeCopaTournament),
       resolveFixture: mutationHook(resolveCopaFixture),
+      matchState: queryHook(input => ["admin", "copa", "matchState", input?.fixtureId, input?.matchId], getCopaMatchState),
+      correctMatch: mutationHook(correctCopaMatch),
     },
     selection: {
       saveOverride: mutationHook(saveSelectionOverride),

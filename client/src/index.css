@@ -746,3 +746,15 @@ a { color: inherit; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   .sponsors-marquee__track { animation: none; }
 }
+
+/* Correction UI is confined to administration. */
+.copa-correction-dialog { width: min(960px, calc(100vw - 24px)); max-width: 960px; max-height: 90dvh; overflow-y: auto; background: #170f12; color: #f6f1ef; }
+.copa-correction-fields { display: grid; gap: 16px; min-width: 0; border: 0; padding: 0; }
+.copa-correction-row { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; border: 1px solid rgba(234,203,130,.16); border-radius: 12px; padding: 12px; }
+.copa-correction-row .admin-field { flex: 1; min-width: 110px; }
+.copa-correction-row .admin-field:first-child { flex: 2; min-width: 170px; }
+.copa-correction-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.copa-correction-error { color: #ffb9b9; }
+.copa-correction-audit { overflow-wrap: anywhere; margin-top: 12px; }
+.copa-correction-audit summary { cursor: pointer; }
+.copa-correction-audit ul { padding-left: 18px; line-height: 1.8; }
