@@ -5,7 +5,8 @@
       "feat/copa-match-corrections": false,
       "feat/copa-captain-corrections": false,
       "feat/copa-next-match-layout": false,
-      "fix/copa-flag-zoom": false
+      "fix/copa-flag-zoom": false,
+      "fix/copa-badge-proportions": false
     }
   },
   "framework": "vite",
