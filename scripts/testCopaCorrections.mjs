@@ -106,6 +106,204 @@ try {
     .sort()) {
     await db.exec(await readFile(`${root}supabase/migrations/${file}`, "utf8"));
   }
+  await test("capitães: inverter cores recalcula vencedor sem alterar placar ou estatísticas", async () => {
+    await completeQuarter();
+    const before = (await state()).data;
+    await apply(101, 301, { homeEntrantId: 208, awayEntrantId: 201 });
+    const after = (await state()).data;
+    const fixture = after.fixtures.find(f => f.id === 101);
+    assert.equal(fixture.homeEntrantId, 208);
+    assert.equal(fixture.awayEntrantId, 201);
+    assert.equal(fixture.winnerEntrantId, 208);
+    assert.equal(after.fixtures.find(f => f.id === 105).homeEntrantId, 208);
+    for (const key of [
+      "matches",
+      "participants",
+      "goals",
+      "highlights",
+      "entrants",
+    ])
+      assert.deepEqual(after[key], before[key]);
+    const log = (
+      await query(
+        "select * from public.\"copaAuditLogs\" where action='match_corrected'"
+      )
+    )[0];
+    assert.equal(
+      log.beforeData.state.fixtures.find(f => f.id === 101).homeEntrantId,
+      201
+    );
+    assert.equal(
+      log.afterData.state.fixtures.find(f => f.id === 101).homeEntrantId,
+      208
+    );
+    assert.equal(log.performedBy, ADMIN);
+  });
+  await test("capitães: inverter cores no empate usa os pênaltis da cor correta", async () => {
+    await completeQuarter();
+    await apply(101, 301, {
+      blackScore: 1,
+      redScore: 1,
+      homePenaltyScore: 3,
+      awayPenaltyScore: 4,
+    });
+    await apply(101, 301, { homeEntrantId: 208, awayEntrantId: 201 });
+    const fixture = (await state()).data.fixtures.find(f => f.id === 101);
+    assert.equal(fixture.winnerEntrantId, 201);
+    assert.equal(fixture.homePenaltyScore, 3);
+    assert.equal(fixture.awayPenaltyScore, 4);
+  });
+  await test("capitães: rejeita duplicados, IDs inválidos e capitães de outra Copa", async () => {
+    await completeQuarter();
+    const before = await state();
+    for (const changes of [
+      { homeEntrantId: 208 },
+      { homeEntrantId: 0 },
+      { homeEntrantId: null },
+      { homeEntrantId: 9999 },
+      { homeEntrantId: 1.5 },
+    ]) {
+      await reject(() => apply(101, 301, changes), /capitães/);
+    }
+    await db.exec(
+      'reset role; insert into public."copaTournaments" (id,"seasonId",title,status,"startDate") values (2,1,\'Outra Copa fictícia\',\'cancelled\',\'2099-01-01\'); insert into public."copaEntrants" (id,"tournamentId","playerId",seed,"playerNameSnapshot") values (999,2,2,1,\'Outro capitão fictício\'); set role authenticated'
+    );
+    await reject(() => apply(101, 301, { homeEntrantId: 999 }), /desta Copa/);
+    assert.deepEqual(await state(), before);
+  });
+  await test("capitães: semifinal invertida atualiza os dois jogos da final", async () => {
+    await seed();
+    await addMatch(305, 105, 2, 1);
+    const before = (await state(105, 305)).data;
+    await apply(105, 305, { homeEntrantId: 204, awayEntrantId: 201 });
+    const after = (await state(105, 305)).data;
+    assert.equal(after.fixtures.find(f => f.id === 105).winnerEntrantId, 204);
+    assert.equal(
+      after.fixtures.filter(
+        f =>
+          f.stage === "final" &&
+          f.homeEntrantId === 204 &&
+          f.awayEntrantId === 202
+      ).length,
+      2
+    );
+    for (const key of ["matches", "participants", "goals", "highlights"])
+      assert.deepEqual(after[key], before[key]);
+  });
+  await test("capitães: bloqueia inversão das quartas com semifinal concluída e reverte tudo", async () => {
+    await completeQuarter();
+    await addMatch(305, 105, 2, 0);
+    const before = await state();
+    const logs = await query('select * from public."copaAuditLogs"');
+    await reject(
+      () => apply(101, 301, { homeEntrantId: 208, awayEntrantId: 201 }),
+      /semifinal.*resultado/
+    );
+    assert.deepEqual(await state(), before);
+    assert.deepEqual(await query('select * from public."copaAuditLogs"'), logs);
+  });
+  await test("capitães: bloqueia semifinal invertida com final já concluída", async () => {
+    await seed();
+    await addMatch(305, 105, 2, 0);
+    await addMatch(307, 107, 2, 0);
+    const before = await state(105, 305);
+    await reject(
+      () => apply(105, 305, { homeEntrantId: 204, awayEntrantId: 201 }),
+      /final.*resultado/
+    );
+    assert.deepEqual(await state(105, 305), before);
+  });
+  await test("capitães: alteração que mantém o vencedor preserva fases posteriores concluídas", async () => {
+    await completeQuarter();
+    await addMatch(305, 105, 2, 0);
+    const before = (await state()).data;
+    await apply(101, 301, { awayEntrantId: 207 });
+    const after = (await state()).data;
+    assert.equal(after.fixtures.find(f => f.id === 101).winnerEntrantId, 201);
+    assert.deepEqual(
+      after.fixtures.filter(f => f.id !== 101),
+      before.fixtures.filter(f => f.id !== 101)
+    );
+    assert.deepEqual(after.matches, before.matches);
+  });
+  await test("capitães: correção do Jogo 1 alinha o Jogo 2 ainda não disputado", async () => {
+    await seed();
+    await addMatch(307, 107, 2, 1);
+    const before = (await state(107, 307)).data;
+    await apply(107, 307, { homeEntrantId: 202, awayEntrantId: 201 });
+    const after = (await state(107, 307)).data;
+    assert.equal(
+      after.fixtures.filter(
+        f =>
+          f.stage === "final" &&
+          f.homeEntrantId === 202 &&
+          f.awayEntrantId === 201
+      ).length,
+      2
+    );
+    assert.equal(after.fixtures.find(f => f.id === 107).winnerEntrantId, null);
+    assert.deepEqual(after.matches, before.matches);
+  });
+  await test("capitães: não troca capitães do Jogo 1 após o Jogo 2 concluído", async () => {
+    await seed();
+    await addMatch(307, 107, 2, 0);
+    await addMatch(308, 108, 0, 1);
+    const before = await state(107, 307);
+    await reject(
+      () => apply(107, 307, { homeEntrantId: 202, awayEntrantId: 201 }),
+      /Jogo 2.*resultado/
+    );
+    assert.deepEqual(await state(107, 307), before);
+  });
+  await test("capitães: Jogo 2 invertido soma o agregado por finalista e preserva o Jogo 1", async () => {
+    await seed();
+    await addMatch(307, 107, 1, 4);
+    await addMatch(308, 108, 4, 0);
+    const before = (await state(108, 308)).data;
+    assert.equal(before.fixtures.find(f => f.id === 108).winnerEntrantId, 201);
+    await apply(108, 308, { homeEntrantId: 202, awayEntrantId: 201 });
+    const after = (await state(108, 308)).data;
+    assert.equal(after.fixtures.find(f => f.id === 108).winnerEntrantId, 202);
+    assert.deepEqual(
+      after.fixtures.find(f => f.id === 107),
+      before.fixtures.find(f => f.id === 107)
+    );
+    assert.deepEqual(after.matches, before.matches);
+    assert.deepEqual(after.tournament, before.tournament);
+  });
+  await test("capitães: inversão da volta com agregado empatado exige pênaltis", async () => {
+    await seed();
+    await addMatch(307, 107, 2, 0);
+    await addMatch(308, 108, 2, 0);
+    const before = await state(108, 308);
+    await reject(
+      () => apply(108, 308, { homeEntrantId: 202, awayEntrantId: 201 }),
+      /pênaltis/
+    );
+    assert.deepEqual(await state(108, 308), before);
+    await apply(108, 308, {
+      homeEntrantId: 202,
+      awayEntrantId: 201,
+      homePenaltyScore: 5,
+      awayPenaltyScore: 4,
+    });
+    assert.equal(
+      (await state(108, 308)).data.fixtures.find(f => f.id === 108)
+        .winnerEntrantId,
+      202
+    );
+  });
+  await test("capitães: não substitui os finalistas da volta por pessoas que não jogaram a ida", async () => {
+    await seed();
+    await addMatch(307, 107, 2, 0);
+    await addMatch(308, 108, 0, 1);
+    const before = await state(108, 308);
+    await reject(
+      () => apply(108, 308, { homeEntrantId: 204 }),
+      /mesmos dois finalistas/
+    );
+    assert.deepEqual(await state(108, 308), before);
+  });
   await test("quartas: troca vencedor e atualiza apenas o lado correspondente da semifinal", async () => {
     await completeQuarter();
     const before = (await state()).data;

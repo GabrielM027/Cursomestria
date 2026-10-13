@@ -118,6 +118,40 @@ const values = {
   highlights: state.data.highlights,
 };
 describe("correção da Copa", () => {
+  it("envia só a associação dos capitães às cores, sem trocar placar ou estatísticas", () => {
+    expect(
+      buildCopaChanges(state, 1, 1, {
+        ...values,
+        homeEntrantId: 2,
+        awayEntrantId: 1,
+      })
+    ).toEqual({ homeEntrantId: 2, awayEntrantId: 1 });
+    expect(
+      buildCopaChanges(state, 1, 1, {
+        ...values,
+        homeEntrantId: 1,
+        awayEntrantId: 2,
+      })
+    ).toEqual({});
+    expect(
+      buildCopaChanges(state, 1, 1, { ...values, awayEntrantId: 3 })
+    ).toEqual({ awayEntrantId: 3 });
+  });
+  it("o agregado acompanha o capitão quando a volta inverte as cores", () => {
+    const preview = previewCopaResult(state, 8, 8, 0, 1, 2, 1);
+    expect(preview.aggregateBlack).toBe(0);
+    expect(preview.aggregateRed).toBe(3);
+    expect(preview.needsPenalties).toBe(false);
+  });
+  it("inverter capitães pode tornar o agregado empatado e exigir pênaltis", () => {
+    expect(previewCopaResult(state, 8, 8, 2, 0, 1, 2).needsPenalties).toBe(
+      false
+    );
+    const preview = previewCopaResult(state, 8, 8, 2, 0, 2, 1);
+    expect(preview.aggregateBlack).toBe(2);
+    expect(preview.aggregateRed).toBe(2);
+    expect(preview.needsPenalties).toBe(true);
+  });
   it("envia só o placar alterado, preservando escalação, votos, gols e destaques", () => {
     expect(buildCopaChanges(state, 1, 1, { ...values, redScore: 3 })).toEqual({
       redScore: 3,
