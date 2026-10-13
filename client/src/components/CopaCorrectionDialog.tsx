@@ -40,6 +40,8 @@ function CorrectionForm({
 }) {
   const fixture = state.data.fixtures.find(item => item.id === fixtureId)!;
   const match = state.data.matches.find(item => item.id === matchId)!;
+  const [homeId, setHomeId] = useState(String(fixture.homeEntrantId ?? ""));
+  const [awayId, setAwayId] = useState(String(fixture.awayEntrantId ?? ""));
   const [blackScore, setBlackScore] = useState(String(match.blackScore));
   const [redScore, setRedScore] = useState(String(match.redScore));
   const [matchDate, setMatchDate] = useState(match.matchDate);
@@ -68,8 +70,13 @@ function CorrectionForm({
     fixtureId,
     matchId,
     Number(blackScore),
-    Number(redScore)
+    Number(redScore),
+    Number(homeId),
+    Number(awayId)
   );
+  const entrants = (state.data.entrants ?? [])
+    .filter(entrant => entrant.tournamentId === fixture.tournamentId)
+    .sort((a, b) => a.seed - b.seed);
   const eligiblePlayers = players.filter(
     player =>
       player.isActive || participants.some(row => row.playerId === player.id)
@@ -119,7 +126,11 @@ function CorrectionForm({
     event.preventDefault();
     setError("");
     try {
+      if (!homeId || !awayId || homeId === awayId)
+        throw new Error("Escolha dois capitães diferentes, um para cada cor.");
       const changes = buildCopaChanges(state, fixtureId, matchId, {
+        homeEntrantId: Number(homeId),
+        awayEntrantId: Number(awayId),
         blackScore: Number(blackScore),
         redScore: Number(redScore),
         matchDate,
@@ -171,10 +182,52 @@ function CorrectionForm({
         className="copa-correction-fields"
       >
         <p className="admin-muted">
-          Preto e vermelho mantêm os capitães deste confronto. Informe somente
-          os dados confirmados. Pontos corridos permanecem congelados para esta
+          Escolha quem comandou cada cor. O vencedor será recalculado usando o
+          placar informado. Pontos corridos permanecem congelados para esta
           partida.
         </p>
+        <div className="admin-form__grid">
+          <label className="admin-field">
+            <span>Capitão do Preto</span>
+            <select
+              required
+              value={homeId}
+              onChange={event => setHomeId(event.target.value)}
+            >
+              <option value="">Selecione o capitão...</option>
+              {entrants.map(entrant => (
+                <option key={entrant.id} value={entrant.id}>
+                  {entrant.playerNameSnapshot}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="admin-field">
+            <span>Capitão do Vermelho</span>
+            <select
+              required
+              value={awayId}
+              onChange={event => setAwayId(event.target.value)}
+            >
+              <option value="">Selecione o capitão...</option>
+              {entrants.map(entrant => (
+                <option key={entrant.id} value={entrant.id}>
+                  {entrant.playerNameSnapshot}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <button
+          type="button"
+          className="admin-secondary"
+          onClick={() => {
+            setHomeId(awayId);
+            setAwayId(homeId);
+          }}
+        >
+          Inverter capitães
+        </button>
         <div className="admin-form__grid">
           <label className="admin-field">
             <span>Gols do Preto</span>
@@ -219,13 +272,20 @@ function CorrectionForm({
           <p className="admin-muted">
             Jogo 1: o campeão será definido pelo agregado após o Jogo 2. Se o
             Jogo 2 estiver concluído, o placar do Jogo 1 não poderá ser
-            alterado.
+            alterado. A troca de capitães também fica bloqueada após a conclusão
+            do Jogo 2.
           </p>
         )}
         {result.secondLeg && (
           <p className="admin-muted">
             Agregado: Preto {result.aggregateBlack} × {result.aggregateRed}{" "}
             Vermelho.
+          </p>
+        )}
+        {result.secondLeg && (
+          <p className="admin-muted">
+            O agregado acompanha cada finalista, inclusive quando os capitães
+            trocaram de cor entre os jogos.
           </p>
         )}
         {result.needsPenalties && (

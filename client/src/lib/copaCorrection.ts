@@ -42,10 +42,18 @@ export type CopaMatch = {
   matchDate: string;
   countsForStandings: boolean;
 };
+export type CopaEntrant = {
+  id: number;
+  tournamentId: number;
+  playerId: number;
+  playerNameSnapshot: string;
+  seed: number;
+};
 export type CopaCorrectionState = {
   revision: string;
   data: {
     tournament: { id: number; status: string };
+    entrants?: CopaEntrant[];
     fixtures: CopaFixture[];
     matches: CopaMatch[];
     participants: CopaParticipant[];
@@ -54,6 +62,8 @@ export type CopaCorrectionState = {
   };
 };
 export type CopaMatchChanges = {
+  homeEntrantId?: number;
+  awayEntrantId?: number;
   blackScore?: number;
   redScore?: number;
   matchDate?: string;
@@ -71,7 +81,9 @@ export function previewCopaResult(
   fixtureId: number,
   matchId: number,
   blackScore: number,
-  redScore: number
+  redScore: number,
+  homeEntrantId?: number,
+  awayEntrantId?: number
 ) {
   const fixture = state.data.fixtures.find(item => item.id === fixtureId)!;
   const finalLegs = state.data.fixtures.filter(item => item.stage === "final");
@@ -83,16 +95,22 @@ export function previewCopaResult(
     fixture.stage === "final" &&
     finalLegs.length === 2 &&
     fixture.slotNumber === 2;
-  const otherFixture = finalLegs.find(item => item.id !== fixture.id);
+  const otherFixture = finalLegs.find(item => item.slotNumber === 1);
   const otherMatch = state.data.matches.find(
     item => item.copaFixtureId === otherFixture?.id && item.id !== matchId
   );
+  const homeId = homeEntrantId ?? fixture.homeEntrantId;
+  const awayId = awayEntrantId ?? fixture.awayEntrantId;
+  const previousGoals = (entrantId: number | null) =>
+    entrantId === otherFixture?.homeEntrantId
+      ? (otherMatch?.blackScore ?? 0)
+      : entrantId === otherFixture?.awayEntrantId
+        ? (otherMatch?.redScore ?? 0)
+        : 0;
   const aggregateBlack = secondLeg
-    ? blackScore + (otherMatch?.blackScore ?? 0)
+    ? blackScore + previousGoals(homeId)
     : blackScore;
-  const aggregateRed = secondLeg
-    ? redScore + (otherMatch?.redScore ?? 0)
-    : redScore;
+  const aggregateRed = secondLeg ? redScore + previousGoals(awayId) : redScore;
   return {
     firstLeg,
     secondLeg,
@@ -108,6 +126,8 @@ export function buildCopaChanges(
   fixtureId: number,
   matchId: number,
   values: {
+    homeEntrantId?: number;
+    awayEntrantId?: number;
     blackScore: number;
     redScore: number;
     matchDate?: string;
@@ -122,6 +142,16 @@ export function buildCopaChanges(
   const fixture = state.data.fixtures.find(item => item.id === fixtureId)!;
   const match = state.data.matches.find(item => item.id === matchId)!;
   const changes: CopaMatchChanges = {};
+  if (
+    values.homeEntrantId !== undefined &&
+    values.homeEntrantId !== fixture.homeEntrantId
+  )
+    changes.homeEntrantId = values.homeEntrantId;
+  if (
+    values.awayEntrantId !== undefined &&
+    values.awayEntrantId !== fixture.awayEntrantId
+  )
+    changes.awayEntrantId = values.awayEntrantId;
   if (values.matchDate !== undefined && values.matchDate !== match.matchDate)
     changes.matchDate = values.matchDate;
   if (values.notes !== undefined && values.notes !== match.notes)

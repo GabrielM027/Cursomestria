@@ -41,6 +41,16 @@ export function CopaCorrectionHistory({
         <p>
           Placar: Preto {match?.blackScore} × {match?.redScore} Vermelho
         </p>
+        <p>
+          Capitão do Preto:{" "}
+          {snapshot.entrants?.find(item => item.id === fixture?.homeEntrantId)
+            ?.playerNameSnapshot ?? entrantName(fixture?.homeEntrantId ?? null)}
+        </p>
+        <p>
+          Capitão do Vermelho:{" "}
+          {snapshot.entrants?.find(item => item.id === fixture?.awayEntrantId)
+            ?.playerNameSnapshot ?? entrantName(fixture?.awayEntrantId ?? null)}
+        </p>
         <p>Classificado: {entrantName(fixture?.winnerEntrantId ?? null)}</p>
         {fixture?.homePenaltyScore !== null &&
           fixture?.homePenaltyScore !== undefined && (
