@@ -7,6 +7,7 @@ Alteração visual para a página inicial (`/`) enquanto a Copa estiver ativa/pa
 - O próximo confronto aparece logo abaixo do menu, com fase, título curto e dia/data programados.
 - As bandeiras/escudos cadastrados ocupam círculos grandes: 140 px no celular de 390 px e 160 px no desktop verificado. Os capitães aparecem embaixo, com seus times/seleções.
 - As duas bandeiras e o “×” permanecem alinhados, mesmo quando um nome ocupa duas linhas. Nomes longos quebram linha sem serem truncados.
+- As imagens preenchem o círculo com `object-fit: cover` e zoom de 20%, recortadas pela moldura. O fundo branco do ajuste anterior foi removido. O recorte das bordas foi autorizado pelo usuário; nomes e dimensões das molduras continuam iguais.
 - O título grande da Copa, “O mata-mata começou”, o selo dos oito classificados e o texto introdutório foram retirados. O chaveamento vem imediatamente depois do confronto, com título compacto.
 - Fundo, bordas, cores, tipografia e espaçamento seguem a identidade do Amigos F.C. e dão prioridade ao confronto.
 - A pausa continua sinalizada. Quando não há confronto definido, a mensagem de espera e o chaveamento continuam disponíveis. Imagens ausentes/com erro usam um símbolo neutro; não voltam a mostrar iniciais.

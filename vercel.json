@@ -4,7 +4,8 @@
     "deploymentEnabled": {
       "feat/copa-match-corrections": false,
       "feat/copa-captain-corrections": false,
-      "feat/copa-next-match-layout": false
+      "feat/copa-next-match-layout": false,
+      "fix/copa-flag-zoom": false
     }
   },
   "framework": "vite",
