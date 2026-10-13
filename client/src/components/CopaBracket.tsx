@@ -115,7 +115,7 @@ export default function CopaBracket({ copa, formatDate }: { copa: { status: stri
   }, [fixtures]);
 
   return <section className="copa-bracket" aria-labelledby={titleId}>
-    <div className="copa-bracket__heading"><div><span className="section-label">Caminho da taça</span><h2 id={titleId}>Chaveamento da <em>Copa</em></h2></div><span>{copa.status === "paused" ? "Pausada" : "Ao vivo"}</span></div>
+    <div className="copa-bracket__heading"><h2 id={titleId}>Chaveamento</h2><span>{copa.status === "paused" ? "Pausada" : "Ao vivo"}</span></div>
     {scrollable && <p className="copa-tree__scroll-hint" id={hintId}><ArrowLeftRight size={16} aria-hidden="true" /> Deslize para acompanhar até a final</p>}
     <div className="copa-tree__viewport" ref={viewportRef} tabIndex={scrollable ? 0 : undefined} role="region" aria-label="Árvore de confrontos da Copa" aria-describedby={scrollable ? hintId : undefined}>
       <div className="copa-tree" ref={treeRef}>
