@@ -5,7 +5,7 @@ Alteração visual para a página inicial (`/`) enquanto a Copa estiver ativa/pa
 ## Comportamento
 
 - O próximo confronto aparece logo abaixo do menu, com fase, título curto e dia/data programados.
-- As bandeiras/escudos cadastrados ocupam círculos grandes: 140 px no celular de 390 px e 160 px no desktop verificado. Os capitães aparecem embaixo, com seus times/seleções.
+- As bandeiras/escudos cadastrados ocupam círculos de 96 px no celular e 112 px no desktop, após o ajuste de proporção solicitado pelo usuário. Os capitães aparecem embaixo, com seus times/seleções. O espaçamento, o “×” e as sombras acompanham o tamanho menor.
 - As duas bandeiras e o “×” permanecem alinhados, mesmo quando um nome ocupa duas linhas. Nomes longos quebram linha sem serem truncados.
 - As imagens preenchem o círculo com `object-fit: cover` e zoom de 20%, recortadas pela moldura. O fundo branco do ajuste anterior foi removido. O recorte das bordas foi autorizado pelo usuário; nomes e dimensões das molduras continuam iguais.
 - O título grande da Copa, “O mata-mata começou”, o selo dos oito classificados e o texto introdutório foram retirados. O chaveamento vem imediatamente depois do confronto, com título compacto.
@@ -22,19 +22,21 @@ Não houve mudança em consultas/RPCs, pontuação, estatísticas, autorização
 
 ## Verificação
 
-| Verificação                        | Resultado                                                                                       |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
-| TypeScript (`tsc --noEmit`)        | Passou                                                                                          |
-| Vitest                             | 32 testes passaram                                                                              |
-| Build Vite                         | Passou                                                                                          |
-| `git diff --check`                 | Passou                                                                                          |
-| Chromium: `/` e `/copa`, 390 × 844 | Mesmo confronto, duas imagens circulares de 140 px, alinhadas; confronto no topo e chave abaixo |
-| Chromium: 1440 × 1000              | Duas imagens de 160 px; layout e árvore completos                                               |
-| Chromium: 320 × 760                | Nomes longos quebram linha, sem rolagem horizontal da página                                    |
-| Estados alternativos               | Pausa, espera, imagem indisponível e indicação de dois jogos da final verificados               |
-| Escopo                             | Página inicial fora da Copa e Pontos Corridos preservados                                       |
-| Árvore                             | Oito confrontos e seis conexões mantidos no cenário fictício                                    |
+| Verificação                        | Resultado                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------------- |
+| TypeScript (`tsc --noEmit`)        | Passou                                                                            |
+| Vitest                             | 32 testes passaram                                                                |
+| Build Vite                         | Passou                                                                            |
+| `git diff --check`                 | Passou                                                                            |
+| Chromium: `/` e `/copa`, 390 × 844 | Mesmo confronto, imagens circulares alinhadas; confronto no topo e chave abaixo   |
+| Chromium: 1440 × 1000              | Layout e árvore completos                                                         |
+| Chromium: 320 × 760                | Nomes longos quebram linha, sem rolagem horizontal da página                      |
+| Estados alternativos               | Pausa, espera, imagem indisponível e indicação de dois jogos da final verificados |
+| Escopo                             | Página inicial fora da Copa e Pontos Corridos preservados                         |
+| Árvore                             | Oito confrontos e seis conexões mantidos no cenário fictício                      |
 
 Os dez cenários de navegador usaram exclusivamente respostas REST e imagens locais fictícias. Não houve chamada ao Supabase real, requisição de gravação ou erro JavaScript. Os nomes do exemplo foram usados somente como texto nos registros fictícios; nenhum registro de produção serviu de teste.
 
 O build mantém o aviso anterior sobre bundle acima de 500 kB. Nenhuma dependência foi adicionada. A branch de trabalho tem deploy automático desabilitado por nome; a publicação autorizada usa a `main`.
+
+No ajuste de proporção, Chromium confirmou círculos de 96 px em larguras de 390/320 px e 112 px em 1440 px, alinhamento entre os dois lados, preservação do recorte e ausência de rolagem horizontal da página. Foram usadas apenas imagens decorativas de referência, sem dados de partidas.
