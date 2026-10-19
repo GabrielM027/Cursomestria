@@ -106,6 +106,83 @@ try {
     .sort()) {
     await db.exec(await readFile(`${root}supabase/migrations/${file}`, "utf8"));
   }
+  await test("fotos após correção: UPDATE salva Melhor/Pior sem alterar resultado ou estatísticas", async () => {
+    await completeQuarter();
+    await apply(101, 301, { highlights: [] });
+    await apply(101, 301, {
+      highlights: [
+        { kind: "best", playerId: 1 },
+        { kind: "worst", playerId: 8 },
+      ],
+    });
+    const before = (await state()).data;
+    const audit = await query(
+      'select * from public."copaAuditLogs" order by id'
+    );
+    // The old client used UPSERT: PostgreSQL invokes BEFORE INSERT before conflict resolution.
+    await reject(
+      () =>
+        db.exec(
+          `insert into public."roundHighlights" ("matchId",kind,"playerId","imageUrl") values (301,'best',1,'https://example.invalid/upload.jpg') on conflict ("matchId",kind) do update set "imageUrl"=excluded."imageUrl"`
+        ),
+      /Corrigir partida/
+    );
+    for (const highlight of before.highlights) {
+      const updated = await query(
+        `update public."roundHighlights" set "matchId"=$1,kind=$2,"playerId"=$3,"imageUrl"=$4,"imageKey"=$5,caption=$6 where id=$7 and "matchId"=$1 and kind=$2 and "playerId"=$3 returning id`,
+        [
+          301,
+          highlight.kind,
+          highlight.playerId,
+          `https://example.invalid/${highlight.kind}.jpg`,
+          `highlights/${highlight.kind}.jpg`,
+          "Foto fictícia",
+          highlight.id,
+        ]
+      );
+      assert.deepEqual(updated, [{ id: highlight.id }]);
+    }
+    const after = (await state()).data;
+    for (const key of [
+      "tournament",
+      "entrants",
+      "fixtures",
+      "matches",
+      "participants",
+      "goals",
+    ])
+      assert.deepEqual(after[key], before[key]);
+    for (const highlight of after.highlights) {
+      const previous = before.highlights.find(h => h.id === highlight.id);
+      assert.equal(highlight.playerId, previous.playerId);
+      assert.equal(highlight.kind, previous.kind);
+      assert.equal(
+        highlight.imageUrl,
+        `https://example.invalid/${highlight.kind}.jpg`
+      );
+      assert.equal(highlight.imageKey, `highlights/${highlight.kind}.jpg`);
+    }
+    assert.deepEqual(
+      await query('select * from public."copaAuditLogs" order by id'),
+      audit
+    );
+    await reject(
+      () =>
+        db.exec(
+          'update public."roundHighlights" set "playerId"=8 where kind=\'best\' and "matchId"=301'
+        ),
+      /Corrigir partida/
+    );
+    await db.exec(
+      `select set_config('request.jwt.claim.sub','${OTHER}',false)`
+    );
+    assert.deepEqual(
+      await query(
+        'update public."roundHighlights" set caption=\'Bloqueado\' where "matchId"=301 returning id'
+      ),
+      []
+    );
+  });
   await test("capitães: inverter cores recalcula vencedor sem alterar placar ou estatísticas", async () => {
     await completeQuarter();
     const before = (await state()).data;

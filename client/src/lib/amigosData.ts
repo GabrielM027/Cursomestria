@@ -720,12 +720,33 @@ export async function saveMatch(input: any) {
   return matchId;
 }
 
-export async function saveHighlight(input: any) {
+export async function saveHighlight(input: { matchId: number; kind: "best" | "worst"; playerId: number; imageUrl?: string | null; imageKey?: string | null; caption?: string | null }) {
   if (!await requireAdmin()) throw new Error("Faça login com uma conta administrativa.");
-  const participant = await supabase.from(TABLES.participants).select("id").eq("matchId", input.matchId).eq("playerId", input.playerId).maybeSingle();
+  const [participant, existing] = await Promise.all([
+    supabase.from(TABLES.participants).select("id").eq("matchId", input.matchId).eq("playerId", input.playerId).maybeSingle(),
+    supabase.from(TABLES.highlights).select("id,playerId").eq("matchId", input.matchId).eq("kind", input.kind).maybeSingle(),
+  ]);
   fail(participant.error);
+  fail(existing.error);
   if (!participant.data) throw new Error("O destaque deve ser escolhido entre os jogadores da partida.");
-  fail((await supabase.from(TABLES.highlights).upsert({ matchId: input.matchId, kind: input.kind, playerId: input.playerId, imageUrl: input.imageUrl ?? null, imageKey: input.imageKey ?? null, caption: input.caption ?? null }, { onConflict: "matchId,kind" })).error);
+  const values = {
+    matchId: input.matchId, kind: input.kind, playerId: input.playerId,
+    ...(input.imageUrl !== undefined ? { imageUrl: input.imageUrl } : {}),
+    ...(input.imageKey !== undefined ? { imageKey: input.imageKey } : {}),
+    ...(input.caption !== undefined ? { caption: input.caption } : {}),
+  };
+  if (existing.data) {
+    // UPSERT fires BEFORE INSERT even on an existing row, which correctly blocks
+    // new statistical records in completed Copa games. Use UPDATE for its media.
+    const updated = await supabase.from(TABLES.highlights).update(values)
+      .eq("id", existing.data.id).eq("matchId", input.matchId).eq("kind", input.kind)
+      .eq("playerId", existing.data.playerId).select("id");
+    fail(updated.error);
+    if (updated.data?.length !== 1) throw new Error("O destaque foi alterado por outro administrador. Reabra a partida antes de salvar a foto.");
+  } else {
+    // Keep INSERT subject to the existing RLS and completed-result guard.
+    fail((await supabase.from(TABLES.highlights).insert(values)).error);
+  }
 }
 
 export async function deleteHighlight(input: { id: number }) {
