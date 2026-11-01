@@ -128,6 +128,7 @@ export function summarizePlayersByPosition<T extends { position?: string | null;
 
 export type SocietyRole = "goalkeeper" | "defender" | "midfielder" | "attacker";
 export type SelectionFormation = { goalkeeperCount: 1; defenderCount: number; midfielderCount: number; attackerCount: number };
+export const MAX_SELECTION_PLAYERS = 11;
 export const DEFAULT_SELECTION_FORMATION: SelectionFormation = { goalkeeperCount: 1, defenderCount: 2, midfielderCount: 3, attackerCount: 2 };
 const selectionRoleMeta: Record<SocietyRole, { label: string; fieldY: number }> = {
   goalkeeper: { label: "Goleiro", fieldY: 86 },
@@ -136,11 +137,19 @@ const selectionRoleMeta: Record<SocietyRole, { label: string; fieldY: number }> 
   attacker: { label: "Atacante", fieldY: 21 },
 };
 
+export function getSelectionPlayerCount(formation: SelectionFormation) {
+  return formation.goalkeeperCount + formation.defenderCount + formation.midfielderCount + formation.attackerCount;
+}
+
+export function getSelectionFieldRows(formation: SelectionFormation) {
+  return 1 + [formation.defenderCount, formation.midfielderCount, formation.attackerCount].reduce((rows, count) => rows + Math.ceil(count / 3), 0);
+}
+
 export function isValidSelectionFormation(value?: Partial<SelectionFormation> | null): value is SelectionFormation {
-  const defenderCount = Number(value?.defenderCount ?? DEFAULT_SELECTION_FORMATION.defenderCount);
-  const midfielderCount = Number(value?.midfielderCount ?? DEFAULT_SELECTION_FORMATION.midfielderCount);
-  const attackerCount = Number(value?.attackerCount ?? DEFAULT_SELECTION_FORMATION.attackerCount);
-  return value?.goalkeeperCount === 1 && [defenderCount, midfielderCount, attackerCount].every(count => Number.isInteger(count) && count >= 0 && count <= 7) && defenderCount + midfielderCount + attackerCount === 7;
+  if (!value || value.goalkeeperCount !== 1) return false;
+  const counts = [value.defenderCount, value.midfielderCount, value.attackerCount];
+  return counts.every(count => typeof count === "number" && Number.isInteger(count) && count >= 0 && count < MAX_SELECTION_PLAYERS)
+    && counts.reduce<number>((total, count) => total + (count ?? 0), 1) <= MAX_SELECTION_PLAYERS;
 }
 
 export function normalizeSelectionFormation(value?: Partial<SelectionFormation> | null): SelectionFormation {
@@ -162,7 +171,22 @@ function selectionSlotPositions(count: number, fieldY: number, role: SocietyRole
 export function buildSelectionSlots(formation: SelectionFormation = DEFAULT_SELECTION_FORMATION) {
   const normalized = normalizeSelectionFormation(formation);
   const counts: Record<SocietyRole, number> = { goalkeeper: normalized.goalkeeperCount, defender: normalized.defenderCount, midfielder: normalized.midfielderCount, attacker: normalized.attackerCount };
-  return (Object.keys(selectionRoleMeta) as SocietyRole[]).flatMap(role => selectionSlotPositions(counts[role], selectionRoleMeta[role].fieldY, role).map((position, index) => ({ role, label: selectionRoleMeta[role].label, slot: index + 1, ...position })));
+  const roles = Object.keys(selectionRoleMeta) as SocietyRole[];
+  // Keep the existing layout for compact formations. Larger groups use several rows.
+  if (Object.values(counts).every(count => count <= 3)) {
+    return roles.flatMap(role => selectionSlotPositions(counts[role], selectionRoleMeta[role].fieldY, role).map((position, index) => ({ role, label: selectionRoleMeta[role].label, slot: index + 1, ...position })));
+  }
+  const totalRows = getSelectionFieldRows(normalized);
+  let fieldRow = 0;
+  return roles.flatMap(role => {
+    const rowCount = Math.ceil(counts[role] / 3);
+    let slotNumber = 0;
+    return Array.from({ length: rowCount }, (_, row) => {
+      const rowSize = Math.ceil((counts[role] - slotNumber) / (rowCount - row));
+      const fieldY = 86 - (72 * fieldRow++) / (totalRows - 1);
+      return selectionSlotPositions(rowSize, fieldY, role).map(position => ({ role, label: selectionRoleMeta[role].label, slot: ++slotNumber, ...position }));
+    }).flat();
+  });
 }
 
 export function resolveSocietyRole(position?: string | null): SocietyRole | null {
@@ -455,10 +479,10 @@ export async function saveSelectionOverride(input: { seasonId: number; role: Soc
 export async function saveSelectionOverrides(input: { seasonId: number; formation: SelectionFormation; slots: Array<{ role: SocietyRole; slotNumber: number; playerId: number | null; fieldX: number; fieldY: number }> }) {
   const admin = await requireAdmin();
   if (!admin) throw new Error("Faça login com uma conta administrativa.");
-  if (!isValidSelectionFormation(input.formation)) throw new Error("A formação precisa ter um goleiro e sete jogadores de linha.");
+  if (!isValidSelectionFormation(input.formation)) throw new Error("A seleção deve ter até 11 jogadores, incluindo exatamente 1 goleiro.");
   const expectedSlots = new Set(buildSelectionSlots(input.formation).map(slot => `${slot.role}-${slot.slot}`));
   const receivedSlots = new Set(input.slots.map(slot => `${slot.role}-${slot.slotNumber}`));
-  if (input.slots.length !== expectedSlots.size || receivedSlots.size !== expectedSlots.size || Array.from(receivedSlots).some(slot => !expectedSlots.has(slot))) throw new Error("A formação precisa ter 1 goleiro, 2 zagueiros, 3 meio-campistas e 2 atacantes.");
+  if (input.slots.length !== expectedSlots.size || receivedSlots.size !== expectedSlots.size || Array.from(receivedSlots).some(slot => !expectedSlots.has(slot))) throw new Error("As posições enviadas precisam corresponder à formação escolhida.");
   if (input.slots.some(slot => !Number.isFinite(slot.fieldX) || !Number.isFinite(slot.fieldY) || slot.fieldX < 5 || slot.fieldX > 95 || slot.fieldY < 5 || slot.fieldY > 95)) throw new Error("Mantenha todos os jogadores dentro dos limites do campo.");
   const selectedPlayerIds = input.slots.flatMap(slot => slot.playerId ? [slot.playerId] : []);
   if (new Set(selectedPlayerIds).size !== selectedPlayerIds.length) throw new Error("Um mesmo jogador não pode ocupar duas posições na seleção.");
@@ -469,7 +493,7 @@ export async function saveSelectionOverrides(input: { seasonId: number; formatio
 export async function saveSelectionFormation(input: { seasonId: number; formation: SelectionFormation }) {
   const admin = await requireAdmin();
   if (!admin) throw new Error("Faça login com uma conta administrativa.");
-  if (!isValidSelectionFormation(input.formation)) throw new Error("A formação precisa ter um goleiro e sete jogadores de linha.");
+  if (!isValidSelectionFormation(input.formation)) throw new Error("A seleção deve ter até 11 jogadores, incluindo exatamente 1 goleiro.");
   fail((await supabase.from(TABLES.selectionFormations).upsert({ seasonId: input.seasonId, ...input.formation, updatedBy: admin.userId }, { onConflict: "seasonId" })).error);
   fail((await supabase.from(TABLES.selectionOverrides).delete().eq("seasonId", input.seasonId)).error);
 }
