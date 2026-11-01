@@ -1,11 +1,11 @@
 import CopaHome from "@/components/CopaHome";
 import ClubShell, { ClubCrest } from "@/components/ClubShell";
 import { trpc } from "@/lib/trpc";
-import { groupHighlightsBySunday, visibleRankingRows } from "@/lib/amigosData";
+import { getSelectionFieldRows, groupHighlightsBySunday, visibleRankingRows } from "@/lib/amigosData";
 import { sponsorSlots, usesFilledSponsorCard } from "@/lib/sponsors";
 import { CalendarDays, ChevronRight, CircleUserRound, Flame, Image as ImageIcon, Play, Sparkles, Trophy } from "lucide-react";
 import { Link } from "wouter";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 type ClubData = any;
 
@@ -128,7 +128,8 @@ export function SelectionOfYearPage() {
   const { data, isLoading } = trpc.club.publicData.useQuery();
   if (isLoading || !data) return <Loading />;
   const filledSlots = data.selectionOfYear.filter((slot: any) => slot.player).length;
-  return <ClubShell><PageHero label="Society · 7 na linha + goleiro" title="Seleção do Ano">Os mais votados como Bola Cheia assumem suas posições no campo. A organização define a formação e a escalação se atualiza a cada partida.</PageHero><section className="section section--dark"><div className="club-container"><div className="selection-year__intro"><div><p className="section-label">Escalação atual</p><h2 className="section-title">Os melhores no <span>campo</span></h2></div></div><div className="selection-field" aria-label="Campo society com a Seleção do Ano"><div className="selection-field__half"></div><div className="selection-field__circle"></div><div className="selection-field__goal selection-field__goal--top"></div><div className="selection-field__goal selection-field__goal--bottom"></div>{data.selectionOfYear.map((slot: any) => <SelectionPlayer key={`${slot.role}-${slot.slot}`} slot={slot} />)}</div><p className="selection-year__status">{filledSlots ? `${filledSlots} de 8 posições já têm líder por votos de Bola Cheia.` : "A seleção vai começar a se formar assim que os votos de Bola Cheia forem lançados."}</p></div></section></ClubShell>;
+  const totalSlots = data.selectionOfYear.length;
+  return <ClubShell><PageHero label={`${totalSlots} ${totalSlots === 1 ? "jogador" : "jogadores"} · 1 goleiro`} title="Seleção do Ano">Os mais votados como Bola Cheia assumem suas posições no campo. A organização define a formação e a escalação se atualiza a cada partida.</PageHero><section className="section section--dark"><div className="club-container"><div className="selection-year__intro"><div><p className="section-label">Escalação atual</p><h2 className="section-title">Os melhores no <span>campo</span></h2></div></div><div className="selection-field" style={{ "--selection-rows": getSelectionFieldRows(data.selectionFormation) } as CSSProperties} aria-label="Campo com a Seleção do Ano"><div className="selection-field__half"></div><div className="selection-field__circle"></div><div className="selection-field__goal selection-field__goal--top"></div><div className="selection-field__goal selection-field__goal--bottom"></div>{data.selectionOfYear.map((slot: any) => <SelectionPlayer key={`${slot.role}-${slot.slot}`} slot={slot} />)}</div><p className="selection-year__status">{filledSlots ? `${filledSlots} de ${totalSlots} posições preenchidas na Seleção do Ano.` : "A seleção vai começar a se formar assim que os votos de Bola Cheia forem lançados."}</p></div></section></ClubShell>;
 }
 
 export function HighlightsPage() {
